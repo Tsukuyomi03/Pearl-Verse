@@ -863,23 +863,17 @@ class PearlDashboard {
   async loadInfoContent() {
     if (!this.userData) return;
 
-    // Load profile statistics
-    try {
-      const response = await fetch("/api/profile/stats");
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          this.updateProfileStats(data);
-        }
-      }
-    } catch (error) {}
-
-    // Update referral code
-    document.getElementById("referral-code").textContent =
-      this.userData.referral_code || "LOADING...";
-
-    // Load social links
-    await this.loadSocialLinks();
+    // Load user bio
+    await this.loadUserBio();
+    
+    // Load showcase cards
+    await this.loadShowcaseCards();
+    
+    // Initialize bio editing
+    this.initBioEditing();
+    
+    // Initialize showcase management
+    this.initShowcaseManagement();
   }
 
   updateProfileStats(data) {
@@ -939,6 +933,174 @@ class PearlDashboard {
       .join("");
 
     socialLinksContainer.innerHTML = socialHTML;
+  }
+
+  // New Info Tab Functions
+  async loadUserBio() {
+    const bioElement = document.getElementById("user-bio");
+    if (bioElement && this.userData) {
+      bioElement.textContent = this.userData.bio || "Tell others about yourself...";
+    }
+  }
+
+  async loadShowcaseCards() {
+    // For now, this is a placeholder
+    // In the future, this will load user's selected showcase cards
+    console.log("Loading showcase cards...");
+  }
+
+  initBioEditing() {
+    const editBtn = document.getElementById("edit-bio-btn");
+    const cancelBtn = document.getElementById("cancel-bio-btn");
+    const saveBtn = document.getElementById("save-bio-btn");
+    const bioDisplay = document.getElementById("bio-display");
+    const bioEdit = document.getElementById("bio-edit");
+    const bioTextarea = document.getElementById("bio-textarea");
+    const charCount = document.getElementById("bio-char-count");
+
+    if (!editBtn) return;
+
+    editBtn.addEventListener("click", () => {
+      // Enter edit mode
+      bioDisplay.style.display = "none";
+      bioEdit.style.display = "block";
+      
+      // Set current bio text
+      const currentBio = document.getElementById("user-bio").textContent;
+      bioTextarea.value = currentBio === "Tell others about yourself..." ? "" : currentBio;
+      
+      // Update character count
+      this.updateBioCharCount();
+      
+      // Focus textarea
+      bioTextarea.focus();
+    });
+
+    cancelBtn?.addEventListener("click", () => {
+      this.cancelBioEdit();
+    });
+
+    saveBtn?.addEventListener("click", () => {
+      this.saveBio();
+    });
+
+    bioTextarea?.addEventListener("input", () => {
+      this.updateBioCharCount();
+    });
+
+    // Save on Enter+Ctrl
+    bioTextarea?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.ctrlKey) {
+        e.preventDefault();
+        this.saveBio();
+      }
+      if (e.key === "Escape") {
+        this.cancelBioEdit();
+      }
+    });
+  }
+
+  updateBioCharCount() {
+    const bioTextarea = document.getElementById("bio-textarea");
+    const charCount = document.getElementById("bio-char-count");
+    
+    if (bioTextarea && charCount) {
+      const length = bioTextarea.value.length;
+      charCount.textContent = length;
+      
+      // Change color based on character count
+      if (length > 450) {
+        charCount.style.color = "#ef4444"; // Red when approaching limit
+      } else if (length > 400) {
+        charCount.style.color = "#f59e0b"; // Orange when getting close
+      } else {
+        charCount.style.color = "#a0aec0"; // Default color
+      }
+    }
+  }
+
+  cancelBioEdit() {
+    const bioDisplay = document.getElementById("bio-display");
+    const bioEdit = document.getElementById("bio-edit");
+    
+    bioDisplay.style.display = "block";
+    bioEdit.style.display = "none";
+  }
+
+  async saveBio() {
+    const bioTextarea = document.getElementById("bio-textarea");
+    const saveBtn = document.getElementById("save-bio-btn");
+    const newBio = bioTextarea.value.trim();
+    
+    // Show loading state
+    const originalHtml = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    saveBtn.disabled = true;
+    
+    try {
+      const response = await fetch("/api/profile/update-bio", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ bio: newBio }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Update UI
+        const bioText = newBio || "Tell others about yourself...";
+        document.getElementById("user-bio").textContent = bioText;
+        document.getElementById("profile-bio").textContent = bioText;
+        
+        // Update user data
+        if (this.userData) {
+          this.userData.bio = newBio;
+        }
+        
+        this.showNotification("Bio updated successfully!", "success");
+        this.cancelBioEdit();
+      } else {
+        this.showError(data.message || "Failed to update bio");
+      }
+    } catch (error) {
+      this.showError("Network error. Please try again.");
+    } finally {
+      // Reset button state
+      saveBtn.innerHTML = originalHtml;
+      saveBtn.disabled = false;
+    }
+  }
+
+  initShowcaseManagement() {
+    const manageBtn = document.getElementById("edit-showcase-btn");
+    
+    if (!manageBtn) return;
+    
+    manageBtn.addEventListener("click", () => {
+      this.openShowcaseManager();
+    });
+    
+    // Add click handlers for showcase slots
+    document.querySelectorAll(".showcase-slot").forEach((slot) => {
+      slot.addEventListener("click", () => {
+        const slotNumber = slot.getAttribute("data-slot");
+        this.openCardSelector(slotNumber);
+      });
+    });
+  }
+
+  openShowcaseManager() {
+    this.showNotification("Showcase management coming soon! 🎴", "info");
+    // TODO: Implement showcase management modal
+    // This would allow users to select which cards to display
+  }
+
+  openCardSelector(slotNumber) {
+    this.showNotification(`Card selection for slot ${slotNumber} coming soon! 🎮`, "info");
+    // TODO: Implement card selection modal
+    // This would show user's owned cards and allow them to select one for the showcase
   }
 
   // Event Listeners

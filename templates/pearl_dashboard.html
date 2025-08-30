@@ -285,82 +285,150 @@
                 <!-- Info Tab -->
                 <div class="tab-pane" id="info-tab">
                     <div class="info-container">
-                        <!-- Profile Information -->
-                        <div class="info-section">
-                            <h3><i class="fas fa-user"></i> Profile Information</h3>
-                            <div class="info-grid">
-                                <div class="info-item">
-                                    <label>Full Name</label>
-                                    <span id="info-full-name">Loading...</span>
+                        <!-- Row 1: Personal Information & Bio Cards -->
+                        <div class="info-row">
+                            <!-- Personal Information Card -->
+                            <div class="info-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-user"></i> Personal Information</h3>
                                 </div>
-                                <div class="info-item">
-                                    <label>Username</label>
-                                    <span id="info-username">@username</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Email</label>
-                                    <span id="info-email">email@example.com</span>
-                                </div>
-                                <div class="info-item">
-                                    <label>Member Since</label>
-                                    <span id="info-member-since">Loading...</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Account Stats -->
-                        <div class="info-section">
-                            <h3><i class="fas fa-chart-line"></i> Account Statistics</h3>
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <i class="fas fa-gem"></i>
-                                    <div class="stat-info">
-                                        <span class="stat-number" id="total-pearls">0</span>
-                                        <span class="stat-text">Total Pearls</span>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-trophy"></i>
-                                    <div class="stat-info">
-                                        <span class="stat-number" id="user-level">1</span>
-                                        <span class="stat-text">Current Level</span>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-star"></i>
-                                    <div class="stat-info">
-                                        <span class="stat-number" id="user-exp">0</span>
-                                        <span class="stat-text">Experience</span>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-users"></i>
-                                    <div class="stat-info">
-                                        <span class="stat-number" id="referral-count">0</span>
-                                        <span class="stat-text">Referrals</span>
+                                <div class="card-content">
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <label>Full Name</label>
+                                            <span id="info-full-name">Loading...</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Username</label>
+                                            <span id="info-username">@username</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Email</label>
+                                            <span id="info-email">email@example.com</span>
+                                        </div>
+                                        <div class="info-item">
+                                            <label>Member Since</label>
+                                            <span id="info-member-since">Loading...</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <!-- Social Links -->
-                        <div class="info-section">
-                            <h3><i class="fas fa-link"></i> Social Links</h3>
-                            <div class="social-links" id="social-links">
-                                <p class="no-links">No social links added yet.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Referral Info -->
-                        <div class="info-section">
-                            <h3><i class="fas fa-share-alt"></i> Referral Code</h3>
-                            <div class="referral-card">
-                                <p>Share your referral code and earn 1000 pearls for each friend who joins!</p>
-                                <div class="referral-code-display">
-                                    <code id="referral-code">LOADING...</code>
-                                    <button class="copy-btn" data-copy="referral-code">
-                                        <i class="fas fa-copy"></i>
+                            
+                            <!-- Bio Card -->
+                            <div class="info-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-edit"></i> Bio</h3>
+                                    <button class="edit-bio-btn" id="edit-bio-btn">
+                                        <i class="fas fa-pencil-alt"></i>
+                                        Edit
                                     </button>
+                                </div>
+                                <div class="card-content">
+                                    <div class="bio-content">
+                                        <div class="bio-display" id="bio-display">
+                                            <p id="user-bio">Tell others about yourself...</p>
+                                        </div>
+                                        <div class="bio-edit" id="bio-edit" style="display: none;">
+                                            <textarea id="bio-textarea" class="bio-textarea" placeholder="Tell others about yourself..." maxlength="500"></textarea>
+                                            <div class="bio-actions">
+                                                <button class="btn btn-secondary" id="cancel-bio-btn">
+                                                    <i class="fas fa-times"></i>
+                                                    Cancel
+                                                </button>
+                                                <button class="btn btn-primary" id="save-bio-btn">
+                                                    <i class="fas fa-save"></i>
+                                                    Save
+                                                </button>
+                                            </div>
+                                            <div class="character-count">
+                                                <span id="bio-char-count">0</span>/500
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 2: Showcase Card -->
+                        <div class="info-row">
+                            <div class="info-card full-width">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-star"></i> Showcase</h3>
+                                    <button class="edit-showcase-btn" id="edit-showcase-btn">
+                                        <i class="fas fa-cog"></i>
+                                        Manage
+                                    </button>
+                                </div>
+                                <div class="card-content">
+                                    <div class="showcase-grid" id="showcase-grid">
+                                        <div class="showcase-slot empty" data-slot="1">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Add Card</span>
+                                        </div>
+                                        <div class="showcase-slot empty" data-slot="2">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Add Card</span>
+                                        </div>
+                                        <div class="showcase-slot empty" data-slot="3">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Add Card</span>
+                                        </div>
+                                        <div class="showcase-slot empty" data-slot="4">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Add Card</span>
+                                        </div>
+                                        <div class="showcase-slot empty" data-slot="5">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Add Card</span>
+                                        </div>
+                                        <div class="showcase-slot empty" data-slot="6">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Add Card</span>
+                                        </div>
+                                    </div>
+                                    <p class="showcase-description">
+                                        Display your 6 favorite cards from the shop for others to see!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 3: Achievements Card -->
+                        <div class="info-row">
+                            <div class="info-card full-width">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-trophy"></i> Achievements</h3>
+                                </div>
+                                <div class="card-content">
+                                    <div class="achievements-grid" id="achievements-grid">
+                                        <div class="achievement-slot locked" data-achievement="1">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Locked</span>
+                                        </div>
+                                        <div class="achievement-slot locked" data-achievement="2">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Locked</span>
+                                        </div>
+                                        <div class="achievement-slot locked" data-achievement="3">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Locked</span>
+                                        </div>
+                                        <div class="achievement-slot locked" data-achievement="4">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Locked</span>
+                                        </div>
+                                        <div class="achievement-slot locked" data-achievement="5">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Locked</span>
+                                        </div>
+                                        <div class="achievement-slot locked" data-achievement="6">
+                                            <i class="fas fa-lock"></i>
+                                            <span>Locked</span>
+                                        </div>
+                                    </div>
+                                    <p class="achievements-description">
+                                        Complete challenges to unlock achievements and show off your progress!
+                                    </p>
                                 </div>
                             </div>
                         </div>

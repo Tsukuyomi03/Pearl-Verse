@@ -97,40 +97,138 @@ class PearlDashboard {
   updateProfileDisplay() {
     if (!this.userData) return;
 
-    // Update profile information
-    document.getElementById(
-      "display-name"
-    ).textContent = `${this.userData.first_name} ${this.userData.last_name}`;
-    // Removed username update since we removed the username element
-    document.getElementById("profile-bio").textContent =
-      this.userData.bio || "Welcome to my Pearl Verse profile!";
+    // Update profile information using jQuery
+    $("#display-name").text(`${this.userData.first_name} ${this.userData.last_name}`);
+    $("#profile-bio").text(this.userData.bio || "Welcome to my Pearl Verse profile!");
 
-    // Update stats (only update if elements exist)
-    const pearlCountElement = document.getElementById("pearl-count");
-    if (pearlCountElement) {
-      pearlCountElement.textContent = this.formatNumber(this.userData.pearl);
-    }
-
-    const levelElement = document.getElementById("level");
-    if (levelElement) {
-      levelElement.textContent = this.userData.level;
-    }
+    // Update stats using jQuery with smooth animation
+    this.updateBalanceElements(this.userData.pearl);
+    $("#level").text(this.userData.level);
 
     // Update info tab
-    document.getElementById(
-      "info-full-name"
-    ).textContent = `${this.userData.first_name} ${this.userData.last_name}`;
-    document.getElementById(
-      "info-username"
-    ).textContent = `@${this.userData.username}`;
-    document.getElementById("info-email").textContent = this.userData.email;
+    $("#info-full-name").text(`${this.userData.first_name} ${this.userData.last_name}`);
+    $("#info-username").text(`@${this.userData.username}`);
+    $("#info-email").text(this.userData.email);
 
     if (this.userData.created_at) {
-      const memberSince = new Date(
-        this.userData.created_at
-      ).toLocaleDateString();
-      document.getElementById("info-member-since").textContent = memberSince;
+      const memberSince = new Date(this.userData.created_at).toLocaleDateString();
+      $("#info-member-since").text(memberSince);
     }
+  }
+
+  // Dynamic balance update with smooth animations using jQuery
+  updateBalanceElements(newBalance, showAnimation = false) {
+    const formattedBalance = this.formatNumber(newBalance);
+    
+    // All balance elements that need updating
+    const balanceElements = [
+      "#pearl-count",
+      "#wallet-balance", 
+      "#total-pearls",
+      "#modal-balance"
+    ];
+    
+    balanceElements.forEach(selector => {
+      const $element = $(selector);
+      if ($element.length) {
+        if (showAnimation) {
+          // Animate balance change
+          $element.addClass('balance-updating');
+          
+          setTimeout(() => {
+            $element.text(formattedBalance);
+            $element.removeClass('balance-updating').addClass('balance-updated');
+            
+            // Remove animation class after animation completes
+            setTimeout(() => {
+              $element.removeClass('balance-updated');
+            }, 1000);
+          }, 200);
+        } else {
+          $element.text(formattedBalance);
+        }
+      }
+    });
+  }
+
+  // Refresh specific sections of the UI
+  async refreshWalletData() {
+    try {
+      // Show subtle loading indicator
+      $("#wallet-balance").addClass('refreshing');
+      
+      // Reload user data
+      const response = await fetch("/api/current-user");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          const oldBalance = this.userData?.pearl || 0;
+          const newBalance = data.user.pearl;
+          
+          this.userData = data.user;
+          
+          // Update balance with animation if it changed
+          if (oldBalance !== newBalance) {
+            this.updateBalanceElements(newBalance, true);
+          } else {
+            this.updateBalanceElements(newBalance, false);
+          }
+        }
+      }
+      
+      // Refresh wallet stats
+      await this.loadWalletStats();
+      
+      // Refresh daily claim status
+      await this.loadDailyClaimStatus();
+      
+      // Refresh transaction history
+      await this.loadTransactionHistory();
+      
+    } catch (error) {
+      console.error('Error refreshing wallet data:', error);
+    } finally {
+      $("#wallet-balance").removeClass('refreshing');
+    }
+  }
+
+  // Animate new transaction addition
+  animateNewTransaction(transaction) {
+    const transactionHtml = this.generateTransactionHtml(transaction);
+    const $newTransaction = $(transactionHtml);
+    
+    // Add to top of transaction list with fade-in animation
+    $newTransaction.hide().prependTo("#transaction-list").fadeIn(500);
+    
+    // Add highlight effect
+    $newTransaction.addClass('new-transaction');
+    setTimeout(() => {
+      $newTransaction.removeClass('new-transaction');
+    }, 3000);
+  }
+
+  // Generate transaction HTML (extracted for reuse)
+  generateTransactionHtml(transaction) {
+    const actualAmount = this.extractPearlAmountFromDescription(
+      transaction.description,
+      transaction.pearl_amount
+    );
+    
+    return `
+      <div class="transaction-item">
+        <div class="transaction-icon">
+          <i class="fas ${this.getTransactionIcon(transaction.transaction_type)}"></i>
+        </div>
+        <div class="transaction-details">
+          <h5>${this.getTransactionTitle(transaction.transaction_type)}</h5>
+          <p class="transaction-description">${this.cleanTransactionDescription(transaction.description)}</p>
+          <p class="transaction-date">${this.formatTransactionDate(transaction.transaction_date || transaction.created_at)}</p>
+        </div>
+        <div class="transaction-amount ${actualAmount > 0 ? "positive" : "negative"}">
+          ${actualAmount > 0 ? "+" : ""}${this.formatNumber(Math.abs(actualAmount))}
+        </div>
+      </div>
+    `;
   }
 
   // Feed Content
@@ -1284,9 +1382,9 @@ class PearlDashboard {
   }
 
   async processSendPearls() {
-    const recipientAddress = document.getElementById("recipient-address").value;
-    const amount = parseFloat(document.getElementById("send-amount").value);
-    const confirmBtn = document.getElementById("confirm-send-btn");
+    const recipientAddress = $("#recipient-address").val();
+    const amount = parseFloat($("#send-amount").val());
+    const $confirmBtn = $("#confirm-send-btn");
 
     // Validate inputs
     if (!this.validateWalletAddress(recipientAddress)) {
@@ -1306,9 +1404,9 @@ class PearlDashboard {
       return;
     }
 
-    // Show loading state
-    confirmBtn.classList.add("loading");
-    confirmBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+    // Show loading state with jQuery
+    $confirmBtn.addClass("loading").prop("disabled", true)
+      .html('<i class="fas fa-spinner fa-spin"></i> Sending...');
 
     try {
       const response = await fetch("/api/wallet/send", {
@@ -1325,28 +1423,31 @@ class PearlDashboard {
       const data = await response.json();
 
       if (data.success) {
-        this.showNotification("Pearls sent successfully!", "success");
+        this.showNotification("Pearls sent successfully! ✨", "success");
 
-        // Update balance
+        // Update balance dynamically with animation
         if (this.userData) {
+          const oldBalance = this.userData.pearl;
           this.userData.pearl = data.new_balance;
-          this.updateProfileDisplay();
-          document.getElementById("wallet-balance").textContent =
-            this.formatNumber(this.userData.pearl);
+          this.updateBalanceElements(data.new_balance, true);
         }
 
-        // Close modal and refresh transaction history
+        // Close modal with fade effect
         this.closeSendPearlsModal();
-        this.loadTransactionHistory();
+        
+        // Refresh wallet data to show new transaction
+        setTimeout(() => {
+          this.refreshWalletData();
+        }, 500);
       } else {
         this.showError(data.message || "Failed to send pearls");
       }
     } catch (error) {
       this.showError("Network error. Please try again.");
     } finally {
-      // Reset button state
-      confirmBtn.classList.remove("loading");
-      confirmBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Pearls';
+      // Reset button state with jQuery
+      $confirmBtn.removeClass("loading").prop("disabled", false)
+        .html('<i class="fas fa-paper-plane"></i> Send Pearls');
     }
   }
 
@@ -1604,8 +1705,15 @@ class PearlDashboard {
     document.body.style.overflow = "";
   }
 
-  async claimDailyReward() {
+  async claimDailyReward(dayNumber = null) {
     try {
+      // Show claiming animation on the specific day button if provided
+      let $claimButton = null;
+      if (dayNumber) {
+        $claimButton = $(`.claim-day:nth-child(${dayNumber})`);
+        $claimButton.addClass('claiming').prop('disabled', true);
+      }
+
       const response = await fetch("/api/daily-claim/claim", {
         method: "POST",
         headers: {
@@ -1616,24 +1724,30 @@ class PearlDashboard {
       const data = await response.json();
 
       if (data.success) {
-        this.showNotification(`${data.message}`, "success");
-        // Update balance display
+        this.showNotification(`${data.message} 🎆`, "success");
+        
+        // Update balance dynamically with animation
         if (this.userData) {
+          const oldBalance = this.userData.pearl;
           this.userData.pearl = data.new_pearl_balance;
-          // Update wallet balance if element exists
-          const walletBalanceElement =
-            document.getElementById("wallet-balance");
-          if (walletBalanceElement) {
-            walletBalanceElement.textContent = this.formatNumber(
-              this.userData.pearl
-            );
-          }
+          this.updateBalanceElements(data.new_pearl_balance, true);
         }
+
+        // Refresh wallet data to show updated claim status and new transaction
+        setTimeout(() => {
+          this.refreshWalletData();
+        }, 1000);
+        
       } else {
         this.showError(data.message);
       }
     } catch (error) {
       this.showError("Failed to claim daily reward");
+    } finally {
+      // Remove claiming animation
+      if ($claimButton) {
+        $claimButton.removeClass('claiming').prop('disabled', false);
+      }
     }
   }
 

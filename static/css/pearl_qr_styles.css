@@ -1,0 +1,464 @@
+/* Pearl QR Code Styling */
+.pearl-qr-display {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    position: relative;
+    box-shadow: 
+        0 20px 40px rgba(102, 126, 234, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.pearl-qr-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.pearl-qr-display canvas {
+    border-radius: 15px;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        0 1px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    padding: 8px;
+    animation: qrGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes qrGlow {
+    0% {
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.2),
+            0 1px 8px rgba(0, 0, 0, 0.1),
+            0 0 0 rgba(102, 126, 234, 0);
+    }
+    100% {
+        box-shadow: 
+            0 10px 30px rgba(0, 0, 0, 0.2),
+            0 1px 8px rgba(0, 0, 0, 0.1),
+            0 0 30px rgba(102, 126, 234, 0.3);
+    }
+}
+
+.qr-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 500;
+}
+
+.qr-loading i {
+    font-size: 32px;
+    margin-bottom: 15px;
+    animation: spin 2s linear infinite;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.qr-loading p {
+    margin: 0;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.8);
+    text-align: center;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* QR Section Styling */
+.qr-section {
+    margin: 25px 0;
+}
+
+.qr-section label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.qr-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.qr-help {
+    text-align: center;
+    color: #ffffff;
+    font-size: 13px;
+    line-height: 1.4;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
+    padding: 12px 16px;
+    border-radius: 10px;
+    border-left: 4px solid #ffffff;
+    margin-top: 15px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* QR Actions Button Styling */
+.qr-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.qr-actions .btn {
+    flex: 1;
+    max-width: 140px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.qr-actions .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    transition: left 0.5s;
+}
+
+.qr-actions .btn:hover::before {
+    left: 100%;
+}
+
+.qr-actions .btn i {
+    margin-right: 8px;
+    font-size: 14px;
+}
+
+/* Rainbow sparkle effect for the QR container */
+.pearl-qr-display::after {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+    animation: sparkle 2s ease-in-out infinite;
+}
+
+@keyframes sparkle {
+    0%, 100% { 
+        opacity: 0;
+        transform: scale(0);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Add more sparkles */
+.pearl-qr-display {
+    animation: shimmer 4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    25% {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+    50% {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+    75% {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+}
+
+/* Error state styling */
+.qr-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.1);
+    border-radius: 15px;
+    border: 2px dashed #e74c3c;
+}
+
+.qr-error div {
+    text-align: center;
+}
+
+.qr-error i {
+    color: #e74c3c;
+    margin-bottom: 10px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .pearl-qr-display {
+        padding: 15px;
+        min-height: 280px;
+        border-radius: 15px;
+    }
+    
+    .pearl-qr-display canvas {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+    }
+    
+    .qr-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .qr-actions .btn {
+        max-width: none;
+        width: 100%;
+    }
+    
+    .qr-loading i {
+        font-size: 28px;
+    }
+    
+    .qr-loading p {
+        font-size: 14px;
+    }
+}
+
+/* Special hover effect for the entire QR display */
+.pearl-qr-display:hover canvas {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+}
+
+/* Accessibility improvements */
+.pearl-qr-display:focus-within {
+    outline: 3px solid rgba(102, 126, 234, 0.5);
+    outline-offset: 2px;
+}
+
+/* Wallet Address Section Styling */
+.wallet-address-section {
+    margin-bottom: 20px;
+}
+
+.wallet-address-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #ffffff;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.address-help {
+    color: #ffffff;
+    font-size: 12px;
+    margin-top: 8px;
+    text-align: center;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.address-display {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.address-display code {
+    color: #ffffff !important;
+    background: transparent !important;
+    font-weight: 500;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+}
+
+.address-display .copy-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    backdrop-filter: blur(5px);
+}
+
+.address-display .copy-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Receive Modal Styling */
+#receive-pearls-modal .modal-content {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#receive-pearls-modal .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#receive-pearls-modal .modal-header h3 {
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#receive-pearls-modal .close-modal {
+    color: #ffffff;
+    opacity: 0.8;
+}
+
+#receive-pearls-modal .close-modal:hover {
+    opacity: 1;
+    color: #ff6b6b;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .qr-help {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.4) 0%, rgba(118, 75, 162, 0.4) 100%);
+        color: #ffffff;
+        border-left-color: #ffffff;
+    }
+    
+    .qr-section label {
+        color: #ffffff;
+    }
+    
+    .wallet-address-section label {
+        color: #ffffff;
+    }
+    
+    .address-help {
+        color: #ffffff;
+    }
+    
+    #receive-pearls-modal .modal-content {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    }
+}
+
+/* QR Scanner Button Styling - Input with Icon Inside */
+.address-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.address-input-container .form-input {
+    width: 100%;
+    padding-right: 45px; /* Make space for the QR icon */
+}
+
+.qr-scan-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+    z-index: 10;
+}
+
+.qr-scan-btn:hover {
+    background: linear-gradient(135deg, #7c93f0 0%, #8a5db8 100%);
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+}
+
+.qr-scan-btn:active {
+    transform: translateY(-50%) scale(0.95);
+    box-shadow: 0 1px 3px rgba(102, 126, 234, 0.3);
+}
+
+.qr-scan-btn i {
+    font-size: 14px;
+    color: white;
+}
+
+.qr-scan-btn:disabled {
+    background: #e0e0e0;
+    color: #9e9e9e;
+    cursor: not-allowed;
+    transform: translateY(-50%);
+    box-shadow: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .address-input-container .form-input {
+        padding-right: 50px; /* Slightly more space on mobile */
+    }
+    
+    .qr-scan-btn {
+        width: 36px;
+        height: 36px;
+        right: 6px;
+    }
+    
+    .qr-scan-btn i {
+        font-size: 16px;
+    }
+}

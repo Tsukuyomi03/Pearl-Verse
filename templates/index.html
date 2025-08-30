@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearl Verse - Digital Card Collection Platform</title>
+    
+    <!-- Preload critical fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="Pearl Verse - The ultimate digital card collection platform for gamers and collectors">
+    <meta name="keywords" content="digital cards, gaming, collection, trading, social platform">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" role="navigation">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="brand-icon">
+                    <i class="fas fa-gem"></i>
+                </div>
+                <span class="brand-text">Pearl Verse</span>
+            </div>
+            
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#community" class="nav-link">Community</a>
+                <a href="#pricing" class="nav-link">Pricing</a>
+                <div class="nav-actions">
+                    <a href="/login" class="btn btn-secondary">Sign In</a>
+                    <a href="/register" class="btn btn-primary">Get Started</a>
+                </div>
+            </div>
+            
+            <!-- Mobile menu toggle -->
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#features" class="mobile-link">Features</a>
+            <a href="#community" class="mobile-link">Community</a>
+            <a href="#pricing" class="mobile-link">Pricing</a>
+            <div class="mobile-actions">
+                <a href="/login" class="btn btn-secondary btn-full">Sign In</a>
+                <a href="/register" class="btn btn-primary btn-full">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span>🎮 Now in Beta</span>
+                </div>
+                <h1 class="hero-title">
+                    Collect. Connect. <span class="gradient-text">Collab.</span>
+                </h1>
+                <p class="hero-description">
+                    The ultimate digital card collection platform where gamers and collectors unite. 
+                    Build your deck, trade with friends, and showcase your rare finds.
+                </p>
+                <div class="hero-actions">
+                    <a href="/register" class="btn btn-primary btn-large">
+                        <i class="fas fa-rocket"></i>
+                        Start Collecting
+                    </a>
+                    <a href="#demo" class="btn btn-secondary btn-large">
+                        <i class="fas fa-play"></i>
+                        Watch Demo
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">50K+</span>
+                        <span class="stat-label">Active Users</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1M+</span>
+                        <span class="stat-label">Cards Traded</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">25+</span>
+                        <span class="stat-label">Game Series</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="card-stack">
+                    <div class="demo-card card-1">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-title">Legendary Card</div>
+                            <div class="card-rarity">★★★★★</div>
+                        </div>
+                    </div>
+                    <div class="demo-card card-2">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-title">Epic Card</div>
+                            <div class="card-rarity">★★★★</div>
+                        </div>
+                    </div>
+                    <div class="demo-card card-3">
+                        <div class="card-shine"></div>
+                        <div class="card-content">
+                            <div class="card-title">Rare Card</div>
+                            <div class="card-rarity">★★★</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-elements">
+                    <div class="float-element gem-1"><i class="fas fa-gem"></i></div>
+                    <div class="float-element gem-2"><i class="fas fa-star"></i></div>
+                    <div class="float-element gem-3"><i class="fas fa-trophy"></i></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Everything you need to collect</h2>
+                <p class="section-description">
+                    Powerful features designed for serious collectors and casual gamers alike
+                </p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-cards-blank"></i>
+                    </div>
+                    <h3 class="feature-title">Digital Cards</h3>
+                    <p class="feature-description">
+                        Collect unique digital cards from your favorite games and franchises. 
+                        Each card is authenticated and secured on the blockchain.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Verified authenticity</li>
+                        <li><i class="fas fa-check"></i> Multiple rarity tiers</li>
+                        <li><i class="fas fa-check"></i> Dynamic card effects</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h3 class="feature-title">Safe Trading</h3>
+                    <p class="feature-description">
+                        Trade cards securely with other collectors. Our escrow system ensures 
+                        fair trades and protects against scams.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Escrow protection</li>
+                        <li><i class="fas fa-check"></i> Real-time valuations</li>
+                        <li><i class="fas fa-check"></i> Trade history tracking</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Community</h3>
+                    <p class="feature-description">
+                        Join a vibrant community of collectors. Share your collections, 
+                        participate in events, and compete in tournaments.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Global leaderboards</li>
+                        <li><i class="fas fa-check"></i> Collection showcases</li>
+                        <li><i class="fas fa-check"></i> Weekly tournaments</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3 class="feature-title">Analytics</h3>
+                    <p class="feature-description">
+                        Track your collection's value, monitor market trends, and make 
+                        informed decisions with detailed analytics.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Portfolio tracking</li>
+                        <li><i class="fas fa-check"></i> Market insights</li>
+                        <li><i class="fas fa-check"></i> Price predictions</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Mobile Ready</h3>
+                    <p class="feature-description">
+                        Access your collection anywhere with our responsive web app. 
+                        Trade on the go and never miss a deal.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> Cross-platform sync</li>
+                        <li><i class="fas fa-check"></i> Offline viewing</li>
+                        <li><i class="fas fa-check"></i> Push notifications</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 class="feature-title">Security</h3>
+                    <p class="feature-description">
+                        Your cards are protected by enterprise-grade security. 
+                        Two-factor authentication and encrypted storage included.
+                    </p>
+                    <ul class="feature-list">
+                        <li><i class="fas fa-check"></i> 2FA authentication</li>
+                        <li><i class="fas fa-check"></i> Encrypted storage</li>
+                        <li><i class="fas fa-check"></i> Backup & recovery</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="community" id="community">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Join the community</h2>
+                <p class="section-description">
+                    Connect with collectors worldwide and discover rare cards together
+                </p>
+            </div>
+            
+            <div class="community-stats">
+                <div class="community-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number">50,000+</span>
+                        <span class="stat-label">Active Collectors</span>
+                    </div>
+                </div>
+                <div class="community-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number">1M+</span>
+                        <span class="stat-label">Successful Trades</span>
+                    </div>
+                </div>
+                <div class="community-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number">500+</span>
+                        <span class="stat-label">Daily Tournaments</span>
+                    </div>
+                </div>
+                <div class="community-stat">
+                    <div class="stat-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Rare Cards Found</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Ready to start your collection?</h2>
+                <p class="cta-description">
+                    Join thousands of collectors and start building your digital card empire today. 
+                    Sign up now and get your first pack free!
+                </p>
+                <div class="cta-actions">
+                    <a href="/register" class="btn btn-primary btn-large">
+                        <i class="fas fa-gem"></i>
+                        Start Free
+                    </a>
+                    <div class="cta-note">
+                        <small>Free to start • No credit card required</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-gem"></i>
+                    </div>
+                    <span class="brand-text">Pearl Verse</span>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Product</h4>
+                        <a href="#features">Features</a>
+                        <a href="#community">Community</a>
+                        <a href="#pricing">Pricing</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Company</h4>
+                        <a href="#about">About</a>
+                        <a href="#careers">Careers</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Support</h4>
+                        <a href="#help">Help Center</a>
+                        <a href="#docs">Documentation</a>
+                        <a href="#status">Status</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Legal</h4>
+                        <a href="#privacy">Privacy</a>
+                        <a href="#terms">Terms</a>
+                        <a href="#security">Security</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    <p>&copy; 2024 Pearl Verse. All rights reserved.</p>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+</body>
+</html>

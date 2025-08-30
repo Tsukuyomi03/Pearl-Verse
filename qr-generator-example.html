@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearl Dashboard - QR Generator Example</title>
+</head>
+<body>
+    <!-- Your existing HTML content -->
+    
+    <!-- Load QR libraries (existing CDN scripts) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    
+    <!-- Load the NEW QR generator module BEFORE the main dashboard script -->
+    <script src="/static/js/qr-generator.js"></script>
+    
+    <!-- Load the main dashboard script AFTER the QR generator -->
+    <script src="/static/js/pearl_dashboard.js"></script>
+    
+    <!-- Optional: Test the QR generator independently -->
+    <script>
+        // Example usage of the QR generator module:
+        window.addEventListener('DOMContentLoaded', async () => {
+            // The QR generator is now available as window.QRGenerator
+            console.log('QR Generator Status:', window.QRGenerator.getStatus());
+            
+            // Example: Generate a QR code on a canvas element
+            /*
+            const canvas = document.getElementById('my-canvas');
+            const success = await window.QRGenerator.generateQR(
+                canvas, 
+                'pearl:0x1234567890abcdef...', 
+                {
+                    size: 256,
+                    errorCorrectionLevel: 'M',
+                    margin: 2
+                }
+            );
+            
+            if (success) {
+                console.log('QR code generated successfully!');
+            } else {
+                console.log('QR code generation failed');
+            }
+            */
+        });
+    </script>
+</body>
+</html>

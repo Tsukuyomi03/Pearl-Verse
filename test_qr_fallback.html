@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Fallback Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .test-container {
+            border: 2px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        .qr-wrapper {
+            display: inline-block;
+            text-align: center;
+            margin: 10px;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5856eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Fallback Test</h1>
+    <p>This tests the fallback QR code generation without external libraries.</p>
+    
+    <div class="test-container">
+        <h2>Test Cases</h2>
+        <button onclick="testWalletAddress()">Test Wallet Address</button>
+        <button onclick="testShortText()">Test Short Text</button>
+        <button onclick="testLongText()">Test Long Text</button>
+        <button onclick="testSpecialChars()">Test Special Characters</button>
+        <button onclick="clearAll()">Clear All</button>
+    </div>
+    
+    <div id="results"></div>
+    
+    <script>
+        // Simplified version of the Pearl Dashboard QR fallback methods
+        class QRFallbackTest {
+            generateFallbackQRCode(canvas, text) {
+                console.log('🎨 Generating fallback QR code for:', text);
+                const ctx = canvas.getContext('2d');
+                const size = 256;
+                canvas.width = size;
+                canvas.height = size;
+                
+                // Create white background
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, size, size);
+                
+                // Add outer border
+                ctx.strokeStyle = '#e5e7eb';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(0, 0, size, size);
+                
+                // Generate a deterministic pattern based on the text
+                const hash = this.hashString(text);
+                const moduleSize = 8;
+                const modules = Math.floor(size / moduleSize);
+                
+                // Add QR-like pattern (deterministic based on hash)
+                ctx.fillStyle = '#000000';
+                for (let i = 0; i < modules; i++) {
+                    for (let j = 0; j < modules; j++) {
+                        // Skip corners for positioning patterns
+                        if (this.shouldSkipModule(i, j, modules)) continue;
+                        
+                        const index = i * modules + j;
+                        if ((hash + index) % 3 === 0) {
+                            ctx.fillRect(i * moduleSize, j * moduleSize, moduleSize - 1, moduleSize - 1);
+                        }
+                    }
+                }
+                
+                // Add positioning patterns (corner squares)
+                this.drawPositioningPattern(ctx, 0, 0, moduleSize);
+                this.drawPositioningPattern(ctx, size - 7 * moduleSize, 0, moduleSize);
+                this.drawPositioningPattern(ctx, 0, size - 7 * moduleSize, moduleSize);
+                
+                // Add timing patterns
+                this.drawTimingPatterns(ctx, moduleSize, modules);
+                
+                // Add a subtle Pearl branding
+                ctx.fillStyle = '#6366f1';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('PEARL', size / 2, size - 8);
+                
+                console.log('✅ Fallback QR code generated successfully');
+                return canvas;
+            }
+            
+            // Helper function to create a simple hash from a string
+            hashString(str) {
+                let hash = 0;
+                for (let i = 0; i < str.length; i++) {
+                    const char = str.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash; // Convert to 32-bit integer
+                }
+                return Math.abs(hash);
+            }
+            
+            // Check if we should skip this module (for positioning patterns)
+            shouldSkipModule(i, j, modules) {
+                // Skip positioning patterns
+                if ((i < 7 && j < 7) || (i >= modules - 7 && j < 7) || (i < 7 && j >= modules - 7)) {
+                    return true;
+                }
+                // Skip timing patterns
+                if (i === 6 || j === 6) {
+                    return true;
+                }
+                return false;
+            }
+            
+            // Draw QR code positioning pattern (corner squares)
+            drawPositioningPattern(ctx, x, y, moduleSize) {
+                const size = 7 * moduleSize;
+                
+                // Outer square
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(x, y, size, size);
+                
+                // Inner white square
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x + moduleSize, y + moduleSize, size - 2 * moduleSize, size - 2 * moduleSize);
+                
+                // Center square
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(x + 2 * moduleSize, y + 2 * moduleSize, 3 * moduleSize, 3 * moduleSize);
+            }
+            
+            // Draw QR code timing patterns
+            drawTimingPatterns(ctx, moduleSize, modules) {
+                ctx.fillStyle = '#000000';
+                
+                // Horizontal timing pattern
+                for (let i = 8; i < modules - 8; i++) {
+                    if (i % 2 === 0) {
+                        ctx.fillRect(i * moduleSize, 6 * moduleSize, moduleSize - 1, moduleSize - 1);
+                    }
+                }
+                
+                // Vertical timing pattern
+                for (let j = 8; j < modules - 8; j++) {
+                    if (j % 2 === 0) {
+                        ctx.fillRect(6 * moduleSize, j * moduleSize, moduleSize - 1, moduleSize - 1);
+                    }
+                }
+            }
+        }
+        
+        const qrTest = new QRFallbackTest();
+        
+        function createTestCanvas(text, label) {
+            const resultsDiv = document.getElementById('results');
+            
+            // Create wrapper
+            const wrapper = document.createElement('div');
+            wrapper.className = 'qr-wrapper';
+            
+            // Create label
+            const labelEl = document.createElement('div');
+            labelEl.textContent = label;
+            labelEl.style.fontWeight = 'bold';
+            labelEl.style.marginBottom = '8px';
+            
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            
+            // Create text display
+            const textEl = document.createElement('div');
+            textEl.textContent = `Text: ${text}`;
+            textEl.style.fontSize = '12px';
+            textEl.style.color = '#666';
+            textEl.style.marginTop = '8px';
+            textEl.style.maxWidth = '256px';
+            textEl.style.wordBreak = 'break-all';
+            
+            // Generate QR code
+            try {
+                qrTest.generateFallbackQRCode(canvas, text);
+                console.log('✅ Test completed for:', label);
+            } catch (error) {
+                console.error('❌ Test failed for:', label, error);
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ff0000';
+                ctx.fillRect(0, 0, 256, 256);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('ERROR', 128, 128);
+            }
+            
+            wrapper.appendChild(labelEl);
+            wrapper.appendChild(canvas);
+            wrapper.appendChild(textEl);
+            resultsDiv.appendChild(wrapper);
+        }
+        
+        function testWalletAddress() {
+            createTestCanvas('pearl:0x1234567890abcdef1234567890abcdef12345678', 'Pearl Wallet Address');
+        }
+        
+        function testShortText() {
+            createTestCanvas('Hello World!', 'Short Text');
+        }
+        
+        function testLongText() {
+            createTestCanvas('This is a very long text string that should still generate a unique and deterministic QR-like pattern for testing purposes in the Pearl Verse application fallback system.', 'Long Text');
+        }
+        
+        function testSpecialChars() {
+            createTestCanvas('Test@#$%^&*(){}[]|\\:";\'<>?,./~`', 'Special Characters');
+        }
+        
+        function clearAll() {
+            document.getElementById('results').innerHTML = '';
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            testWalletAddress();
+        });
+    </script>
+</body>
+</html>

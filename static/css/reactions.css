@@ -1,0 +1,121 @@
+/* Reactions styling */
+.reactions-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.reaction-count {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2px 8px;
+  font-size: 0.85rem;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.reaction-count:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.reactions-dropdown .reaction-btn.reacted {
+  color: #007bff !important;
+}
+
+.reactions-menu {
+  background: rgba(33, 37, 41, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.reaction-emoji {
+  background: transparent !important;
+  border: none !important;
+  font-size: 1.5rem;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.reaction-emoji:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  transform: scale(1.2);
+}
+
+/* Post editing styles */
+.post-edit-form {
+  margin-top: 8px;
+}
+
+.post-edit-form .form-control {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  resize: vertical;
+}
+
+.post-edit-form .form-control:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  color: #fff;
+}
+
+.post-edit-form .btn {
+  min-width: 70px;
+}
+
+/* Post ownership styles */
+.dropdown-item.text-danger:hover {
+  background-color: rgba(220, 53, 69, 0.2) !important;
+  color: #dc3545 !important;
+}
+
+/* Reaction button animations */
+.post-action-btn {
+  transition: all 0.2s ease;
+  padding: 0.5rem;
+  border-radius: 8px;
+  text-decoration: none !important;
+}
+
+.post-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.reaction-count-main {
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .reactions-menu {
+    position: fixed !important;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: auto !important;
+    min-width: 300px;
+  }
+  
+  .reaction-emoji {
+    font-size: 1.8rem;
+    padding: 12px;
+  }
+  
+  .reactions-summary {
+    gap: 4px;
+  }
+  
+  .reaction-count {
+    font-size: 0.8rem;
+    padding: 1px 6px;
+  }
+}

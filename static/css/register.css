@@ -1,0 +1,977 @@
+/* ============================================
+   Pearl Verse - Register Page
+   Modern Flat Design with Dark Theme
+   ============================================ */
+
+:root {
+    /* Color Variables */
+    --primary-bg: #0f0f0f;
+    --secondary-bg: #1a1a1a;
+    --card-bg: #242424;
+    --input-bg: #2d2d2d;
+    --border-color: #404040;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #666666;
+    
+    /* Accent Colors */
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --success-color: #10b981;
+    --success-hover: #059669;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+    
+    /* Gradients */
+    --primary-gradient: linear-gradient(135deg, #4f46e5, #7c3aed);
+    --success-gradient: linear-gradient(135deg, #10b981, #059669);
+    --card-gradient: linear-gradient(135deg, #242424, #2d2d2d);
+    
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 25px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.6);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ============================================
+   Background Pattern
+   ============================================ */
+
+.bg-pattern {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.03;
+    background-image: 
+        radial-gradient(circle at 25% 25%, #4f46e5 0%, transparent 50%),
+        radial-gradient(circle at 75% 75%, #7c3aed 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #10b981 0%, transparent 50%);
+    background-size: 600px 600px, 800px 800px, 400px 400px;
+    background-position: 0 0, 100% 100%, 50% 50%;
+    animation: backgroundFloat 20s ease-in-out infinite;
+}
+
+@keyframes backgroundFloat {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(-30px, -30px) rotate(1deg); }
+    66% { transform: translate(30px, -20px) rotate(-1deg); }
+}
+
+/* ============================================
+   Flatpickr Date Picker Styles
+   ============================================ */
+
+/* Custom Flatpickr theme to match our dark design */
+.flatpickr-calendar {
+    background: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: var(--shadow-lg) !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.flatpickr-calendar.open {
+    z-index: 99999 !important;
+}
+
+/* Calendar header */
+.flatpickr-months {
+    background: var(--input-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+.flatpickr-month {
+    color: var(--text-primary) !important;
+    background: transparent !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    background: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Navigation arrows */
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    color: var(--text-secondary) !important;
+    transition: var(--transition-fast) !important;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    color: var(--primary-color) !important;
+    background: rgba(79, 70, 229, 0.1) !important;
+}
+
+/* Weekdays header */
+.flatpickr-weekdays {
+    background: var(--secondary-bg) !important;
+}
+
+.flatpickr-weekday {
+    color: var(--text-secondary) !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+}
+
+/* Calendar days */
+.flatpickr-days {
+    background: var(--card-bg) !important;
+}
+
+.flatpickr-day {
+    color: var(--text-primary) !important;
+    border-radius: var(--radius-sm) !important;
+    transition: all var(--transition-fast) !important;
+    margin: 1px !important;
+}
+
+.flatpickr-day:hover {
+    background: rgba(79, 70, 229, 0.1) !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.flatpickr-day.selected {
+    background: var(--primary-gradient) !important;
+    color: white !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 1px var(--primary-color) !important;
+}
+
+.flatpickr-day.today {
+    color: var(--primary-color) !important;
+    font-weight: 600 !important;
+    border-color: var(--primary-color) !important;
+}
+
+.flatpickr-day.today.selected {
+    color: white !important;
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: var(--text-muted) !important;
+}
+
+.flatpickr-day.disabled {
+    color: var(--text-muted) !important;
+    opacity: 0.4 !important;
+    cursor: not-allowed !important;
+}
+
+/* Year input field */
+.numInput.cur-year {
+    background: var(--input-bg) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+/* Alternative input styling (the visible input field) */
+.form-control.flatpickr-input[readonly] {
+    background-color: var(--input-bg) !important;
+    cursor: pointer !important;
+}
+
+.form-control.flatpickr-input {
+    padding-right: 45px !important; /* Make room for the calendar icon */
+}
+
+/* Custom calendar icon positioning */
+.flatpickr-calendar-icon {
+    transition: color var(--transition-fast) !important;
+}
+
+.form-group:hover .flatpickr-calendar-icon {
+    color: var(--primary-color) !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+    .flatpickr-calendar {
+        font-size: 14px !important;
+    }
+    
+    .flatpickr-day {
+        height: 35px !important;
+        line-height: 35px !important;
+    }
+}
+
+/* Animation for calendar appearance */
+@keyframes flatpickrFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.flatpickr-calendar.open {
+    animation: flatpickrFadeIn 0.2s ease-out !important;
+}
+
+/* ============================================
+   Register Card
+   ============================================ */
+
+.register-card {
+    background: var(--card-gradient);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    animation: slideInUp 0.6s ease-out;
+    max-width: 500px;
+    margin: 2rem auto;
+    position: relative;
+}
+
+.register-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary-gradient);
+    z-index: 1;
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   Header Section
+   ============================================ */
+
+.register-header {
+    padding: 2.5rem 2rem 2rem;
+    background: linear-gradient(135deg, transparent, rgba(79, 70, 229, 0.05));
+}
+
+.logo-container {
+    margin-bottom: 1.5rem;
+}
+
+.logo-container i {
+    font-size: 3rem;
+    background: var(--primary-gradient);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.3));
+    animation: gemPulse 3s ease-in-out infinite;
+}
+
+@keyframes gemPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(79, 70, 229, 0.3)); }
+    50% { transform: scale(1.05); filter: drop-shadow(0 0 30px rgba(79, 70, 229, 0.5)); }
+}
+
+.register-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.register-header p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+/* ============================================
+   Steps Container
+   ============================================ */
+
+.steps-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    transition: var(--transition-normal);
+}
+
+.step-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    transition: var(--transition-normal);
+    margin-bottom: 0.5rem;
+}
+
+.step-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: var(--transition-normal);
+}
+
+.step.active .step-circle {
+    background: var(--primary-gradient);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+    transform: scale(1.1);
+}
+
+.step.active .step-label {
+    color: var(--primary-color);
+}
+
+.step.completed .step-circle {
+    background: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+}
+
+.step.completed .step-label {
+    color: var(--success-color);
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--border-color);
+    margin: 0 1rem;
+    margin-top: 25px;
+    border-radius: 1px;
+    transition: var(--transition-normal);
+}
+
+.step.completed + .step-line {
+    background: var(--success-color);
+}
+
+/* ============================================
+   Form Styles
+   ============================================ */
+
+.register-form {
+    padding: 0 2rem 2rem;
+}
+
+.form-step {
+    display: none;
+    animation: fadeInSlide 0.4s ease-out;
+}
+
+.form-step.active {
+    display: block;
+}
+
+@keyframes fadeInSlide {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.step-content {
+    margin-bottom: 2rem;
+}
+
+.step-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-title i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+/* ============================================
+   Form Controls
+   ============================================ */
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+.form-label i {
+    color: var(--primary-color);
+    margin-right: 0.5rem;
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-primary) !important;
+    font-size: 1rem;
+    font-weight: 400;
+    transition: var(--transition-normal);
+    -webkit-text-fill-color: var(--text-primary) !important;
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    background: var(--secondary-bg);
+}
+
+.form-control::placeholder,
+.form-select::placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Firefox placeholder styling */
+.form-control::-moz-placeholder,
+.form-select::-moz-placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* WebKit placeholder styling */
+.form-control::-webkit-input-placeholder,
+.form-select::-webkit-input-placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+/* Microsoft Edge/IE placeholder styling */
+.form-control:-ms-input-placeholder,
+.form-select:-ms-input-placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.form-control.is-valid {
+    border-color: var(--success-color);
+    background-image: none;
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger-color);
+    background-image: none;
+}
+
+/* Name inputs should display in uppercase */
+.form-control.name-input {
+    text-transform: uppercase;
+}
+
+/* ============================================
+   Password Input Group
+   ============================================ */
+
+.password-input-group {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.password-toggle:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ============================================
+   Password Strength
+   ============================================ */
+
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--danger-color);
+    border-radius: 2px;
+    transition: var(--transition-normal);
+}
+
+.strength-fill.weak {
+    background: var(--danger-color);
+    width: 25%;
+}
+
+.strength-fill.fair {
+    background: var(--warning-color);
+    width: 50%;
+}
+
+.strength-fill.good {
+    background: var(--info-color);
+    width: 75%;
+}
+
+.strength-fill.strong {
+    background: var(--success-color);
+    width: 100%;
+}
+
+.strength-text {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ============================================
+   Form Text and Feedback
+   ============================================ */
+
+.form-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.form-text i {
+    color: var(--info-color);
+}
+
+.invalid-feedback {
+    display: none;
+    font-size: 0.85rem;
+    color: var(--danger-color);
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.form-control.is-invalid ~ .invalid-feedback,
+.form-check-input.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+
+/* ============================================
+   Form Check (Checkboxes)
+   ============================================ */
+
+.agreements {
+    margin-top: 2rem;
+}
+
+.form-check {
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.02);
+    margin-bottom: 1rem;
+    transition: var(--transition-normal);
+}
+
+.form-check:hover {
+    border-color: var(--primary-color);
+    background: rgba(79, 70, 229, 0.05);
+}
+
+.form-check-input {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-top: 0.2rem;
+    margin-right: 0.75rem;
+    background: var(--input-bg);
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+}
+
+.form-check-input:checked {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-check-label {
+    color: var(--text-primary);
+    font-weight: 400;
+    cursor: pointer;
+    line-height: 1.5;
+}
+
+.form-check-label small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.form-check-label .link-primary {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.form-check-label .link-primary:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   Form Actions (Buttons)
+   ============================================ */
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+.btn {
+    padding: 0.875rem 2rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn i {
+    font-size: 0.9rem;
+}
+
+/* Primary Button */
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+/* Secondary Button */
+.btn-secondary {
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border: 2px solid var(--border-color);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: var(--secondary-bg);
+    border-color: var(--text-muted);
+}
+
+/* Success Button */
+.btn-success {
+    background: var(--success-gradient);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-success:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Outline Primary Button */
+.btn-outline-primary {
+    background: transparent;
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-outline-primary:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* ============================================
+   Register Footer
+   ============================================ */
+
+.register-footer {
+    padding: 2rem;
+    border-top: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.divider {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--border-color);
+}
+
+.divider span {
+    background: var(--card-bg);
+    padding: 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+}
+
+.back-home {
+    text-align: center;
+}
+
+.back-home a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: var(--transition-fast);
+}
+
+.back-home a:hover {
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Loading State
+   ============================================ */
+
+.btn-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .register-card {
+        margin: 1rem;
+        border-radius: var(--radius-lg);
+    }
+    
+    .register-header {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    
+    .register-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .steps-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .step-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .step-label {
+        font-size: 0.75rem;
+    }
+    
+    .register-form {
+        padding: 0 1.5rem 1.5rem;
+    }
+    
+    .step-title {
+        font-size: 1.25rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .register-footer {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .steps-container {
+        padding: 1rem 0.5rem;
+    }
+    
+    .step-line {
+        margin: 0 0.5rem;
+    }
+    
+    .step-label {
+        display: none;
+    }
+    
+    .register-form {
+        padding: 0 1rem 1rem;
+    }
+    
+    .register-footer {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   Accessibility
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Focus states for keyboard navigation */
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: #666666;
+        --text-secondary: #cccccc;
+    }
+}

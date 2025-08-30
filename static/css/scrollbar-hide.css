@@ -1,0 +1,397 @@
+/**
+ * Scrollbar Hide Module
+ * 
+ * This CSS module provides utilities to hide scrollbars while maintaining
+ * the ability to scroll. Works across all major browsers.
+ * 
+ * Usage:
+ * - Add .scrollbar-hide class to any element to hide its scrollbar
+ * - Add .scrollbar-hide-global to body to hide all scrollbars globally
+ * - Use .scrollbar-thin for thin, styled scrollbars (fallback for browsers that don't support hiding)
+ */
+
+/* ======================
+   SCROLLBAR HIDE UTILITIES
+   ====================== */
+
+/**
+ * Hide scrollbar for a specific element while keeping scroll functionality
+ * Works on: Chrome, Safari, Edge (Webkit browsers)
+ */
+.scrollbar-hide {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;            /* Chrome, Safari, Opera */
+}
+
+/**
+ * Global scrollbar hiding - apply to body or html element
+ */
+.scrollbar-hide-global,
+.scrollbar-hide-global *,
+body.scrollbar-hide-global,
+body.scrollbar-hide-global *,
+html.scrollbar-hide-global,
+html.scrollbar-hide-global * {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide-global::-webkit-scrollbar,
+.scrollbar-hide-global *::-webkit-scrollbar,
+body.scrollbar-hide-global::-webkit-scrollbar,
+body.scrollbar-hide-global *::-webkit-scrollbar,
+html.scrollbar-hide-global::-webkit-scrollbar,
+html.scrollbar-hide-global *::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera - use !important for global */
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/**
+ * Hide only vertical scrollbars
+ */
+.scrollbar-hide-vertical {
+    overflow-x: auto;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide-vertical::-webkit-scrollbar:vertical {
+    display: none;            /* Chrome, Safari, Opera */
+}
+
+/**
+ * Hide only horizontal scrollbars
+ */
+.scrollbar-hide-horizontal {
+    overflow-x: auto;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide-horizontal::-webkit-scrollbar:horizontal {
+    display: none;            /* Chrome, Safari, Opera */
+}
+
+/**
+ * Thin scrollbar alternative (for browsers that don't support hiding)
+ * This provides a fallback with styled thin scrollbars
+ */
+.scrollbar-thin {
+    scrollbar-width: thin;     /* Firefox */
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent; /* Firefox */
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;               /* Width of vertical scrollbar */
+    height: 6px;              /* Height of horizontal scrollbar */
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;  /* Background of the scrollbar track */
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3); /* Color of the scrollbar thumb */
+    border-radius: 3px;       /* Rounded corners */
+    transition: background-color 0.3s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.5); /* Hover color */
+}
+
+/**
+ * Custom Pearl Verse themed scrollbar
+ */
+.scrollbar-pearl {
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-blue, #5c85d6) rgba(255, 255, 255, 0.1);
+}
+
+.scrollbar-pearl::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.scrollbar-pearl::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.scrollbar-pearl::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, var(--accent-blue, #5c85d6), var(--accent-purple, #8b7bd8));
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.scrollbar-pearl::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, var(--accent-purple, #8b7bd8), var(--accent-blue, #5c85d6));
+    box-shadow: 0 0 8px rgba(92, 133, 214, 0.4);
+}
+
+/* ======================
+   SCROLL BEHAVIOR UTILITIES
+   ====================== */
+
+/**
+ * Smooth scrolling behavior
+ */
+.scroll-smooth {
+    scroll-behavior: smooth;
+}
+
+/**
+ * Auto scrolling behavior (default)
+ */
+.scroll-auto {
+    scroll-behavior: auto;
+}
+
+/**
+ * Enable vertical scrolling only
+ */
+.scroll-vertical-only {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/**
+ * Enable horizontal scrolling only
+ */
+.scroll-horizontal-only {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+/**
+ * Disable all scrolling
+ */
+.scroll-none {
+    overflow: hidden;
+}
+
+/**
+ * Enable all scrolling
+ */
+.scroll-all {
+    overflow: auto;
+}
+
+/* ======================
+   MOBILE SPECIFIC UTILITIES
+   ====================== */
+
+/**
+ * Mobile-friendly scrollbar hiding
+ * Addresses iOS Safari specific issues
+ */
+@media (max-width: 768px) {
+    .scrollbar-hide-mobile {
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .scrollbar-hide-mobile::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Prevent bounce scrolling on iOS */
+    .scroll-no-bounce {
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* ======================
+   UTILITY COMBINATIONS
+   ====================== */
+
+/**
+ * Common combinations for different use cases
+ */
+
+/* Hide scrollbar with smooth scrolling */
+.scrollbar-hide-smooth {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+}
+
+.scrollbar-hide-smooth::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for overlay/modal content */
+.scrollbar-hide-overlay {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.scrollbar-hide-overlay::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for sidebar content */
+.scrollbar-hide-sidebar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.scrollbar-hide-sidebar::-webkit-scrollbar {
+    display: none;
+}
+
+/* ======================
+   ACCESSIBILITY CONSIDERATIONS
+   ====================== */
+
+/**
+ * Respect user's motion preferences
+ * Users who prefer reduced motion won't get smooth scrolling
+ */
+@media (prefers-reduced-motion: reduce) {
+    .scroll-smooth,
+    .scrollbar-hide-smooth {
+        scroll-behavior: auto;
+    }
+}
+
+/**
+ * High contrast mode support
+ * Show thin scrollbars in high contrast mode for better usability
+ */
+@media (prefers-contrast: high) {
+    .scrollbar-hide,
+    .scrollbar-hide-global,
+    .scrollbar-hide-vertical,
+    .scrollbar-hide-horizontal {
+        scrollbar-width: thin;
+        scrollbar-color: ButtonText ButtonFace;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar,
+    .scrollbar-hide-global::-webkit-scrollbar,
+    .scrollbar-hide-vertical::-webkit-scrollbar,
+    .scrollbar-hide-horizontal::-webkit-scrollbar {
+        display: block;
+        width: 8px;
+        height: 8px;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar-thumb,
+    .scrollbar-hide-global::-webkit-scrollbar-thumb,
+    .scrollbar-hide-vertical::-webkit-scrollbar-thumb,
+    .scrollbar-hide-horizontal::-webkit-scrollbar-thumb {
+        background: ButtonText;
+        border-radius: 4px;
+    }
+}
+
+/**
+ * Focus management for keyboard navigation
+ * Ensure scrollable areas can be focused for keyboard users
+ */
+.scrollbar-hide[tabindex],
+.scrollbar-hide-overlay[tabindex],
+.scrollbar-hide-sidebar[tabindex] {
+    outline-offset: 2px;
+}
+
+.scrollbar-hide[tabindex]:focus,
+.scrollbar-hide-overlay[tabindex]:focus,
+.scrollbar-hide-sidebar[tabindex]:focus {
+    outline: 2px solid var(--accent-blue, #5c85d6);
+    outline-offset: 2px;
+}
+
+/* ======================
+   DEBUGGING UTILITIES
+   ====================== */
+
+/**
+ * Debug mode - temporarily show scrollbars for development
+ * Add .debug-scrollbar to any element to override hiding
+ */
+.debug-scrollbar,
+.debug-scrollbar * {
+    -ms-overflow-style: auto !important;
+    scrollbar-width: auto !important;
+}
+
+.debug-scrollbar::-webkit-scrollbar,
+.debug-scrollbar *::-webkit-scrollbar {
+    display: block !important;
+    width: 16px !important;
+    height: 16px !important;
+}
+
+.debug-scrollbar::-webkit-scrollbar-thumb,
+.debug-scrollbar *::-webkit-scrollbar-thumb {
+    background: red !important;
+    border-radius: 8px !important;
+}
+
+/* ======================
+   USAGE EXAMPLES IN COMMENTS
+   ====================== */
+
+/*
+USAGE EXAMPLES:
+
+1. Hide scrollbar on entire page:
+   <body class="scrollbar-hide-global">
+
+2. Hide scrollbar on specific container:
+   <div class="scrollbar-hide">
+     <!-- scrollable content -->
+   </div>
+
+3. Hide scrollbar with smooth scrolling:
+   <div class="scrollbar-hide-smooth">
+     <!-- content -->
+   </div>
+
+4. Sidebar with hidden scrollbar:
+   <aside class="scrollbar-hide-sidebar">
+     <!-- sidebar content -->
+   </aside>
+
+5. Modal/overlay content:
+   <div class="scrollbar-hide-overlay">
+     <!-- modal content -->
+   </div>
+
+6. Thin styled scrollbar (fallback):
+   <div class="scrollbar-thin">
+     <!-- content -->
+   </div>
+
+7. Pearl Verse themed scrollbar:
+   <div class="scrollbar-pearl">
+     <!-- content -->
+   </div>
+
+8. Mobile-specific hiding:
+   <div class="scrollbar-hide-mobile">
+     <!-- content -->
+   </div>
+
+9. Debug mode (show red scrollbars):
+   <div class="scrollbar-hide debug-scrollbar">
+     <!-- content -->
+   </div>
+*/

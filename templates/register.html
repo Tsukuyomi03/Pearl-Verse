@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Pearl Verse</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+</head>
+<body>
+    <!-- Background Pattern -->
+    <div class="bg-pattern"></div>
+    
+    <!-- Main Container -->
+    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+        <div class="row w-100 justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+                <div class="register-card">
+                    <!-- Header -->
+                    <div class="register-header text-center">
+                        <div class="logo-container">
+                            <i class="bi bi-gem"></i>
+                        </div>
+                        <h1>Join Pearl Verse</h1>
+                        <p>Create your account and start your journey</p>
+                    </div>
+
+                    <!-- Progress Steps -->
+                    <div class="steps-container">
+                        <div class="step active" data-step="1">
+                            <div class="step-circle">
+                                <i class="bi bi-person"></i>
+                            </div>
+                            <span class="step-label">Personal</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="2">
+                            <div class="step-circle">
+                                <i class="bi bi-shield-lock"></i>
+                            </div>
+                            <span class="step-label">Security</span>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="3">
+                            <div class="step-circle">
+                                <i class="bi bi-gear"></i>
+                            </div>
+                            <span class="step-label">Preferences</span>
+                        </div>
+                    </div>
+
+                    <!-- Registration Form -->
+                    <form id="registerForm" class="register-form" novalidate>
+                        <!-- Step 1: Personal Information -->
+                        <div class="form-step active" data-step="1">
+                            <div class="step-content">
+                                <h3 class="step-title">
+                                    <i class="bi bi-person-circle me-2"></i>
+                                    Personal Information
+                                </h3>
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label for="firstName" class="form-label">
+                                                <i class="bi bi-person me-2"></i>First Name
+                                            </label>
+                                            <input type="text" class="form-control name-input" id="firstName" name="firstName"
+                                                   placeholder="Enter your first name" required>
+                                            <div class="invalid-feedback">
+                                                Please enter your first name.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="form-group">
+                                            <label for="lastName" class="form-label">
+                                                <i class="bi bi-person me-2"></i>Last Name
+                                            </label>
+                                            <input type="text" class="form-control name-input" id="lastName" name="lastName"
+                                                   placeholder="Enter your last name" required>
+                                            <div class="invalid-feedback">
+                                                Please enter your last name.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="username" class="form-label">
+                                        <i class="bi bi-at me-2"></i>Username
+                                    </label>
+                                    <input type="text" class="form-control" id="username" name="username"
+                                           placeholder="Choose a unique username" required>
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        This will be your unique identifier in Pearl Verse
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Please choose a username (3-20 characters).
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="dateOfBirth" class="form-label">
+                                        <i class="bi bi-calendar-event me-2"></i>Date of Birth
+                                    </label>
+                                    <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
+                                    <div class="invalid-feedback">
+                                        Please enter your date of birth.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-primary next-btn">
+                                    Continue <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Account Security -->
+                        <div class="form-step" data-step="2">
+                            <div class="step-content">
+                                <h3 class="step-title">
+                                    <i class="bi bi-shield-lock me-2"></i>
+                                    Account Security
+                                </h3>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="email" class="form-label">
+                                        <i class="bi bi-envelope me-2"></i>Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                           placeholder="Enter your email address" required>
+                                    <div class="invalid-feedback">
+                                        Please enter a valid email address.
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="password" class="form-label">
+                                        <i class="bi bi-lock me-2"></i>Password
+                                    </label>
+                                    <div class="password-input-group">
+                                        <input type="password" class="form-control" id="password" name="password"
+                                               placeholder="Create a strong password" required>
+                                        <button type="button" class="password-toggle" id="togglePassword">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="password-strength">
+                                        <div class="strength-bar">
+                                            <div class="strength-fill"></div>
+                                        </div>
+                                        <span class="strength-text">Password strength</span>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Password must be at least 8 characters long.
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    <label for="confirmPassword" class="form-label">
+                                        <i class="bi bi-lock me-2"></i>Confirm Password
+                                    </label>
+                                    <div class="password-input-group">
+                                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword"
+                                               placeholder="Confirm your password" required>
+                                        <button type="button" class="password-toggle" id="toggleConfirmPassword">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                    </div>
+                                    <div class="invalid-feedback">
+                                        Passwords must match.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary back-btn">
+                                    <i class="bi bi-arrow-left me-2"></i>Back
+                                </button>
+                                <button type="button" class="btn btn-primary next-btn">
+                                    Continue <i class="bi bi-arrow-right ms-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Preferences -->
+                        <div class="form-step" data-step="3">
+                            <div class="step-content">
+                                <h3 class="step-title">
+                                    <i class="bi bi-gear me-2"></i>
+                                    Preferences
+                                </h3>
+                                
+                                <div class="form-group mb-3">
+                                    <label for="referralCode" class="form-label">
+                                        <i class="bi bi-gift me-2"></i>Referral Code (Optional)
+                                    </label>
+                                    <input type="text" class="form-control" id="referralCode" name="referralCode"
+                                           placeholder="Enter referral code for bonus rewards"
+                                           maxlength="8">
+                                    <div class="form-text">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Get 1000 extra pearls with a valid referral code! 💎
+                                    </div>
+                                </div>
+                                
+                                <div class="agreements mb-4">
+                                    <div class="form-check mb-3">
+                                        <input type="checkbox" class="form-check-input" id="terms" name="terms" required>
+                                        <label class="form-check-label" for="terms">
+                                            <i class="bi bi-shield-check me-2"></i>
+                                            I agree to the 
+                                            <a href="#" class="link-primary">Terms of Service</a> 
+                                            and 
+                                            <a href="#" class="link-primary">Privacy Policy</a>
+                                        </label>
+                                        <div class="invalid-feedback">
+                                            You must accept the Terms of Service to continue.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary back-btn">
+                                    <i class="bi bi-arrow-left me-2"></i>Back
+                                </button>
+                                <button type="submit" class="btn btn-success submit-btn">
+                                    <span class="btn-text">
+                                        <i class="bi bi-person-plus me-2"></i>Create Account
+                                    </span>
+                                    <span class="btn-loading d-none">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                        Creating Account...
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Footer -->
+                    <div class="register-footer">
+                        <div class="divider">
+                            <span>Already have an account?</span>
+                        </div>
+                        <a href="/login" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            Sign In to Your Account
+                        </a>
+                        <div class="back-home mt-3">
+                            <a href="/" class="text-muted">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="{{ url_for('static', filename='js/register.js') }}"></script>
+</body>
+</html>

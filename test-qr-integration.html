@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearl QR Code Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        #qr-loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 14px;
+        }
+        #test-canvas {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+        }
+        button {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5856eb;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .status.success {
+            background: #d1f2eb;
+            color: #0d7377;
+        }
+        .status.error {
+            background: #fadde1;
+            color: #721c24;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .test-wallet {
+            font-family: monospace;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pearl QR Code Integration Test</h1>
+    
+    <div class="info">
+        <h3>🧪 Test Purpose</h3>
+        <p>This test verifies that the Pearl QR code generation system works correctly with:</p>
+        <ul>
+            <li>QR Generator Module (qr-generator.js)</li>
+            <li>CDNJS QR Code Library (if available)</li>
+            <li>Fallback generation system</li>
+        </ul>
+    </div>
+
+    <div class="test-container">
+        <h2>Library Status Check</h2>
+        <div id="library-status"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>QR Code Generation Test</h2>
+        <p>Test wallet address:</p>
+        <div class="test-wallet">pearl:0x1234567890abcdef1234567890abcdef12345678</div>
+        
+        <div class="qr-container">
+            <div id="qr-loading">
+                <i>🔄</i>
+                <p>Generating QR code...</p>
+            </div>
+            <canvas id="test-canvas" width="256" height="256" style="display: none;"></canvas>
+        </div>
+
+        <button onclick="testQRGeneration()">Generate QR Code</button>
+        <button onclick="testFallbackGeneration()">Test Fallback Only</button>
+        <button onclick="clearCanvas()">Clear Canvas</button>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <div class="test-container">
+        <h2>Integration Test Results</h2>
+        <div id="integration-results"></div>
+    </div>
+
+    <!-- External QR Library (Optional) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    
+    <!-- Pearl QR Generator Module -->
+    <script src="static/js/qr-generator.js"></script>
+
+    <script>
+        // Test functions
+        function displayStatus(message, type) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+            return statusDiv;
+        }
+
+        function checkLibraryStatus() {
+            console.log('🔍 Checking library status...');
+            const statusContainer = document.getElementById('library-status');
+            
+            // Check if QR Generator module is available
+            const hasQRGenerator = typeof window.QRGenerator !== 'undefined';
+            const hasCdnjs = typeof qrcode !== 'undefined' && typeof qrcode.generate === 'function';
+            
+            let statusHTML = '';
+            
+            statusHTML += `<div class="status ${hasQRGenerator ? 'success' : 'error'}">
+                QR Generator Module: ${hasQRGenerator ? '✅ Available' : '❌ Missing'}
+            </div>`;
+            
+            statusHTML += `<div class="status ${hasCdnjs ? 'success' : 'error'}">
+                CDNJS QR Library: ${hasCdnjs ? '✅ Available' : '❌ Missing'}
+            </div>`;
+
+            if (hasQRGenerator) {
+                const status = window.QRGenerator.getStatus();
+                statusHTML += `<div class="status success">
+                    Generator Status: ✅ Ready (${status.libraryType})
+                </div>`;
+            }
+
+            statusContainer.innerHTML = statusHTML;
+            console.log('📊 Library status check complete');
+            return { hasQRGenerator, hasCdnjs };
+        }
+
+        async function testQRGeneration() {
+            console.log('🧪 Starting QR generation test...');
+            const canvas = document.getElementById('test-canvas');
+            const loading = document.getElementById('qr-loading');
+            const results = document.getElementById('test-results');
+            const testAddress = 'pearl:0x1234567890abcdef1234567890abcdef12345678';
+
+            // Show loading
+            loading.style.display = 'flex';
+            canvas.style.display = 'none';
+            results.innerHTML = '';
+
+            if (!window.QRGenerator) {
+                console.error('❌ QRGenerator not available');
+                loading.style.display = 'none';
+                results.appendChild(displayStatus('❌ QR Generator module not found!', 'error'));
+                return;
+            }
+
+            try {
+                console.log('🔄 Calling QRGenerator.generateQR...');
+                const success = await window.QRGenerator.generateQR(canvas, testAddress, {
+                    size: 256,
+                    errorCorrectionLevel: 'M',
+                    margin: 2
+                });
+
+                loading.style.display = 'none';
+
+                if (success) {
+                    canvas.style.display = 'block';
+                    results.appendChild(displayStatus('✅ QR code generated successfully!', 'success'));
+                    console.log('✅ QR generation test passed');
+                } else {
+                    results.appendChild(displayStatus('❌ QR generation failed', 'error'));
+                    console.log('❌ QR generation test failed');
+                }
+            } catch (error) {
+                console.error('❌ Error during QR generation test:', error);
+                loading.style.display = 'none';
+                results.appendChild(displayStatus(`❌ Error: ${error.message}`, 'error'));
+            }
+        }
+
+        async function testFallbackGeneration() {
+            console.log('🧪 Testing fallback generation...');
+            const canvas = document.getElementById('test-canvas');
+            const loading = document.getElementById('qr-loading');
+            const results = document.getElementById('test-results');
+            const testAddress = 'pearl:0x1234567890abcdef1234567890abcdef12345678';
+
+            // Temporarily hide cdnjs to force fallback
+            const originalQrcode = window.qrcode;
+            window.qrcode = undefined;
+
+            loading.style.display = 'flex';
+            canvas.style.display = 'none';
+            results.innerHTML = '';
+
+            try {
+                const success = await window.QRGenerator.generateQR(canvas, testAddress, {
+                    size: 256,
+                    errorCorrectionLevel: 'M',
+                    margin: 2
+                });
+
+                loading.style.display = 'none';
+
+                if (success) {
+                    canvas.style.display = 'block';
+                    results.appendChild(displayStatus('✅ Fallback QR generation successful!', 'success'));
+                    console.log('✅ Fallback generation test passed');
+                } else {
+                    results.appendChild(displayStatus('❌ Fallback generation failed', 'error'));
+                    console.log('❌ Fallback generation test failed');
+                }
+            } catch (error) {
+                console.error('❌ Error during fallback test:', error);
+                loading.style.display = 'none';
+                results.appendChild(displayStatus(`❌ Fallback Error: ${error.message}`, 'error'));
+            } finally {
+                // Restore original qrcode
+                window.qrcode = originalQrcode;
+            }
+        }
+
+        function clearCanvas() {
+            const canvas = document.getElementById('test-canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'none';
+            document.getElementById('test-results').innerHTML = '';
+            console.log('🧹 Canvas cleared');
+        }
+
+        function runIntegrationTest() {
+            console.log('🚀 Running full integration test...');
+            const resultsContainer = document.getElementById('integration-results');
+            
+            const { hasQRGenerator, hasCdnjs } = checkLibraryStatus();
+            
+            let testResults = '';
+            
+            if (hasQRGenerator) {
+                testResults += `<div class="status success">
+                    ✅ Integration Test: QR Generator module loaded successfully
+                </div>`;
+            } else {
+                testResults += `<div class="status error">
+                    ❌ Integration Test: QR Generator module failed to load
+                </div>`;
+            }
+
+            if (hasCdnjs) {
+                testResults += `<div class="status success">
+                    ✅ Optimal Configuration: CDNJS library available for best quality
+                </div>`;
+            } else {
+                testResults += `<div class="status success">
+                    ✅ Fallback Ready: System will use custom QR generation
+                </div>`;
+            }
+
+            resultsContainer.innerHTML = testResults;
+            console.log('📈 Integration test complete');
+        }
+
+        // Run tests on page load
+        window.addEventListener('load', () => {
+            console.log('🌟 Pearl QR Integration Test loaded');
+            runIntegrationTest();
+        });
+    </script>
+</body>
+</html>

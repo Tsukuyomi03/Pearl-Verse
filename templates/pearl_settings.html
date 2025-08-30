@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Manage your Pearl Verse profile, security settings, and social connections">
+    <meta name="theme-color" content="#0f172a">
+    <title>Settings - Pearl Verse</title>
+    
+    <!-- Modern Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous">
+    
+    <!-- Inter Font - Modern, clean, and highly readable -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Modular Component Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_sidenav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_topnav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_botnav.css') }}">
+    
+    <!-- Settings Page Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_settings.css') }}">
+</head>
+<body>
+    <!-- Include Modular Side Navigation -->
+    {% include 'modular_sidenav.html' %}
+    
+    <!-- Include Modular Top Navigation -->
+    {% include 'modular_topnav.html' %}
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <div class="settings-container">
+            <!-- Settings Header -->
+            <header class="settings-header">
+                <div class="header-content">
+                    <div class="header-info">
+                        <h1 class="page-title">
+                            <i class="fas fa-gear" aria-hidden="true"></i>
+                            <span>Settings</span>
+                        </h1>
+                        <p class="page-description">Manage your profile, security settings, and social connections</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Settings Content -->
+            <div class="settings-content">
+                
+                <!-- Profile Information Section -->
+                <section class="settings-section" id="profileSection">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-id-card" aria-hidden="true"></i>
+                            <span>Profile Information</span>
+                        </h2>
+                        <p class="section-description">Update your personal information and profile details</p>
+                    </div>
+                    
+                    <div class="section-content">
+                        <form class="settings-form" id="profileForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="firstName" class="form-label">
+                                        <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                        <span>First Name</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="firstName" 
+                                        name="firstName" 
+                                        class="form-input"
+                                        placeholder="Enter your first name"
+                                        value="Player"
+                                        required
+                                    >
+                                    <div class="input-error" id="firstNameError"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="lastName" class="form-label">
+                                        <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                        <span>Last Name</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="lastName" 
+                                        name="lastName" 
+                                        class="form-input"
+                                        placeholder="Enter your last name"
+                                        value="Name"
+                                        required
+                                    >
+                                    <div class="input-error" id="lastNameError"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-at" aria-hidden="true"></i>
+                                    <span>Email Address</span>
+                                </label>
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    class="form-input"
+                                    placeholder="Enter your email address"
+                                    value="player@example.com"
+                                    required
+                                >
+                                <div class="input-error" id="emailError"></div>
+                            </div>
+                            
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="dateOfBirth" class="form-label">
+                                        <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                                        <span>Date of Birth</span>
+                                    </label>
+                                    <input 
+                                        type="date" 
+                                        id="dateOfBirth" 
+                                        name="dateOfBirth" 
+                                        class="form-input date-input"
+                                        max="" 
+                                        required
+                                    >
+                                    <div class="input-error" id="dateOfBirthError"></div>
+                                    <div class="input-help" id="ageDisplay"></div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="location" class="form-label">
+                                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                        <span>Location</span>
+                                        <span class="optional-label">(Optional)</span>
+                                    </label>
+                                    <input 
+                                        type="text" 
+                                        id="location" 
+                                        name="location" 
+                                        class="form-input"
+                                        placeholder="Enter your location"
+                                        maxlength="100"
+                                    >
+                                    <div class="input-error" id="locationError"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancelProfile">
+                                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                                    <span>Cancel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="saveProfile">
+                                    <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+                                    <span>Save Changes</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Password Change Section -->
+                <section class="settings-section" id="passwordSection">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                            <span>Change Password</span>
+                        </h2>
+                        <p class="section-description">Update your account password for enhanced security</p>
+                    </div>
+                    
+                    <div class="section-content">
+                        <form class="settings-form" id="passwordForm">
+                            <div class="form-group">
+                                <label for="currentPassword" class="form-label">
+                                    <i class="fas fa-lock" aria-hidden="true"></i>
+                                    <span>Current Password</span>
+                                </label>
+                                <div class="password-input-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="currentPassword" 
+                                        name="currentPassword" 
+                                        class="form-input password-input"
+                                        placeholder="Enter your current password"
+                                        required
+                                    >
+                                    <button type="button" class="password-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="input-error" id="currentPasswordError"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="newPassword" class="form-label">
+                                    <i class="fas fa-key" aria-hidden="true"></i>
+                                    <span>New Password</span>
+                                </label>
+                                <div class="password-input-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="newPassword" 
+                                        name="newPassword" 
+                                        class="form-input password-input"
+                                        placeholder="Enter your new password"
+                                        required
+                                    >
+                                    <button type="button" class="password-toggle" data-target="newPassword" aria-label="Toggle password visibility">
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="password-strength" id="passwordStrength"></div>
+                                <div class="input-error" id="newPasswordError"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirmPassword" class="form-label">
+                                    <i class="fas fa-check-double" aria-hidden="true"></i>
+                                    <span>Confirm New Password</span>
+                                </label>
+                                <div class="password-input-wrapper">
+                                    <input 
+                                        type="password" 
+                                        id="confirmPassword" 
+                                        name="confirmPassword" 
+                                        class="form-input password-input"
+                                        placeholder="Confirm your new password"
+                                        required
+                                    >
+                                    <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Toggle password visibility">
+                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="input-error" id="confirmPasswordError"></div>
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancelPassword">
+                                    <i class="fas fa-xmark" aria-hidden="true"></i>
+                                    <span>Cancel</span>
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="changePassword">
+                                    <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                                    <span>Update Password</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Social Links Section -->
+                <section class="settings-section" id="socialSection">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-link" aria-hidden="true"></i>
+                            <span>Social Links</span>
+                        </h2>
+                        <p class="section-description">Connect your social media accounts and control their visibility on your dashboard</p>
+                    </div>
+                    
+                    <div class="section-content">
+                        <form class="settings-form" id="socialForm">
+                            <div class="social-links-container" id="socialLinksContainer">
+                                <!-- Social Links Info -->
+                                <div class="social-info-banner">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>Toggle social platforms on to display them on your dashboard. Toggle off to hide from dashboard.</span>
+                                </div>
+                                
+                                <!-- Discord -->
+                                <div class="social-link-group" data-platform="discord">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-discord social-icon discord"></i>
+                                            <span class="social-name">Discord</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Discord on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="discord_enabled" aria-describedby="discord-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="discord_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://discord.gg/your-server"
+                                            aria-label="Discord server URL"
+                                            id="discord-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="discord">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Twitter -->
+                                <div class="social-link-group" data-platform="twitter">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-twitter social-icon twitter"></i>
+                                            <span class="social-name">Twitter / X</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Twitter on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="twitter_enabled" aria-describedby="twitter-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="twitter_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://x.com/username"
+                                            aria-label="X (Twitter) profile URL"
+                                            id="twitter-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="twitter">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Instagram -->
+                                <div class="social-link-group" data-platform="instagram">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-instagram social-icon instagram"></i>
+                                            <span class="social-name">Instagram</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Instagram on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="instagram_enabled" aria-describedby="instagram-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="instagram_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://instagram.com/username"
+                                            aria-label="Instagram profile URL"
+                                            id="instagram-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="instagram">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- YouTube -->
+                                <div class="social-link-group" data-platform="youtube">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-youtube social-icon youtube"></i>
+                                            <span class="social-name">YouTube</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show YouTube on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="youtube_enabled" aria-describedby="youtube-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="youtube_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://youtube.com/@username"
+                                            aria-label="YouTube channel URL"
+                                            id="youtube-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="youtube">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- TikTok -->
+                                <div class="social-link-group" data-platform="tiktok">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-tiktok social-icon tiktok"></i>
+                                            <span class="social-name">TikTok</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show TikTok on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="tiktok_enabled" aria-describedby="tiktok-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="tiktok_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://tiktok.com/@username"
+                                            aria-label="TikTok profile URL"
+                                            id="tiktok-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="tiktok">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- GitHub -->
+                                <div class="social-link-group" data-platform="github">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-github social-icon github"></i>
+                                            <span class="social-name">GitHub</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show GitHub on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="github_enabled" aria-describedby="github-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="github_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://github.com/username"
+                                            aria-label="GitHub profile URL"
+                                            id="github-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="github">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- LinkedIn -->
+                                <div class="social-link-group" data-platform="linkedin">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-linkedin social-icon linkedin"></i>
+                                            <span class="social-name">LinkedIn</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show LinkedIn on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="linkedin_enabled" aria-describedby="linkedin-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="linkedin_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://linkedin.com/in/username"
+                                            aria-label="LinkedIn profile URL"
+                                            id="linkedin-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="linkedin">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Twitch -->
+                                <div class="social-link-group" data-platform="twitch">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-twitch social-icon twitch"></i>
+                                            <span class="social-name">Twitch</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Twitch on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="twitch_enabled" aria-describedby="twitch-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="twitch_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://twitch.tv/username"
+                                            aria-label="Twitch channel URL"
+                                            id="twitch-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="twitch">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Snapchat -->
+                                <div class="social-link-group" data-platform="snapchat">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-snapchat social-icon snapchat"></i>
+                                            <span class="social-name">Snapchat</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Snapchat on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="snapchat_enabled" aria-describedby="snapchat-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="text" 
+                                            name="snapchat_username" 
+                                            class="form-input social-input"
+                                            placeholder="Your Snapchat username"
+                                            aria-label="Snapchat username"
+                                            id="snapchat-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="snapchat">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- WhatsApp -->
+                                <div class="social-link-group" data-platform="whatsapp">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-whatsapp social-icon whatsapp"></i>
+                                            <span class="social-name">WhatsApp</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show WhatsApp on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="whatsapp_enabled" aria-describedby="whatsapp-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="tel" 
+                                            name="whatsapp_number" 
+                                            class="form-input social-input"
+                                            placeholder="+1234567890 (with country code)"
+                                            aria-label="WhatsApp phone number"
+                                            id="whatsapp-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="whatsapp">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Telegram -->
+                                <div class="social-link-group" data-platform="telegram">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-telegram social-icon telegram"></i>
+                                            <span class="social-name">Telegram</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Telegram on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="telegram_enabled" aria-describedby="telegram-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="text" 
+                                            name="telegram_username" 
+                                            class="form-input social-input"
+                                            placeholder="@username or phone number"
+                                            aria-label="Telegram username or phone"
+                                            id="telegram-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="telegram">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Reddit -->
+                                <div class="social-link-group" data-platform="reddit">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-reddit social-icon reddit"></i>
+                                            <span class="social-name">Reddit</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Reddit on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="reddit_enabled" aria-describedby="reddit-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="reddit_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://reddit.com/u/username"
+                                            aria-label="Reddit profile URL"
+                                            id="reddit-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="reddit">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Pinterest -->
+                                <div class="social-link-group" data-platform="pinterest">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-pinterest social-icon pinterest"></i>
+                                            <span class="social-name">Pinterest</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Pinterest on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="pinterest_enabled" aria-describedby="pinterest-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="pinterest_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://pinterest.com/username"
+                                            aria-label="Pinterest profile URL"
+                                            id="pinterest-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="pinterest">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Steam -->
+                                <div class="social-link-group" data-platform="steam">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fab fa-steam social-icon steam"></i>
+                                            <span class="social-name">Steam</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show Steam on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="steam_enabled" aria-describedby="steam-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="steam_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://steamcommunity.com/id/username"
+                                            aria-label="Steam profile URL"
+                                            id="steam-desc"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="steam">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Custom Website -->
+                                <div class="social-link-group" data-platform="website">
+                                    <div class="social-header">
+                                        <div class="social-info">
+                                            <i class="fas fa-globe social-icon website" aria-hidden="true"></i>
+                                            <span class="social-name">Custom Website</span>
+                                            <span class="social-visibility-status">Hidden from dashboard</span>
+                                        </div>
+                                        <div class="social-toggle">
+                                            <label class="toggle-switch" aria-label="Show website on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="website_enabled" aria-describedby="website-desc">
+                                                <span class="toggle-slider" aria-hidden="true"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="social-input-group">
+                                        <input 
+                                            type="url" 
+                                            name="website_url" 
+                                            class="form-input social-input"
+                                            placeholder="https://your-website.com"
+                                            aria-label="Website URL"
+                                            id="website-desc"
+                                            disabled
+                                        >
+                                        <input 
+                                            type="text" 
+                                            name="website_name" 
+                                            class="form-input social-input"
+                                            placeholder="Website Display Name"
+                                            aria-label="Website display name"
+                                            disabled
+                                        >
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="website">
+                                            <i class="fas fa-save"></i>
+                                            <span>Save</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include Modular Bottom Navigation -->
+    {% include 'modular_botnav.html' %}
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/modular_sidenav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modular_topnav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modular_botnav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pearl_settings.js') }}"></script>
+</body>
+</html>

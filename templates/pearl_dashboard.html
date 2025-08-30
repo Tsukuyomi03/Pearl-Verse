@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pearl Dashboard - Pearl Verse</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_dashboard.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_sidenav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_topnav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_botnav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/wallet_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_qr_styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_header_update.css') }}">
+</head>
+<body>
+    <!-- Include Modular Side Navigation -->
+    {% include 'modular_sidenav.html' %}
+    
+    <!-- Include Modular Top Navigation -->
+    {% include 'modular_topnav.html' %}
+    
+    <!-- Include Modular Bottom Navigation -->
+    {% include 'modular_botnav.html' %}
+    
+    <!-- Main Dashboard Content -->
+    <main class="dashboard-main">
+        <!-- Profile Header with Banner and Avatar -->
+        <div class="profile-header">
+                <!-- Profile Banner -->
+                <div class="profile-banner">
+                    <div id="profile-banner" class="banner-image default-banner"></div>
+                    <div class="banner-overlay"></div>
+                    
+                    <!-- Avatar Container (centered on banner) -->
+                    <div class="avatar-container">
+                        <div class="avatar-wrapper">
+                            <div id="profile-avatar" class="profile-avatar default-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="avatar-status online"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Profile Info Section -->
+                <div class="profile-info">
+                    <div class="profile-details">
+                        <h1 class="profile-name">
+                            <span id="display-name">Loading...</span>
+                        </h1>
+                        <p class="profile-bio" id="profile-bio">Welcome to my Pearl Verse profile!</p>
+                        
+                        <!-- Main Profile Stats (Level, Followers, Following) -->
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-value" id="level">1</span>
+                                <span class="stat-label">Level</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="followers-count">0</span>
+                                <span class="stat-label">Followers</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="following-count">0</span>
+                                <span class="stat-label">Following</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="profile-tabs">
+                <nav class="tab-navigation">
+                    <button class="tab-btn active" data-tab="feed">
+                        <i class="fas fa-home"></i>
+                        <span>Feed</span>
+                    </button>
+                    <button class="tab-btn" data-tab="wallet">
+                        <i class="fas fa-wallet"></i>
+                        <span>Wallet</span>
+                    </button>
+                    <button class="tab-btn" data-tab="info">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Info</span>
+                    </button>
+                </nav>
+            </div>
+            
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Feed Tab -->
+                <div class="tab-pane active" id="feed-tab">
+                    <div class="feed-container">
+                        <div class="feed-layout">
+                            <!-- Active Socials Card -->
+                            <div class="active-socials-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-users"></i> Active Socials</h3>
+                                </div>
+                                <div class="socials-list" id="active-socials">
+                                    <!-- Content will be loaded by JavaScript -->
+                                </div>
+                            </div>
+                            
+                            <!-- Posts and Create Post Card -->
+                            <div class="posts-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-newspaper"></i> Posts & Activity</h3>
+                                </div>
+                                
+                                <!-- Create Post Section -->
+                                <div class="create-post-section">
+                                    <div class="create-post-header">
+                                        <div class="mini-avatar default-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <input type="text" class="post-input" placeholder="What's on your mind?" readonly>
+                                    </div>
+                                    <div class="create-post-actions">
+                                        <button class="post-action-btn" data-action="photo">
+                                            <i class="fas fa-image"></i>
+                                            Photo
+                                        </button>
+                                        <button class="post-action-btn" data-action="feeling">
+                                            <i class="fas fa-smile"></i>
+                                            Feeling
+                                        </button>
+                                        <button class="post-action-btn" data-action="location">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            Location
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Posts Feed -->
+                                <div class="posts-feed" id="posts-feed">
+                                    <div class="loading-posts">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Loading your feed...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Wallet Tab -->
+                <div class="tab-pane" id="wallet-tab">
+                    <div class="wallet-container">
+                        
+                        <!-- Row 1: Wallet Actions & Referral Cards -->
+                        <div class="wallet-row">
+                            <!-- Wallet Actions Card -->
+                            <div class="wallet-card wallet-actions-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-wallet"></i> Wallet Actions</h3>
+                                    <div class="balance-display">
+                                        <span class="balance-amount" id="wallet-balance">0</span>
+                                        <span class="balance-label">PEARLS</span>
+                                    </div>
+                                </div>
+                                <div class="wallet-address-section">
+                                    <label>Your Wallet Address</label>
+                                    <div class="address-display">
+                                        <code id="wallet-address">pearl:0x...</code>
+                                        <button class="copy-btn" data-copy="wallet-address" title="Copy Address">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="action-btn send-btn" id="send-pearls-btn">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <span>Send</span>
+                                    </button>
+                                    <button class="action-btn receive-btn" id="receive-pearls-btn">
+                                        <i class="fas fa-download"></i>
+                                        <span>Receive</span>
+                                    </button>
+                                    <button class="action-btn topup-btn" id="topup-pearls-btn">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Top Up</span>
+                                    </button>
+                                    <button class="action-btn ads-btn" id="watch-ads-btn">
+                                        <i class="fas fa-play"></i>
+                                        <span>Watch Ads</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Referral Card -->
+                            <div class="wallet-card referral-card">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-users"></i> Referral Program</h3>
+                                    <div class="referral-bonus">
+                                        <span class="bonus-amount">1000</span>
+                                        <span class="bonus-label">PEARLS PER REFERRAL</span>
+                                    </div>
+                                </div>
+                                <div class="referral-stats">
+                                    <div class="referral-stat">
+                                        <span class="stat-number" id="referral-count-wallet">0</span>
+                                        <span class="stat-label">Friends Referred</span>
+                                    </div>
+                                    <div class="referral-stat">
+                                        <span class="stat-number" id="referral-earnings">0</span>
+                                        <span class="stat-label">Pearls Earned</span>
+                                    </div>
+                                </div>
+                                <div class="referral-code-section">
+                                    <label>Your Referral Code</label>
+                                    <div class="referral-code-display">
+                                        <code id="referral-code-wallet">LOADING...</code>
+                                        <button class="copy-btn" data-copy="referral-code-wallet" title="Copy Referral Code">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button class="share-referral-btn" id="share-referral-btn">
+                                    <i class="fas fa-share-alt"></i>
+                                    Share Referral Link
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 2: 7-Day Claim Card -->
+                        <div class="wallet-row">
+                            <div class="wallet-card daily-claim-card full-width">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-calendar-check"></i> Daily Claim Rewards</h3>
+                                    <div class="streak-info">
+                                        <span class="streak-number" id="current-streak">0</span>
+                                        <span class="streak-label">Day Streak</span>
+                                    </div>
+                                </div>
+                                <div class="daily-claim-grid" id="daily-claim-grid">
+                                    <!-- 7-day claim buttons will be generated by JavaScript -->
+                                    <div class="loading-claims">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Loading daily claim status...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Row 3: Transaction History -->
+                        <div class="wallet-row">
+                            <div class="wallet-card transaction-history-card full-width">
+                                <div class="card-header">
+                                    <h3><i class="fas fa-history"></i> Transaction History</h3>
+                                    <div class="transaction-filters">
+                                        <select id="transaction-filter" class="filter-select">
+                                            <option value="all">All Transactions</option>
+                                            <option value="send">Sent</option>
+                                            <option value="receive">Received</option>
+                                            <option value="daily_claim">Daily Claims</option>
+                                            <option value="referral">Referrals</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="transaction-list" id="transaction-list">
+                                    <div class="loading-transactions">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <p>Loading transaction history...</p>
+                                    </div>
+                                </div>
+                                <div class="load-more-section">
+                                    <button class="load-more-btn" id="load-more-transactions">
+                                        Load More Transactions
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- Info Tab -->
+                <div class="tab-pane" id="info-tab">
+                    <div class="info-container">
+                        <!-- Profile Information -->
+                        <div class="info-section">
+                            <h3><i class="fas fa-user"></i> Profile Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name</label>
+                                    <span id="info-full-name">Loading...</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Username</label>
+                                    <span id="info-username">@username</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email</label>
+                                    <span id="info-email">email@example.com</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Member Since</label>
+                                    <span id="info-member-since">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Stats -->
+                        <div class="info-section">
+                            <h3><i class="fas fa-chart-line"></i> Account Statistics</h3>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <i class="fas fa-gem"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-number" id="total-pearls">0</span>
+                                        <span class="stat-text">Total Pearls</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fas fa-trophy"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-number" id="user-level">1</span>
+                                        <span class="stat-text">Current Level</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fas fa-star"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-number" id="user-exp">0</span>
+                                        <span class="stat-text">Experience</span>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <i class="fas fa-users"></i>
+                                    <div class="stat-info">
+                                        <span class="stat-number" id="referral-count">0</span>
+                                        <span class="stat-text">Referrals</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Social Links -->
+                        <div class="info-section">
+                            <h3><i class="fas fa-link"></i> Social Links</h3>
+                            <div class="social-links" id="social-links">
+                                <p class="no-links">No social links added yet.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Referral Info -->
+                        <div class="info-section">
+                            <h3><i class="fas fa-share-alt"></i> Referral Code</h3>
+                            <div class="referral-card">
+                                <p>Share your referral code and earn 1000 pearls for each friend who joins!</p>
+                                <div class="referral-code-display">
+                                    <code id="referral-code">LOADING...</code>
+                                    <button class="copy-btn" data-copy="referral-code">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+    
+    <!-- Send Pearls Modal -->
+    <div id="send-pearls-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-paper-plane"></i> Send Pearls</h3>
+                <button class="close-modal" id="close-send-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="send-pearls-form">
+                    <!-- Recipient Address Section -->
+                    <div class="form-group">
+                        <label for="recipient-address">Recipient Wallet Address</label>
+                        <div class="address-input-container">
+                            <input type="text" id="recipient-address" class="form-input" placeholder="pearl:0x..." required>
+                            <button type="button" class="qr-scan-btn" id="scan-qr-btn" title="Scan QR Code">
+                                <i class="fas fa-qrcode"></i>
+                            </button>
+                        </div>
+                        <div class="input-help">
+                            Enter a valid Pearl wallet address or scan a QR code
+                        </div>
+                    </div>
+                    
+                    <!-- Amount Section -->
+                    <div class="form-group">
+                        <label for="send-amount">Amount (Pearls)</label>
+                        <div class="amount-input-container">
+                            <input type="number" id="send-amount" class="form-input" placeholder="0" min="1" step="1" required>
+                            <div class="amount-actions">
+                                <button type="button" class="amount-btn" data-percentage="25">25%</button>
+                                <button type="button" class="amount-btn" data-percentage="50">50%</button>
+                                <button type="button" class="amount-btn" data-percentage="75">75%</button>
+                                <button type="button" class="amount-btn" data-percentage="100">Max</button>
+                            </div>
+                        </div>
+                        <div class="balance-info">
+                            Available Balance: <span id="modal-balance">0</span> Pearls
+                        </div>
+                    </div>
+                    
+                    <!-- Transaction Summary -->
+                    <div class="transaction-summary">
+                        <div class="summary-row total">
+                            <span>Amount to Send:</span>
+                            <span id="summary-amount">0 Pearls</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-send-btn">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="confirm-send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Send Pearls
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Receive Pearls Modal -->
+    <div id="receive-pearls-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-download"></i> Receive Pearls</h3>
+                <button class="close-modal" id="close-receive-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="receive-content">
+                    <!-- QR Code Section -->
+                    <div class="qr-section">
+                        <label>QR Code</label>
+                        <div class="qr-container">
+                            <div class="qr-display pearl-qr-display">
+                                <div id="qr-loading" class="qr-loading">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <p>Generating beautiful QR code...</p>
+                                </div>
+                                <div id="receive-qr-code"></div>
+                            </div>
+                        </div>
+                        <div class="qr-help">
+                            Others can scan this rainbow QR code to send you Pearls ✨
+                        </div>
+                    </div>
+                    
+                    <!-- QR Actions -->
+                    <div class="qr-actions">
+                        <button class="btn btn-secondary" id="download-qr-btn">
+                            <i class="fas fa-download"></i>
+                            Download QR
+                        </button>
+                        <button class="btn btn-secondary" id="copy-qr-btn">
+                            <i class="fas fa-copy"></i>
+                            Copy QR
+                        </button>
+                        <button class="btn btn-secondary" id="share-qr-btn">
+                            <i class="fas fa-share"></i>
+                            Share QR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <!-- QR Code Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    
+    <!-- Application Scripts -->
+    <script src="{{ url_for('static', filename='js/modular_sidenav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modular_topnav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modular_botnav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/qr-generator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pearl_dashboard.js') }}"></script>
+</body>
+</html>

@@ -190,6 +190,484 @@
     background: rgba(0, 0, 0, 0.8);
 }
 
+/* Multi-Image Post Layouts */
+/* 1 Image: Full width, maintain aspect ratio */
+.post-images-single {
+    margin: 12px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.post-single-image {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    object-fit: contain;
+    background: #f8f9fa;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.post-single-image:hover {
+    transform: scale(1.02);
+}
+
+/* 2 Images: Stacked rows */
+.post-images-two {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 12px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.post-images-two .post-image-container {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.post-two-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.post-two-image:hover {
+    transform: scale(1.05);
+}
+
+/* 3 Images: Main left + 2 stacked right */
+.post-images-three {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4px;
+    height: 400px;
+    margin: 12px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    width: 100%; /* Ensure full width */
+}
+
+.post-images-three .three-main {
+    height: 100%;
+    overflow: hidden;
+    position: relative; /* Ensure positioning context */
+    grid-column: 1 / 2; /* Explicitly place in first column */
+}
+
+.post-three-main-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: block; /* Ensure display block */
+}
+
+.post-three-main-image:hover {
+    transform: scale(1.05);
+}
+
+.post-images-three-side {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    grid-column: 2 / 3; /* Explicitly place in second column */
+    min-width: 0; /* Prevent overflow */
+}
+
+.post-images-three-side .three-side {
+    flex: 1;
+    overflow: hidden;
+    position: relative; /* Ensure positioning context */
+    min-height: 0; /* Prevent overflow */
+}
+
+.post-three-side-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: block; /* Ensure display block */
+}
+
+.post-three-side-image:hover {
+    transform: scale(1.05);
+}
+
+/* Ensure proper layout at all browser sizes */
+@media (min-width: 481px) {
+    .post-images-three {
+        display: grid !important;
+        grid-template-columns: 2fr 1fr !important;
+    }
+
+    .post-images-three-side {
+        display: flex !important;
+    }
+}
+
+/* 4 Images: 2x2 grid */
+.post-images-four {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 4px;
+    height: 400px;
+    margin: 12px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.post-images-four .four-grid {
+    overflow: hidden;
+    position: relative;
+}
+
+.post-four-grid-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.post-four-grid-image:hover {
+    transform: scale(1.05);
+}
+
+/* 5+ Images: 2x2 grid with overlay */
+.post-images-multiple {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 4px;
+    height: 400px;
+    margin: 12px 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.post-images-multiple .multiple-grid {
+    overflow: hidden;
+    position: relative;
+}
+
+.post-multiple-grid-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.post-multiple-grid-image:hover {
+    transform: scale(1.05);
+}
+
+/* More images overlay */
+.more-images-overlay {
+    position: relative;
+}
+
+.more-images-overlay::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+    pointer-events: none;
+}
+
+.more-images-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    z-index: 2;
+    pointer-events: none;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+    .post-images-three {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .post-images-three .three-main {
+        height: 250px;
+    }
+    
+    .post-images-three-side {
+        flex-direction: row;
+    }
+    
+    .post-images-three-side .three-side {
+        height: 120px;
+    }
+    
+    .post-images-four,
+    .post-images-multiple {
+        height: 300px;
+    }
+    
+    .post-images-two .post-image-container {
+        height: 150px;
+    }
+}
+
+/* Image preview styles for post creation modal */
+.image-previews-grid {
+    display: grid;
+    gap: 8px;
+    margin-top: 12px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.image-previews-grid.count-1 {
+    grid-template-columns: 1fr;
+}
+
+.image-previews-grid.count-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.image-previews-grid.count-3 {
+    grid-template-columns: 2fr 1fr;
+}
+
+.image-previews-grid.count-4 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.image-previews-grid.count-5-plus {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+}
+
+.image-preview-container {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: #f8f9fa;
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remove-image-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s ease;
+    z-index: 2;
+}
+
+.remove-image-btn:hover {
+    background: rgba(220, 38, 38, 0.9);
+}
+
+.image-count-indicator {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    z-index: 1;
+}
+
+.clear-all-images-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: background 0.2s ease;
+}
+
+.clear-all-images-btn:hover {
+    background: #dc2626;
+}
+
+/* Modal Image Carousel Styles */
+.modal-image-carousel {
+    position: relative;
+    margin: 16px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    max-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-image {
+    width: 100%;
+    height: auto;
+    max-height: 80vh;
+    object-fit: contain;
+    display: block;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+
+.carousel-arrow:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-arrow.left {
+    left: 16px;
+}
+
+.carousel-arrow.right {
+    right: 16px;
+}
+
+.carousel-counter {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    backdrop-filter: blur(4px);
+    z-index: 10;
+}
+
+.modal-image-single {
+    margin: 16px 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    max-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-image-single .carousel-image {
+    cursor: default;
+}
+
+/* Responsive carousel design */
+@media (max-width: 768px) {
+    .modal-image-carousel,
+    .modal-image-single {
+        max-height: 60vh;
+        margin: 12px 0;
+        border-radius: 8px;
+    }
+    
+    .carousel-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .carousel-arrow.left {
+        left: 12px;
+    }
+    
+    .carousel-arrow.right {
+        right: 12px;
+    }
+    
+    .carousel-counter {
+        bottom: 12px;
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .carousel-arrow {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+    
+    .carousel-arrow.left {
+        left: 8px;
+    }
+    
+    .carousel-arrow.right {
+        right: 8px;
+    }
+    
+    .carousel-counter {
+        bottom: 8px;
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+}
+
 /* Profile Details */
 .profile-details {
     flex-grow: 1;
@@ -555,13 +1033,17 @@
     display: flex;
     flex-direction: column;
     height: fit-content;
-    min-height: 500px;
+    /* Remove min-height to allow content to determine height naturally */
 }
 
-/* Create Post Section */
+/* Create Post Section - Match post card styling */
 .create-post-section {
-    padding: 16px 20px;
-    border-bottom: 1px solid #4a5568;
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e9ecef;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    margin: 0 20px 0 20px; /* Match posts-feed padding to align width */
 }
 
 .create-post-header {
@@ -578,7 +1060,7 @@
     object-fit: cover;
 }
 
-/* Default Avatar Styles */
+/* Default Avatar Styles - Updated for create post section */
 .default-avatar {
     background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
     display: flex;
@@ -590,6 +1072,9 @@
 
 .mini-avatar.default-avatar {
     font-size: 16px;
+    /* Use light theme colors for create post section */
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
 }
 
 .mini-avatar.platform-avatar {
@@ -600,36 +1085,35 @@
 
 .post-input {
     flex: 1;
-    border: none;
-    background: #4a5568;
-    border-radius: 24px;
+    border: 1px solid #e9ecef;
+    background: #f8f9fa;
+    border-radius: 20px;
     padding: 12px 16px;
     font-size: 16px;
-    color: #e2e8f0;
+    color: #6c757d;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
 }
 
 .post-input:hover {
-    background: #2d3748;
+    background: #e9ecef;
 }
 
 .create-post-actions {
     display: flex;
     gap: 8px;
-    padding-top: 12px;
-    border-top: 1px solid #4a5568;
+    margin-top: 12px;
 }
 
 .post-action-btn {
     flex: 1;
-    background: none;
-    border: none;
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
     padding: 8px;
-    border-radius: 8px;
-    color: #a0aec0;
+    border-radius: 20px;
+    color: #495057;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -639,8 +1123,10 @@
 }
 
 .post-action-btn:hover {
-    background: #4a5568;
-    color: #f7fafc;
+    background: #e9ecef;
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-1px);
 }
 
 .posts-feed {
@@ -648,10 +1134,7 @@
     flex-direction: column;
     gap: 16px;
     padding: 20px;
-    max-height: 400px;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    /* Removed max-height and overflow-y to allow full page scrolling */
 }
 
 .posts-feed::-webkit-scrollbar {

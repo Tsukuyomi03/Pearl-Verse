@@ -24,9 +24,9 @@ class Comment(db.Model):
     author = db.relationship('User', backref='comments')
     post = db.relationship('Post', backref='comments')
     
-    def to_dict(self):
+    def to_dict(self, current_user_id=None):
         """Convert comment object to dictionary"""
-        return {
+        result = {
             'id': self.id,
             'user_id': self.user_id,
             'post_id': self.post_id,
@@ -37,3 +37,9 @@ class Comment(db.Model):
             'author_username': self.author.username if self.author else None,
             'author_name': f"{self.author.first_name} {self.author.last_name}" if self.author else None
         }
+        
+        # Add ownership information if current user ID is provided
+        if current_user_id is not None:
+            result['is_owner'] = self.user_id == current_user_id
+        
+        return result

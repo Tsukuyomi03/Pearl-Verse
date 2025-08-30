@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from config import get_config
-from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, Post, PostReaction, SocialMediaLink, Comment, CommentLike
+from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, Post, PostReaction, SocialMediaLink, Comment, CommentLike, PostImage
 import os
 import re
 import string
@@ -2070,22 +2070,33 @@ def create_post():
                         uploaded_files.append(file)
             
             # Process and save uploaded images
+            uploaded_image_urls = []
             if uploaded_files:
                 try:
-                    # For now, we'll handle the first uploaded image
-                    # In a real implementation, you might want to handle multiple images
-                    file = uploaded_files[0]
-                    
-                    # Save the uploaded file
-                    image_url, error_message = save_uploaded_file(file, user_id)
-                    
-                    if error_message:
+                    # Handle multiple images (up to 10 images per post)
+                    max_images = 10
+                    if len(uploaded_files) > max_images:
                         return jsonify({
                             'success': False,
-                            'message': f'Image upload failed: {error_message}'
+                            'message': f'Maximum {max_images} images allowed per post'
                         }), 400
+                    
+                    for file in uploaded_files:
+                        # Save each uploaded file
+                        saved_url, error_message = save_uploaded_file(file, user_id)
                         
-                    print(f"Image uploaded successfully: {image_url}")
+                        if error_message:
+                            return jsonify({
+                                'success': False,
+                                'message': f'Image upload failed: {error_message}'
+                            }), 400
+                        
+                        uploaded_image_urls.append(saved_url)
+                        print(f"Image uploaded successfully: {saved_url}")
+                    
+                    # For backward compatibility, set the first image as the main image_url
+                    if uploaded_image_urls:
+                        image_url = uploaded_image_urls[0]
                     
                 except Exception as e:
                     print(f"Error uploading image: {e}")
@@ -2170,6 +2181,19 @@ def create_post():
         )
         
         db.session.add(new_post)
+        db.session.flush()  # Get post ID before commit
+        
+        # Create PostImage records for uploaded images
+        if 'uploaded_image_urls' in locals() and uploaded_image_urls:
+            for index, img_url in enumerate(uploaded_image_urls):
+                post_image = PostImage(
+                    post_id=new_post.id,
+                    image_url=img_url,
+                    image_order=index
+                )
+                db.session.add(post_image)
+                print(f"Created PostImage record: {img_url} (order: {index})")
+        
         db.session.commit()
         
         print(f"Post created successfully by user {user_id}: {content[:50]}...")
@@ -2190,29 +2214,115 @@ def create_post():
 
 @app.route('/api/posts/<int:post_id>', methods=['PUT'])
 def edit_post(post_id):
-    """Edit a post content if the requester is the owner"""
+    """Edit a post content, feeling, and location if the requester is the owner"""
     try:
+        # Check if user is logged in
         if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({'success': False, 'message': 'Please log in to edit posts'}), 401
+            return jsonify({
+                'success': False, 
+                'message': 'Please log in to edit posts'
+            }), 401
+        
         user_id = session['user_id']
+        user = db.session.get(User, user_id)
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Get the post to edit
         post = db.session.get(Post, post_id)
         if not post:
-            return jsonify({'success': False, 'message': 'Post not found'}), 404
+            return jsonify({
+                'success': False, 
+                'message': 'Post not found'
+            }), 404
+        
+        # Check if user owns this post
         if post.user_id != user_id:
-            return jsonify({'success': False, 'message': 'You do not have permission to edit this post'}), 403
-        data = request.get_json() or {}
-        content = (data.get('content') or '').strip()
+            return jsonify({
+                'success': False, 
+                'message': 'You do not have permission to edit this post'
+            }), 403
+        
+        # Handle both JSON and FormData requests (similar to create_post)
+        content = ''
+        feeling = ''
+        location = ''
+        
+        # Check if this is a FormData request or JSON request
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            # Handle FormData (from modal edit)
+            content = request.form.get('content', '').strip()
+            feeling = request.form.get('feeling', '').strip()
+            location = request.form.get('location', '').strip()
+        else:
+            # Handle JSON data
+            data = request.get_json()
+            if not data:
+                return jsonify({
+                    'success': False,
+                    'message': 'No data provided'
+                }), 400
+            
+            content = data.get('content', '').strip()
+            feeling = data.get('feeling', '').strip()
+            location = data.get('location', '').strip()
+        
+        # Validate content (required)
         if not content:
-            return jsonify({'success': False, 'message': 'Post content is required'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'Post content is required'
+            }), 400
+        
         if len(content) > 1000:
-            return jsonify({'success': False, 'message': 'Post content must be 1000 characters or less'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'Post content must be 1000 characters or less'
+            }), 400
+        
+        # Validate feeling length if provided (optional)
+        if feeling and len(feeling) > 100:
+            return jsonify({
+                'success': False,
+                'message': 'Feeling must be 100 characters or less'
+            }), 400
+        
+        # Validate location length if provided (optional)
+        if location and len(location) > 255:
+            return jsonify({
+                'success': False,
+                'message': 'Location must be 255 characters or less'
+            }), 400
+        
+        # Update post fields
         post.content = content
+        post.feeling = feeling if feeling else None
+        post.location = location if location else None
+        post.updated_at = datetime.now()
+        
         db.session.commit()
-        return jsonify({'success': True, 'message': 'Post updated successfully', 'post': post.to_dict()}), 200
+        
+        print(f"Post {post_id} updated successfully by user {user_id}: {content[:50]}...")
+        
+        return jsonify({
+            'success': True, 
+            'message': 'Post updated successfully!',
+            'post': post.to_dict()
+        }), 200
+        
     except Exception as e:
         db.session.rollback()
         print(f"Edit post error: {str(e)}")
-        return jsonify({'success': False, 'message': 'An error occurred while editing the post'}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False, 
+            'message': 'An error occurred while updating your post. Please try again.'
+        }), 500
 
 @app.route('/api/posts/<int:post_id>', methods=['DELETE'])
 def delete_post(post_id):
@@ -2227,13 +2337,22 @@ def delete_post(post_id):
         if post.user_id != user_id:
             return jsonify({'success': False, 'message': 'You do not have permission to delete this post'}), 403
         
-        # Store image path for deletion after database operations
-        image_path_to_delete = None
+        # Store image paths for deletion after database operations
+        image_paths_to_delete = []
+        
+        # Collect main image URL for deletion (backward compatibility)
         if post.image_url:
             # Extract filename from URL path (e.g., "/uploads/filename.jpg" -> "filename.jpg")
             if post.image_url.startswith('/uploads/'):
                 filename = post.image_url.replace('/uploads/', '')
-                image_path_to_delete = os.path.join(UPLOAD_FOLDER, filename)
+                image_paths_to_delete.append(os.path.join(UPLOAD_FOLDER, filename))
+        
+        # Collect PostImage files for deletion
+        post_images = PostImage.query.filter_by(post_id=post_id).all()
+        for post_image in post_images:
+            if post_image.image_url and post_image.image_url.startswith('/uploads/'):
+                filename = post_image.image_url.replace('/uploads/', '')
+                image_paths_to_delete.append(os.path.join(UPLOAD_FOLDER, filename))
         
         print(f"Deleting post {post_id} and all related data...")
         
@@ -2252,20 +2371,25 @@ def delete_post(post_id):
         deleted_reactions = PostReaction.query.filter_by(post_id=post_id).delete()
         print(f"Deleted {deleted_reactions} post reactions")
         
-        # 4. Delete the post record itself
+        # 4. Delete PostImage records (depends on post)
+        deleted_post_images = PostImage.query.filter_by(post_id=post_id).delete()
+        print(f"Deleted {deleted_post_images} PostImage records")
+        
+        # 5. Delete the post record itself
         db.session.delete(post)
         db.session.commit()
         
         print(f"Post {post_id} deleted successfully from database")
         
-        # Delete the image file from filesystem after successful database deletion
-        if image_path_to_delete and os.path.exists(image_path_to_delete):
-            try:
-                os.remove(image_path_to_delete)
-                print(f"Deleted image file: {image_path_to_delete}")
-            except Exception as file_error:
-                print(f"Warning: Could not delete image file {image_path_to_delete}: {file_error}")
-                # Don't fail the request if file deletion fails - post is already deleted from database
+        # Delete image files from filesystem after successful database deletion
+        for image_path in image_paths_to_delete:
+            if os.path.exists(image_path):
+                try:
+                    os.remove(image_path)
+                    print(f"Deleted image file: {image_path}")
+                except Exception as file_error:
+                    print(f"Warning: Could not delete image file {image_path}: {file_error}")
+                    # Don't fail the request if file deletion fails - post is already deleted from database
         
         return jsonify({'success': True, 'message': 'Post deleted successfully'}), 200
     except Exception as e:
@@ -2294,13 +2418,13 @@ def get_posts():
         # Limit per_page to reasonable values
         per_page = min(max(per_page, 1), 20)
         
-        # Build query
+        # Build query with eager loading of images
         if user_only:
             # Get only posts from the current user
-            query = Post.query.filter_by(user_id=user_id)
+            query = Post.query.options(db.joinedload(Post.images)).filter_by(user_id=user_id)
         else:
             # Get all posts (for feed)
-            query = Post.query
+            query = Post.query.options(db.joinedload(Post.images))
         
         # Order by most recent first
         query = query.order_by(Post.created_at.desc())
@@ -2825,7 +2949,7 @@ def add_comment_to_post(post_id):
         return jsonify({
             'success': True,
             'message': 'Comment added successfully!',
-            'comment': new_comment.to_dict(),
+            'comment': new_comment.to_dict(current_user_id=user_id),
             'new_comments_count': post.comments_count
         }), 201
         
@@ -2883,7 +3007,7 @@ def get_post_comments(post_id):
         # Format comments for frontend
         formatted_comments = []
         for comment in comments_pagination.items:
-            comment_dict = comment.to_dict()
+            comment_dict = comment.to_dict(current_user_id=user_id)
             
             # Add time ago formatting
             try:
@@ -2941,6 +3065,138 @@ def get_post_comments(post_id):
             'message': 'An error occurred while fetching comments'
         }), 500
 
+@app.route('/api/comments/<int:comment_id>', methods=['PUT'])
+def update_comment(comment_id):
+    """Update a comment"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to update comments'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Check if comment exists
+        comment = db.session.get(Comment, comment_id)
+        if not comment:
+            return jsonify({
+                'success': False,
+                'message': 'Comment not found'
+            }), 404
+        
+        # Check if user owns this comment
+        if comment.user_id != user_id:
+            return jsonify({
+                'success': False,
+                'message': 'You can only edit your own comments'
+            }), 403
+        
+        # Get JSON data from request
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'message': 'No data provided'
+            }), 400
+        
+        content = data.get('content', '').strip()
+        
+        # Validate content
+        if not content:
+            return jsonify({
+                'success': False,
+                'message': 'Comment content is required'
+            }), 400
+        
+        if len(content) > 500:
+            return jsonify({
+                'success': False,
+                'message': 'Comment must be 500 characters or less'
+            }), 400
+        
+        # Update comment
+        comment.content = content
+        comment.updated_at = datetime.now()
+        
+        db.session.commit()
+        
+        print(f"Comment {comment_id} updated by user {user_id}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Comment updated successfully!',
+            'comment': comment.to_dict()
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Update comment error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while updating your comment'
+        }), 500
+
+@app.route('/api/comments/<int:comment_id>', methods=['DELETE'])
+def delete_comment(comment_id):
+    """Delete a comment"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to delete comments'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Check if comment exists
+        comment = db.session.get(Comment, comment_id)
+        if not comment:
+            return jsonify({
+                'success': False,
+                'message': 'Comment not found'
+            }), 404
+        
+        # Check if user owns this comment
+        if comment.user_id != user_id:
+            return jsonify({
+                'success': False,
+                'message': 'You can only delete your own comments'
+            }), 403
+        
+        # Get post to update comment count
+        post = db.session.get(Post, comment.post_id)
+        
+        # Delete all likes for this comment first
+        CommentLike.query.filter_by(comment_id=comment_id).delete()
+        
+        # Delete the comment
+        db.session.delete(comment)
+        
+        # Update post comments count
+        if post:
+            post.comments_count = max(0, (post.comments_count or 0) - 1)
+        
+        db.session.commit()
+        
+        print(f"Comment {comment_id} deleted by user {user_id}")
+        
+        return jsonify({
+            'success': True,
+            'message': 'Comment deleted successfully!',
+            'new_comments_count': post.comments_count if post else 0
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Delete comment error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while deleting your comment'
+        }), 500
+
 @app.route('/api/comments/<int:comment_id>/like', methods=['POST'])
 def toggle_comment_like(comment_id):
     """Like or unlike a comment"""
@@ -2990,7 +3246,7 @@ def toggle_comment_like(comment_id):
         return jsonify({
             'success': True,
             'message': f'Comment {action} successfully!',
-            'liked': liked,
+            'user_liked': liked,
             'likes_count': comment.likes_count
         }), 200
         

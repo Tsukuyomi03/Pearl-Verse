@@ -8,6 +8,9 @@
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
     
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_dashboard.css') }}">
@@ -17,6 +20,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/wallet_styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_qr_styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_header_update.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/post_modals.css') }}">
 </head>
 <body>
     <!-- Include Modular Side Navigation -->
@@ -122,20 +126,6 @@
                                             <i class="fas fa-user"></i>
                                         </div>
                                         <input type="text" class="post-input" placeholder="What's on your mind?" readonly>
-                                    </div>
-                                    <div class="create-post-actions">
-                                        <button class="post-action-btn" data-action="photo">
-                                            <i class="fas fa-image"></i>
-                                            Photo
-                                        </button>
-                                        <button class="post-action-btn" data-action="feeling">
-                                            <i class="fas fa-smile"></i>
-                                            Feeling
-                                        </button>
-                                        <button class="post-action-btn" data-action="location">
-                                            <i class="fas fa-map-marker-alt"></i>
-                                            Location
-                                        </button>
                                     </div>
                                 </div>
                                 
@@ -546,6 +536,253 @@
                             Share QR
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Post Modal -->
+    <div id="create-post-modal" class="modal">
+        <div class="modal-content create-post-modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> Create Post</h3>
+                <button class="close-modal" id="close-create-post-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="create-post-form" enctype="multipart/form-data">
+                    <!-- User Info Header -->
+                    <div class="post-creator-header">
+                        <div class="creator-avatar default-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="creator-info">
+                            <span class="creator-name" id="creator-name">Loading...</span>
+                            <div class="post-privacy">
+                                <i class="fas fa-globe"></i>
+                                <span>Public</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Post Content -->
+                    <div class="form-group">
+                        <textarea id="post-content" name="content" class="post-textarea" 
+                            placeholder="What's on your mind?" maxlength="1000" required></textarea>
+                        <div class="character-count">
+                            <span id="post-char-count">0</span>/1000
+                        </div>
+                    </div>
+                    
+                    <!-- Image Preview -->
+                    <div class="image-preview-section" id="image-preview-section" style="display: none;">
+                        <div class="image-preview-container" id="image-preview-container">
+                            <!-- Multiple image previews will be added here dynamically -->
+                        </div>
+                        <div class="image-upload-info">
+                            <p>You can upload up to 10 images per post</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Feeling & Location Display -->
+                    <div class="post-extras">
+                        <div class="feeling-display" id="feeling-display" style="display: none;">
+                            <i class="fas fa-smile"></i>
+                            <span>Feeling <span id="feeling-text"></span></span>
+                            <button type="button" class="remove-feeling-btn" id="remove-feeling-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="location-display" id="location-display" style="display: none;">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="location-text"></span>
+                            <button type="button" class="remove-location-btn" id="remove-location-btn">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hidden inputs -->
+                    <input type="hidden" id="selected-feeling" name="feeling">
+                    <input type="hidden" id="selected-location" name="location">
+                    <input type="file" id="image-upload" name="image_files" accept="image/*" multiple style="display: none;">
+                    
+                    <!-- Post Actions -->
+                    <div class="post-actions-bar">
+                        <button type="button" class="post-action-btn" id="add-photo-btn">
+                            <i class="fas fa-image"></i>
+                            Photo
+                        </button>
+                        <button type="button" class="post-action-btn" id="add-feeling-btn">
+                            <i class="fas fa-smile"></i>
+                            Feeling
+                        </button>
+                        <button type="button" class="post-action-btn" id="add-location-btn">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Location
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-create-post-btn">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button type="submit" form="create-post-form" class="btn btn-primary" id="submit-post-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Post
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Post Detail Modal -->
+    <div id="post-detail-modal" class="modal">
+        <div class="modal-content post-detail-modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-comment"></i> Post Details</h3>
+                <button class="close-modal" id="close-post-detail-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Post Content -->
+                <div id="modal-post-content">
+                    <!-- Post will be loaded here dynamically -->
+                </div>
+                
+                <!-- Comments Section -->
+                <div class="comments-section">
+                    <div class="comments-header">
+                        <h4><i class="fas fa-comments"></i> Comments</h4>
+                        <span class="comments-count" id="modal-comments-count">0</span>
+                    </div>
+                    
+                    <!-- Add Comment Form -->
+                    <div class="add-comment-form">
+                        <div class="comment-input-container">
+                            <div class="commenter-avatar default-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="comment-input-wrapper">
+                                <textarea id="comment-input" class="comment-textarea" 
+                                    placeholder="Write a comment..." maxlength="500"></textarea>
+                                <div class="comment-actions">
+                                    <button type="button" class="btn btn-primary btn-sm" id="submit-comment-btn">
+                                        <i class="fas fa-paper-plane"></i>
+                                        Comment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Comments List -->
+                    <div class="comments-list" id="comments-list">
+                        <div class="loading-comments">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            <p>Loading comments...</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Load More Comments -->
+                    <div class="load-more-comments" id="load-more-comments" style="display: none;">
+                        <button class="btn btn-secondary btn-sm" id="load-more-comments-btn">
+                            Load More Comments
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Feeling Selection Modal -->
+    <div id="feeling-modal" class="modal">
+        <div class="modal-content feeling-modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-smile"></i> How are you feeling?</h3>
+                <button class="close-modal" id="close-feeling-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="feelings-grid">
+                    <button type="button" class="feeling-option" data-feeling="happy">
+                        <i class="fas fa-smile"></i>
+                        <span>Happy</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="excited">
+                        <i class="fas fa-grin-stars"></i>
+                        <span>Excited</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="grateful">
+                        <i class="fas fa-heart"></i>
+                        <span>Grateful</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="blessed">
+                        <i class="fas fa-pray"></i>
+                        <span>Blessed</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="motivated">
+                        <i class="fas fa-fire"></i>
+                        <span>Motivated</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="proud">
+                        <i class="fas fa-medal"></i>
+                        <span>Proud</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="relaxed">
+                        <i class="fas fa-leaf"></i>
+                        <span>Relaxed</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="adventurous">
+                        <i class="fas fa-mountain"></i>
+                        <span>Adventurous</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="creative">
+                        <i class="fas fa-palette"></i>
+                        <span>Creative</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="nostalgic">
+                        <i class="fas fa-clock"></i>
+                        <span>Nostalgic</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="thoughtful">
+                        <i class="fas fa-brain"></i>
+                        <span>Thoughtful</span>
+                    </button>
+                    <button type="button" class="feeling-option" data-feeling="chill">
+                        <i class="fas fa-coffee"></i>
+                        <span>Chill</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Viewer Modal -->
+    <div id="image-viewer-modal" class="modal">
+        <div class="modal-content image-viewer-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-image"></i> Image Viewer</h3>
+                <button class="close-modal" id="close-image-viewer">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body image-viewer-body">
+                <div class="image-viewer-container">
+                    <button class="image-nav-btn prev-btn" id="prev-image-btn" aria-label="Previous image">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="image-display">
+                        <img id="viewer-image" class="viewer-image" src="" alt="Image viewer">
+                        <div class="image-counter" id="image-counter">1 / 1</div>
+                    </div>
+                    <button class="image-nav-btn next-btn" id="next-image-btn" aria-label="Next image">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
             </div>
         </div>

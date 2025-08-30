@@ -20,6 +20,7 @@ from .post_reaction import PostReaction
 from .social_media_link import SocialMediaLink
 from .comment import Comment
 from .comment_like import CommentLike
+from .post_image import PostImage
 
 # Export all models for easy importing
 __all__ = [
@@ -34,5 +35,6 @@ __all__ = [
     'PostReaction',
     'SocialMediaLink',
     'Comment',
-    'CommentLike'
+    'CommentLike',
+    'PostImage'
 ]

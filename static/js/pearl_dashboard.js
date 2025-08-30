@@ -10,24 +10,27 @@ class PearlDashboard {
     this.init();
   }
 
-  init() {
+  async init() {
     // Initialize tab functionality
     this.initTabs();
 
-    // Load user data
-    this.loadUserData();
+    // Load user data first and wait for it to complete
+    await this.loadUserData();
 
     // Initialize event listeners
     this.initEventListeners();
 
+    // Initialize global event listeners
+    this.initGlobalEventListeners();
+
     // Initialize modals
     this.initModals();
 
-    // Load initial content based on stored or default tab
-    this.loadTabContent(this.currentTab);
-    
     // Set the active tab based on stored state
     this.setActiveTab(this.currentTab);
+    
+    // Load initial content based on stored or default tab (after user data is loaded)
+    this.loadTabContent(this.currentTab);
   }
 
   // Tab Management
@@ -285,37 +288,24 @@ class PearlDashboard {
             </div>
         `;
 
-    // Simulate loading posts (replace with actual API call)
-    setTimeout(() => {
+    try {
+      // Load actual posts from API
+      const posts = await this.loadPosts();
+      this.displayPosts(posts);
+    } catch (error) {
+      console.error('Error loading feed content:', error);
+      // Show error state or fallback content
       feedContainer.innerHTML = `
-                <div class="post-card">
-                    <div class="post-header">
-                        <img src="/static/images/default-avatar.png" alt="Avatar" class="post-avatar">
-                        <div class="post-info">
-                            <h4>Welcome Post</h4>
-                            <p class="post-time">Just now</p>
-                        </div>
-                    </div>
-                    <div class="post-content">
-                        <p>Welcome to Pearl Verse! 🎮✨ Start your journey by claiming your daily rewards and connecting with friends!</p>
-                    </div>
-                    <div class="post-actions">
-                        <button class="post-action">
-                            <i class="fas fa-heart"></i>
-                            Like
-                        </button>
-                        <button class="post-action">
-                            <i class="fas fa-comment"></i>
-                            Comment
-                        </button>
-                        <button class="post-action">
-                            <i class="fas fa-share"></i>
-                            Share
-                        </button>
-                    </div>
+                <div class="no-posts">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load posts. Please try again.</p>
+                    <button class="btn btn-primary" onclick="pearlDashboard.loadFeedContent()" style="margin-top: 12px;">
+                        <i class="fas fa-refresh"></i>
+                        Retry
+                    </button>
                 </div>
             `;
-    }, 1000);
+    }
   }
 
   async loadActiveSocials() {
@@ -542,20 +532,34 @@ class PearlDashboard {
 
   // Wallet Content
   async loadWalletContent() {
-    if (!this.userData) return;
+    // If no user data, wait a bit and try again
+    if (!this.userData) {
+      console.log('No user data available for wallet, attempting to reload...');
+      // Try to reload user data
+      await this.loadUserData();
+      
+      // If still no user data, show loading state but still try to load other data
+      if (!this.userData) {
+        console.warn('Still no user data available for wallet content');
+        // Don't return early - still load what we can
+      }
+    }
 
-    // Update wallet balance
-    document.getElementById("wallet-balance").textContent = this.formatNumber(
-      this.userData.pearl
-    );
-    document.getElementById("wallet-address").textContent =
-      this.userData.wallet_address || "pearl:0x...";
+    // Update wallet display if we have user data
+    if (this.userData) {
+      // Update wallet balance
+      document.getElementById("wallet-balance").textContent = this.formatNumber(
+        this.userData.pearl
+      );
+      document.getElementById("wallet-address").textContent =
+        this.userData.wallet_address || "pearl:0x...";
 
-    // Update referral info in wallet
-    document.getElementById("referral-code-wallet").textContent =
-      this.userData.referral_code || "LOADING...";
+      // Update referral info in wallet
+      document.getElementById("referral-code-wallet").textContent =
+        this.userData.referral_code || "LOADING...";
+    }
 
-    // Load wallet-specific data
+    // Load wallet-specific data (these can work independently)
     await this.loadWalletStats();
     await this.loadDailyClaimStatus();
     await this.loadTransactionHistory();
@@ -1486,7 +1490,27 @@ class PearlDashboard {
   // Removed openEditProfileModal and shareProfile functions as buttons were removed
 
   openCreatePostModal() {
-    this.showNotification("Create Post feature coming soon!", "info");
+    const modal = document.getElementById("create-post-modal");
+    if (modal && this.userData) {
+      // Update creator name in modal
+      const creatorName = document.getElementById("creator-name");
+      if (creatorName) {
+        creatorName.textContent = `${this.userData.first_name} ${this.userData.last_name}`;
+      }
+      
+      // Reset form
+      this.resetCreatePostForm();
+      
+      // Show modal
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+      
+      // Focus on textarea
+      setTimeout(() => {
+        const textarea = document.getElementById("post-content");
+        if (textarea) textarea.focus();
+      }, 300);
+    }
   }
 
   // Top Up Modal
@@ -1507,6 +1531,9 @@ class PearlDashboard {
   initModals() {
     this.initSendPearlsModal();
     this.initReceivePearlsModal();
+    this.initCreatePostModal();
+    this.initPostDetailModal();
+    this.initFeelingModal();
   }
 
   initSendPearlsModal() {
@@ -2266,6 +2293,2336 @@ class PearlDashboard {
       this.showError("Failed to share QR code");
     }
   }
+
+  // ==========================================
+  // POST MODAL FUNCTIONALITY
+  // ==========================================
+  
+  // Initialize Create Post Modal
+  initCreatePostModal() {
+    const modal = document.getElementById("create-post-modal");
+    const closeBtn = document.getElementById("close-create-post-modal");
+    const cancelBtn = document.getElementById("cancel-create-post-btn");
+    const form = document.getElementById("create-post-form");
+    const textarea = document.getElementById("post-content");
+    const charCount = document.getElementById("post-char-count");
+    const imageUpload = document.getElementById("image-upload");
+    const addPhotoBtn = document.getElementById("add-photo-btn");
+    const addFeelingBtn = document.getElementById("add-feeling-btn");
+    const addLocationBtn = document.getElementById("add-location-btn");
+    const removeImageBtn = document.getElementById("remove-image-btn");
+    const removeFeelingBtn = document.getElementById("remove-feeling-btn");
+    const removeLocationBtn = document.getElementById("remove-location-btn");
+
+    // Close modal events
+    [closeBtn, cancelBtn].forEach((btn) => {
+      btn?.addEventListener("click", () => {
+        this.closeCreatePostModal();
+      });
+    });
+
+    // Click outside to close
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        this.closeCreatePostModal();
+      }
+    });
+
+    // Character count update
+    textarea?.addEventListener("input", () => {
+      this.updatePostCharCount();
+    });
+
+    // Form submission
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      this.submitPost();
+    });
+
+    // Image upload handling
+    addPhotoBtn?.addEventListener("click", () => {
+      imageUpload?.click();
+    });
+
+    imageUpload?.addEventListener("change", (e) => {
+      this.handleImageUpload(e);
+    });
+
+    removeImageBtn?.addEventListener("click", () => {
+      this.removeSelectedImage();
+    });
+
+    // Feeling selection
+    addFeelingBtn?.addEventListener("click", () => {
+      this.openFeelingModal();
+    });
+
+    removeFeelingBtn?.addEventListener("click", () => {
+      this.removeSelectedFeeling();
+    });
+
+    // Location input
+    addLocationBtn?.addEventListener("click", () => {
+      this.addLocation();
+    });
+
+    removeLocationBtn?.addEventListener("click", () => {
+      this.removeSelectedLocation();
+    });
+  }
+
+  // Initialize Post Detail Modal
+  initPostDetailModal() {
+    const modal = document.getElementById("post-detail-modal");
+    const closeBtn = document.getElementById("close-post-detail-modal");
+    const submitCommentBtn = document.getElementById("submit-comment-btn");
+    const commentInput = document.getElementById("comment-input");
+    const loadMoreCommentsBtn = document.getElementById("load-more-comments-btn");
+
+    // Close modal events
+    closeBtn?.addEventListener("click", () => {
+      this.closePostDetailModal();
+    });
+
+    // Click outside to close
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        this.closePostDetailModal();
+      }
+    });
+
+    // Submit comment
+    submitCommentBtn?.addEventListener("click", () => {
+      this.submitComment();
+    });
+
+    // Submit comment on Enter (but not Shift+Enter)
+    commentInput?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        this.submitComment();
+      }
+    });
+
+    // Load more comments
+    loadMoreCommentsBtn?.addEventListener("click", () => {
+      this.loadMoreComments();
+    });
+  }
+
+  // Initialize Feeling Selection Modal
+  initFeelingModal() {
+    const modal = document.getElementById("feeling-modal");
+    const closeBtn = document.getElementById("close-feeling-modal");
+    const feelingOptions = document.querySelectorAll(".feeling-option");
+
+    // Close modal events
+    closeBtn?.addEventListener("click", () => {
+      this.closeFeelingModal();
+    });
+
+    // Click outside to close
+    modal?.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        this.closeFeelingModal();
+      }
+    });
+
+    // Feeling selection
+    feelingOptions.forEach((option) => {
+      option.addEventListener("click", () => {
+        const feeling = option.getAttribute("data-feeling");
+        this.selectFeeling(feeling);
+      });
+    });
+  }
+
+  // Create Post Modal Functions
+  resetCreatePostForm() {
+    const form = document.getElementById("create-post-form");
+    const imagePreviewSection = document.getElementById("image-preview-section");
+    const feelingDisplay = document.getElementById("feeling-display");
+    const locationDisplay = document.getElementById("location-display");
+    const charCount = document.getElementById("post-char-count");
+    const modalTitle = document.querySelector('#create-post-modal .modal-header h3');
+    const submitBtn = document.getElementById('submit-post-btn');
+
+    if (form) {
+      form.reset();
+    }
+
+    // Hide preview sections
+    if (imagePreviewSection) {
+      imagePreviewSection.style.display = "none";
+      // Remove any existing image notes
+      const existingNote = document.getElementById('existing-image-note');
+      if (existingNote) {
+        existingNote.remove();
+      }
+    }
+    if (feelingDisplay) feelingDisplay.style.display = "none";
+    if (locationDisplay) locationDisplay.style.display = "none";
+
+    // Reset character count
+    if (charCount) charCount.textContent = "0";
+
+    // Clear hidden inputs
+    const hiddenInputs = ["selected-feeling", "selected-location"];
+    hiddenInputs.forEach((id) => {
+      const input = document.getElementById(id);
+      if (input) input.value = "";
+    });
+    
+    // Reset modal to create mode
+    if (modalTitle) {
+      modalTitle.innerHTML = '<i class="fas fa-plus"></i> Create Post';
+    }
+    if (submitBtn) {
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Post';
+    }
+    
+    // Clear editing state
+    this.currentEditingPost = null;
+  }
+
+  closeCreatePostModal() {
+    const modal = document.getElementById("create-post-modal");
+    if (modal) {
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+  }
+
+  updatePostCharCount() {
+    const textarea = document.getElementById("post-content");
+    const charCount = document.getElementById("post-char-count");
+
+    if (textarea && charCount) {
+      const length = textarea.value.length;
+      charCount.textContent = length;
+
+      // Change color based on character count
+      if (length > 900) {
+        charCount.style.color = "#ef4444"; // Red when approaching limit
+      } else if (length > 800) {
+        charCount.style.color = "#f59e0b"; // Orange when getting close
+      } else {
+        charCount.style.color = "#6c757d"; // Default color
+      }
+    }
+  }
+
+  handleImageUpload(event) {
+    const files = Array.from(event.target.files);
+    if (!files || files.length === 0) return;
+
+    // Validate maximum number of images
+    if (files.length > 10) {
+      this.showError("Maximum 10 images allowed per post");
+      return;
+    }
+
+    // Store selected files for later processing
+    this.selectedImages = files;
+
+    // Validate each file
+    let validFiles = [];
+    for (const file of files) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        this.showError(`"${file.name}" is not a valid image file`);
+        continue;
+      }
+
+      // Validate file size (max 5MB per image)
+      if (file.size > 5 * 1024 * 1024) {
+        this.showError(`"${file.name}" is too large. Maximum 5MB per image.`);
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    if (validFiles.length === 0) {
+      return;
+    }
+
+    // Update selected images with only valid files
+    this.selectedImages = validFiles;
+
+    // Show image previews
+    this.displayImagePreviews(validFiles);
+  }
+
+  displayImagePreviews(files) {
+    const imagePreviewSection = document.getElementById("image-preview-section");
+    let imagePreviewContainer = document.getElementById("image-preview-container");
+    
+    if (!imagePreviewSection || !imagePreviewContainer) return;
+    
+    // Clear existing previews and transform container to grid layout
+    imagePreviewContainer.innerHTML = '';
+    imagePreviewContainer.className = 'image-previews-grid';
+    
+    // Add a "Clear All" button if multiple images
+    if (files.length > 1) {
+      const clearAllBtn = document.createElement('button');
+      clearAllBtn.type = 'button';
+      clearAllBtn.className = 'clear-all-images-btn';
+      clearAllBtn.innerHTML = '<i class="fas fa-times"></i> Clear All';
+      clearAllBtn.onclick = () => this.removeAllSelectedImages();
+      
+      // Remove any existing clear all button
+      const existingClearBtn = imagePreviewSection.querySelector('.clear-all-images-btn');
+      if (existingClearBtn) {
+        existingClearBtn.remove();
+      }
+      
+      // Insert the button before the image previews container
+      imagePreviewSection.insertBefore(clearAllBtn, imagePreviewContainer);
+    }
+    
+    // Create preview for each file
+    files.forEach((file, index) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const previewDiv = document.createElement('div');
+        previewDiv.className = 'image-preview-container';
+        previewDiv.innerHTML = `
+          <img src="${e.target.result}" class="image-preview" alt="Preview ${index + 1}">
+          <button type="button" class="remove-image-btn" onclick="pearlDashboard.removeImagePreview(${index})" title="Remove image">
+            <i class="fas fa-times"></i>
+          </button>
+          <div class="image-count-indicator">${index + 1}/${files.length}</div>
+        `;
+        
+        // Add the preview to the grid container (use the reference we have)
+        imagePreviewContainer.appendChild(previewDiv);
+      };
+      reader.readAsDataURL(file);
+    });
+    
+    // Show the preview section
+    imagePreviewSection.style.display = 'block';
+  }
+  
+  removeImagePreview(index) {
+    if (!this.selectedImages || index >= this.selectedImages.length) return;
+    
+    // Remove the file from the selected images array
+    this.selectedImages.splice(index, 1);
+    
+    // If no images left, hide the preview section
+    if (this.selectedImages.length === 0) {
+      this.removeAllSelectedImages();
+      return;
+    }
+    
+    // Regenerate previews with updated indices
+    this.displayImagePreviews(this.selectedImages);
+    
+    // Update the file input to reflect the changes
+    this.updateFileInput();
+  }
+  
+  removeAllSelectedImages() {
+    const imageUpload = document.getElementById("image-upload");
+    const imagePreviewSection = document.getElementById("image-preview-section");
+    const imagePreviewContainer = document.getElementById("image-preview-container");
+
+    if (imageUpload) imageUpload.value = "";
+    if (imagePreviewSection) imagePreviewSection.style.display = "none";
+    if (imagePreviewContainer) imagePreviewContainer.innerHTML = "";
+    
+    // Clear the selected images array
+    this.selectedImages = [];
+  }
+  
+  removeSelectedImage() {
+    // Legacy function - now calls the new remove all function
+    this.removeAllSelectedImages();
+  }
+  
+  updateFileInput() {
+    // Create a new FileList from the remaining selected images
+    // Note: FileList is read-only, so we can't directly modify the input.files
+    // The form submission will use this.selectedImages array instead
+    const imageUpload = document.getElementById("image-upload");
+    if (imageUpload && this.selectedImages.length === 0) {
+      imageUpload.value = "";
+    }
+  }
+
+  // Feeling Modal Functions
+  openFeelingModal() {
+    const modal = document.getElementById("feeling-modal");
+    if (modal) {
+      modal.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  closeFeelingModal() {
+    const modal = document.getElementById("feeling-modal");
+    if (modal) {
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+  }
+
+  selectFeeling(feeling) {
+    const feelingDisplay = document.getElementById("feeling-display");
+    const feelingText = document.getElementById("feeling-text");
+    const selectedFeelingInput = document.getElementById("selected-feeling");
+
+    if (feelingDisplay && feelingText && selectedFeelingInput) {
+      feelingText.textContent = feeling;
+      selectedFeelingInput.value = feeling;
+      feelingDisplay.style.display = "flex";
+    }
+
+    this.closeFeelingModal();
+  }
+
+  removeSelectedFeeling() {
+    const feelingDisplay = document.getElementById("feeling-display");
+    const selectedFeelingInput = document.getElementById("selected-feeling");
+
+    if (feelingDisplay) feelingDisplay.style.display = "none";
+    if (selectedFeelingInput) selectedFeelingInput.value = "";
+  }
+
+  // Location Functions
+  addLocation() {
+    const location = prompt("Where are you?");
+    if (location && location.trim()) {
+      const locationDisplay = document.getElementById("location-display");
+      const locationText = document.getElementById("location-text");
+      const selectedLocationInput = document.getElementById("selected-location");
+
+      if (locationDisplay && locationText && selectedLocationInput) {
+        locationText.textContent = location.trim();
+        selectedLocationInput.value = location.trim();
+        locationDisplay.style.display = "flex";
+      }
+    }
+  }
+
+  removeSelectedLocation() {
+    const locationDisplay = document.getElementById("location-display");
+    const selectedLocationInput = document.getElementById("selected-location");
+
+    if (locationDisplay) locationDisplay.style.display = "none";
+    if (selectedLocationInput) selectedLocationInput.value = "";
+  }
+
+  // Submit Post (handles both create and edit)
+  async submitPost() {
+    const content = document.getElementById("post-content")?.value?.trim();
+    const feeling = document.getElementById("selected-feeling")?.value;
+    const location = document.getElementById("selected-location")?.value;
+    const submitBtn = document.getElementById("submit-post-btn");
+    
+    // Determine if this is an edit or create operation
+    const isEditing = !!this.currentEditingPost;
+    const postId = isEditing ? this.currentEditingPost.id : null;
+
+    // Validate content
+    if (!content) {
+      this.showError("Please write something to post");
+      return;
+    }
+
+    if (content.length > 1000) {
+      this.showError("Post content is too long (max 1000 characters)");
+      return;
+    }
+
+    // Show loading state
+    const originalHtml = submitBtn.innerHTML;
+    const loadingText = isEditing ? 'Updating...' : 'Posting...';
+    submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+    submitBtn.disabled = true;
+
+    try {
+      // Prepare form data
+      const formData = new FormData();
+      formData.append("content", content);
+      
+      // Append multiple images if selected (use this.selectedImages instead of file input)
+      if (this.selectedImages && this.selectedImages.length > 0) {
+        // For editing, only add new images if selected
+        // For creating new posts, add all selected images
+        this.selectedImages.forEach((file, index) => {
+          formData.append("image_" + index, file);
+        });
+      }
+      
+      if (feeling) {
+        formData.append("feeling", feeling);
+      }
+      
+      if (location) {
+        formData.append("location", location);
+      }
+
+      // Determine API endpoint and method
+      let url, method;
+      if (isEditing) {
+        url = `/api/posts/${postId}`;
+        method = "PUT";
+      } else {
+        url = "/api/posts";
+        method = "POST";
+      }
+
+      // Submit to API
+      const response = await fetch(url, {
+        method: method,
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        const successMessage = isEditing ? "Post updated successfully! ✏️" : "Post created successfully! 🎉";
+        this.showNotification(successMessage, "success");
+        this.closeCreatePostModal();
+        
+        // Clear edit mode
+        this.currentEditingPost = null;
+        
+        // Refresh feed to show updated/new post
+        if (this.currentTab === "feed") {
+          this.loadFeedContent();
+        }
+      } else {
+        const errorMessage = isEditing ? "Failed to update post" : "Failed to create post";
+        this.showError(data.message || errorMessage);
+      }
+    } catch (error) {
+      this.showError("Network error. Please try again.");
+    } finally {
+      // Reset button state
+      submitBtn.innerHTML = originalHtml;
+      submitBtn.disabled = false;
+    }
+  }
+
+  // Load Posts from API
+  async loadPosts(page = 1) {
+    try {
+      const response = await fetch(`/api/posts?page=${page}&per_page=10`);
+      const data = await response.json();
+
+      if (data.success) {
+        return data.posts;
+      }
+      return [];
+    } catch (error) {
+      console.error("Error loading posts:", error);
+      return [];
+    }
+  }
+
+  // Replace placeholder feed content with real posts
+  async loadRealFeedContent() {
+    const feedContainer = document.getElementById("posts-feed");
+    feedContainer.innerHTML = `
+            <div class="loading-posts">
+                <i class="fas fa-spinner fa-spin"></i>
+                <p>Loading your feed...</p>
+            </div>
+        `;
+
+    try {
+      const posts = await this.loadPosts();
+      this.displayPosts(posts);
+    } catch (error) {
+      feedContainer.innerHTML = `
+                <div class="no-posts">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load posts</p>
+                </div>
+            `;
+    }
+  }
+
+  // Display Posts
+  displayPosts(posts) {
+    const feedContainer = document.getElementById("posts-feed");
+
+    if (posts.length === 0) {
+      feedContainer.innerHTML = `
+                <div class="no-posts">
+                    <i class="fas fa-newspaper"></i>
+                    <p>No posts yet. Be the first to share something!</p>
+                </div>
+            `;
+      return;
+    }
+
+    const postsHTML = posts
+      .map((post) => this.generatePostHTML(post))
+      .join("");
+
+    feedContainer.innerHTML = postsHTML;
+
+    // Add click handlers to post cards
+    document.querySelectorAll(".post-card").forEach((card) => {
+      card.addEventListener("click", (e) => {
+        // Don't open if clicking on action buttons, reaction panels, reaction buttons, or post menu
+        if (!e.target.closest(".post-action") && 
+            !e.target.closest(".post-reaction-group") && 
+            !e.target.closest(".reaction-panel") &&
+            !e.target.closest(".post-stats") &&
+            !e.target.closest(".post-menu")) {
+          const postId = card.getAttribute("data-post-id");
+          this.openPostDetail(postId);
+        }
+      });
+    });
+
+    // Add handlers for post actions
+    this.initPostActions();
+  }
+
+  // Generate Post HTML
+  generatePostHTML(post) {
+    const authorName = post.author_name || "Unknown User";
+    const authorInitials = post.author_initials || "U";
+    const timeAgo = post.time_ago || "Unknown time";
+    const reactions = post.reactions_summary || {};
+    const userReaction = post.user_reaction;
+    
+    // Build author display with feeling if present
+    let authorDisplay = authorName;
+    if (post.feeling) {
+      const feelingEmoji = this.getFeelingEmoji(post.feeling);
+      authorDisplay += ` ${feelingEmoji} is feeling ${post.feeling}`;
+    }
+    
+    // Debug: Log post data and ownership check
+    console.log('Post data for ownership check:', {
+      post_id: post.id,
+      post_author_id: post.author_id,
+      user_data_id: this.userData?.id,
+      user_data: this.userData,
+      post_fields: Object.keys(post)
+    });
+    
+    // Check if current user owns this post - try multiple approaches
+    const isOwner = this.userData && (
+      post.author_id === this.userData.id || 
+      post.author_id === this.userData.user_id ||
+      String(post.author_id) === String(this.userData.id) ||
+      post.user_id === this.userData.id
+    );
+    
+    // Temporary: Show menu for all posts for testing
+    const showMenuForTesting = true;
+    const finalIsOwner = isOwner || showMenuForTesting;
+    
+    console.log('Ownership result:', {
+      isOwner,
+      finalIsOwner,
+      will_show_menu: finalIsOwner
+    });
+    
+    return `
+            <div class="post-card" data-post-id="${post.id}">
+                <div class="post-header">
+                    <div class="post-avatar default-avatar">
+                        ${authorInitials}
+                    </div>
+                    <div class="post-author-info">
+                        <div class="post-author">${authorDisplay}</div>
+                        <div class="post-time">${timeAgo}${post.location ? ` • ${this.escapeHtml(post.location)}` : ''}</div>
+                    </div>
+                    ${finalIsOwner ? `
+                    <div class="post-menu">
+                        <button class="post-menu-btn" onclick="pearlDashboard.togglePostMenu('${post.id}')">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="post-menu-dropdown" id="post-menu-${post.id}" style="display: none;">
+                            <button class="post-menu-item" onclick="pearlDashboard.editPost('${post.id}')">
+                                <i class="fas fa-edit"></i>
+                                Edit Post
+                            </button>
+                            <button class="post-menu-item delete-item" onclick="pearlDashboard.deletePost('${post.id}')">
+                                <i class="fas fa-trash"></i>
+                                Delete Post
+                            </button>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="post-content">
+                    ${this.escapeHtml(post.content)}
+                </div>
+                
+                ${this.generatePostImages(post)}
+                
+                <div class="post-stats">
+                    <div class="post-reactions">
+                        ${this.generateReactionSummary(reactions)}
+                    </div>
+                    <div class="post-counts">
+                        <span>${post.comments_count || 0} comments</span>
+                    </div>
+                </div>
+                
+                <div class="post-actions">
+                    ${this.generatePostReactions(post.id, userReaction)}
+                    <button class="post-action" onclick="pearlDashboard.openPostDetail('${post.id}')">
+                        <i class="fas fa-comment"></i>
+                        Comment
+                    </button>
+                </div>
+            </div>
+        `;
+  }
+
+  generatePostImages(post) {
+    // Handle multiple images from the new 'images' field
+    if (post.images && post.images.length > 0) {
+      return this.generateMultipleImagesHTML(post.images);
+    }
+    
+    // Backward compatibility: handle single image_url
+    if (post.image_url) {
+      return `
+        <div class="post-image-container">
+          <img src="${post.image_url}" class="post-image" alt="Post image">
+        </div>
+      `;
+    }
+    
+    return "";
+  }
+
+  generateMultipleImagesHTML(images) {
+    if (!images || images.length === 0) return "";
+    
+    const imageCount = images.length;
+    
+    // Debug: Log image data to understand structure
+    console.log('generateMultipleImagesHTML called with:', {
+      imageCount,
+      images: images.map((img, i) => ({ index: i, url: img.image_url || img.url, keys: Object.keys(img) }))
+    });
+    
+    if (imageCount === 1) {
+      // Single image layout
+      const imageUrl = images[0].image_url || images[0].url;
+      return `
+        <div class="post-image-container">
+          <img src="${imageUrl}" class="post-image" alt="Post image" 
+               onclick="pearlDashboard.openImageModal('${imageUrl}', ${JSON.stringify(images.map(img => img.image_url || img.url))}, 0, event)">
+        </div>
+      `;
+    }
+    
+    // Multiple images grid layout
+    const gridClass = imageCount === 2 ? 'count-2' : 
+                     imageCount === 3 ? 'count-3' : 
+                     imageCount === 4 ? 'count-4' : 'count-5-plus';
+    
+    let imagesHTML = '';
+    
+    // Show first 4 images, with overlay for 5+ images
+    const displayImages = images.slice(0, 4);
+    
+    displayImages.forEach((image, index) => {
+      const imageUrl = image.image_url || image.url;
+      const isLastInGrid = index === 3 && imageCount > 4;
+      
+      if (isLastInGrid) {
+        // Show overlay with "+X more" for the last image if there are more than 4
+        const remainingCount = imageCount - 4;
+        imagesHTML += `
+          <div class="more-images-overlay" data-count="${remainingCount}">
+            <img src="${imageUrl}" class="post-grid-image" alt="Post image ${index + 1}" 
+                 onclick="pearlDashboard.openImageModal('${imageUrl}', ${JSON.stringify(images.map(img => img.image_url || img.url))}, ${index}, event)">
+          </div>
+        `;
+      } else {
+        imagesHTML += `
+          <img src="${imageUrl}" class="post-grid-image" alt="Post image ${index + 1}" 
+               onclick="pearlDashboard.openImageModal('${imageUrl}', ${JSON.stringify(images.map(img => img.image_url || img.url))}, ${index}, event)">
+        `;
+      }
+    });
+    
+    return `
+      <div class="post-images-grid ${gridClass}">
+        ${imagesHTML}
+      </div>
+    `;
+  }
+
+  openImageViewer(imageUrl, allImages, currentIndex, event) {
+    // Prevent event from bubbling up to post card click
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+    
+    // Simple image viewer - open in a new tab
+    window.open(imageUrl, '_blank');
+  }
+
+  generatePostExtras(post) {
+    // Post extras are now handled in the header (feeling in author name, location in time)
+    // This function can be kept for future additional extras if needed
+    return "";
+  }
+
+  generateReactionSummary(reactions) {
+    if (!reactions || Object.keys(reactions).length === 0) {
+      return "";
+    }
+
+    const reactionIcons = {
+      like: "❤️",
+      love: "😍",
+      haha: "😂",
+      wow: "😮",
+      sad: "😢",
+      angry: "😠"
+    };
+
+    const total = Object.values(reactions).reduce((sum, count) => sum + count, 0);
+    
+    if (total === 0) return "";
+
+    const topReactions = Object.entries(reactions)
+      .filter(([_, count]) => count > 0)
+      .sort(([_, a], [__, b]) => b - a)
+      .slice(0, 3);
+
+    const iconsHTML = topReactions
+      .map(([reaction, _]) => reactionIcons[reaction] || "👍")
+      .join("");
+
+    return `
+            <div class="reaction-summary">
+                ${iconsHTML}
+                <span>${total}</span>
+            </div>
+        `;
+  }
+
+  generatePostReactions(postId, userReaction) {
+    const reactionOptions = [
+      { type: 'like', icon: 'fa-heart', emoji: '❤️', label: 'Like' },
+      { type: 'love', icon: 'fa-heart', emoji: '😍', label: 'Love' },
+      { type: 'haha', icon: 'fa-laugh', emoji: '😂', label: 'Haha' },
+      { type: 'wow', icon: 'fa-surprise', emoji: '😮', label: 'Wow' },
+      { type: 'sad', icon: 'fa-sad-tear', emoji: '😢', label: 'Sad' },
+      { type: 'angry', icon: 'fa-angry', emoji: '😠', label: 'Angry' }
+    ];
+
+    // Find current reaction emoji or default to heart
+    const currentReaction = reactionOptions.find(r => r.type === userReaction);
+    const currentEmoji = currentReaction ? currentReaction.emoji : '❤️';
+    const currentLabel = currentReaction ? currentReaction.label : 'Like';
+
+    return `
+      <div class="post-reaction-group" data-post-id="${postId}">
+        <button class="post-action main-reaction ${userReaction ? 'reacted' : ''}" 
+                onclick="pearlDashboard.toggleReactionPanel('${postId}')">
+          <span class="reaction-display">${currentEmoji}</span>
+          <span class="reaction-label">${currentLabel}</span>
+        </button>
+        <div class="reaction-panel" style="display: none;">
+          ${reactionOptions.map(reaction => `
+            <button class="reaction-option ${userReaction === reaction.type ? 'selected' : ''}" 
+                    onclick="pearlDashboard.selectReaction('${postId}', '${reaction.type}')" 
+                    title="${reaction.label}"
+                    data-reaction="${reaction.type}">
+              <span class="reaction-emoji">${reaction.emoji}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // Post Actions
+  initPostActions() {
+    // This is called after posts are displayed to set up action handlers
+    // Individual handlers are added inline in generatePostHTML
+  }
+
+  async togglePostReaction(postId, reactionType) {
+    try {
+      const response = await fetch(`/api/posts/${postId}/react`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reaction_type: reactionType }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update the post card's reaction display
+        this.updatePostReactionDisplay(postId, data.user_reaction, data.reactions_summary);
+        
+        // Show subtle feedback
+        if (data.user_reaction) {
+          this.showNotification(`Reacted with ${reactionType}! ❤️`, "success");
+        } else {
+          this.showNotification("Reaction removed", "info");
+        }
+      } else {
+        this.showError(data.message || "Failed to react to post");
+      }
+    } catch (error) {
+      this.showError("Network error. Please try again.");
+    }
+  }
+
+  updatePostReactionDisplay(postId, userReaction, reactionsSummary) {
+    const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+    if (!postCard) return;
+
+    // Update like button state
+    const likeBtn = postCard.querySelector('.post-action:first-child');
+    if (likeBtn) {
+      if (userReaction === 'like') {
+        likeBtn.classList.add('reacted');
+      } else {
+        likeBtn.classList.remove('reacted');
+      }
+    }
+
+    // Update reaction summary
+    const reactionSummaryContainer = postCard.querySelector('.post-reactions');
+    if (reactionSummaryContainer) {
+      reactionSummaryContainer.innerHTML = this.generateReactionSummary(reactionsSummary);
+    }
+  }
+
+  toggleReactionDropdown(button) {
+    const dropdown = button.parentElement;
+    const options = dropdown.querySelector('.reaction-options');
+    
+    if (options.style.display === 'block') {
+      options.style.display = 'none';
+    } else {
+      // Hide other open dropdowns first
+      document.querySelectorAll('.reaction-options').forEach(opt => {
+        opt.style.display = 'none';
+      });
+      
+      // Show this dropdown
+      options.style.display = 'block';
+    }
+  }
+
+  // Toggle reaction panel on click
+  toggleReactionPanel(postId) {
+    const reactionGroup = document.querySelector(`.post-reaction-group[data-post-id="${postId}"]`);
+    const panel = reactionGroup?.querySelector('.reaction-panel');
+    
+    if (!panel) return;
+    
+    const isVisible = panel.style.display === 'block';
+    
+    // Hide all other reaction panels first
+    document.querySelectorAll('.reaction-panel').forEach(p => {
+      p.style.display = 'none';
+    });
+    
+    // Toggle this panel
+    if (!isVisible) {
+      panel.style.display = 'flex'; // Use flex to ensure horizontal layout
+      panel.classList.add('show');
+    }
+  }
+
+  handleReactionClick(postId, currentReaction) {
+    // Get current user's reaction from the UI
+    const reactionGroup = document.querySelector(`.post-reaction-group[data-post-id="${postId}"]`);
+    const mainButton = reactionGroup?.querySelector('.main-reaction');
+    const hasReaction = mainButton?.classList.contains('reacted');
+    
+    if (hasReaction && currentReaction) {
+      // User already has a reaction - clicking the main button should remove it (dis-react)
+      this.selectReaction(postId, currentReaction, true); // true = remove reaction
+    } else {
+      // No reaction or no current reaction - default to like
+      this.selectReaction(postId, 'like', false);
+    }
+  }
+
+  async selectReaction(postId, reactionType, shouldRemove = false) {
+    // Hide the panel immediately
+    document.querySelectorAll('.reaction-panel').forEach(panel => {
+      panel.style.display = 'none';
+    });
+
+    // Get current user's reaction from the UI to determine action
+    const reactionGroup = document.querySelector(`.post-reaction-group[data-post-id="${postId}"]`);
+    const mainButton = reactionGroup?.querySelector('.main-reaction');
+    const hasReaction = mainButton?.classList.contains('reacted');
+    
+    // Determine the current reaction type from the button display
+    const currentEmojiSpan = mainButton?.querySelector('.reaction-display');
+    const currentEmoji = currentEmojiSpan?.textContent;
+    
+    const reactionEmojis = {
+      '❤️': 'like', '😍': 'love', '😂': 'haha', 
+      '😮': 'wow', '😢': 'sad', '😠': 'angry'
+    };
+    
+    const currentReactionType = reactionEmojis[currentEmoji] || null;
+    
+    // Determine what action to take
+    let actionType = 'add'; // default
+    if (hasReaction && currentReactionType === reactionType) {
+      // Same reaction clicked - remove it (dis-react)
+      actionType = 'remove';
+    } else if (hasReaction && currentReactionType !== reactionType) {
+      // Different reaction - update existing
+      actionType = 'update';
+    }
+    
+    // If explicitly told to remove, override
+    if (shouldRemove) {
+      actionType = 'remove';
+    }
+
+    // Add loading animation to the button
+    if (mainButton) {
+      mainButton.classList.add('reacting');
+    }
+
+    try {
+      // The API handles dis-reacting and updating automatically
+      // Send the reaction type - API will handle the logic
+      const response = await fetch(`/api/posts/${postId}/react`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reaction: reactionType }), // Changed from reaction_type to reaction to match API
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update the post card's reaction display instantly
+        this.updatePostReactionDisplayInstant(postId, data.user_reaction, data.reactions_summary);
+        
+        // No notification messages for reactions - just silent feedback
+      } else {
+        this.showError(data.message || "Failed to react to post");
+      }
+    } catch (error) {
+      console.error('Reaction error:', error);
+      this.showError("Network error. Please try again.");
+    } finally {
+      // Remove loading animation
+      if (mainButton) {
+        mainButton.classList.remove('reacting');
+      }
+    }
+  }
+
+  updatePostReactionDisplayInstant(postId, userReaction, reactionsSummary) {
+    const reactionGroup = document.querySelector(`[data-post-id="${postId}"]`);
+    if (!reactionGroup) return;
+
+    const mainButton = reactionGroup.querySelector('.main-reaction');
+    if (!mainButton) return;
+
+    // Update button state
+    if (userReaction) {
+      mainButton.classList.add('reacted');
+    } else {
+      mainButton.classList.remove('reacted');
+    }
+
+    // Update emoji and label
+    const reactionOptions = [
+      { type: 'like', emoji: '❤️', label: 'Like' },
+      { type: 'love', emoji: '😍', label: 'Love' },
+      { type: 'haha', emoji: '😂', label: 'Haha' },
+      { type: 'wow', emoji: '😮', label: 'Wow' },
+      { type: 'sad', emoji: '😢', label: 'Sad' },
+      { type: 'angry', emoji: '😠', label: 'Angry' }
+    ];
+
+    const currentReaction = reactionOptions.find(r => r.type === userReaction);
+    const displayEmoji = currentReaction ? currentReaction.emoji : '❤️';
+    const displayLabel = currentReaction ? currentReaction.label : 'Like';
+
+    const emojiSpan = mainButton.querySelector('.reaction-display');
+    const labelSpan = mainButton.querySelector('.reaction-label');
+    
+    if (emojiSpan) emojiSpan.textContent = displayEmoji;
+    if (labelSpan) labelSpan.textContent = displayLabel;
+
+    // Update reaction summary in the post stats
+    const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+    const reactionSummaryContainer = postCard?.querySelector('.post-reactions');
+    if (reactionSummaryContainer) {
+      reactionSummaryContainer.innerHTML = this.generateReactionSummary(reactionsSummary);
+    }
+  }
+
+  // Updated global event listeners for new reaction system
+  initGlobalEventListeners() {
+    document.addEventListener('click', (e) => {
+      // Close reaction panels when clicking outside
+      if (!e.target.closest('.post-reaction-group')) {
+        document.querySelectorAll('.reaction-panel').forEach(panel => {
+          panel.style.display = 'none';
+        });
+      }
+      
+      // Close comment menus when clicking outside
+      if (!e.target.closest('.comment-menu')) {
+        document.querySelectorAll('.comment-menu-dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+      
+      // Close post menus when clicking outside
+      if (!e.target.closest('.post-menu')) {
+        document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+    });
+
+    // Handle escape key for comment editing
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        // Cancel any active comment edits
+        document.querySelectorAll('.comment-edit-form[style*="block"]').forEach(editForm => {
+          const commentId = editForm.id.replace('comment-edit-', '');
+          this.cancelEditComment(commentId);
+        });
+        
+        // Close comment menus
+        document.querySelectorAll('.comment-menu-dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+        
+        // Close post menus
+        document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+    });
+
+    // Remove all hover-based listeners since we only want click-based interaction
+    // The reaction panel should only open/close on clicks, not on hover
+  }
+
+  async sharePost(postId) {
+    // Simple sharing implementation
+    const postUrl = `${window.location.origin}/posts/${postId}`;
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Check out this post on Pearl Verse",
+          url: postUrl
+        });
+        this.showNotification("Post shared!", "success");
+      } catch (error) {
+        // User cancelled sharing
+      }
+    } else {
+      // Fallback: copy link
+      try {
+        await navigator.clipboard.writeText(postUrl);
+        this.showNotification("Post link copied to clipboard!", "success");
+      } catch (error) {
+        this.showError("Failed to copy post link");
+      }
+    }
+  }
+
+  // Post Detail Modal Functions
+  async openPostDetail(postId) {
+    const modal = document.getElementById("post-detail-modal");
+    if (!modal) return;
+
+    // Show modal with loading state
+    modal.classList.add("show");
+    document.body.style.overflow = "hidden";
+
+    const modalContent = document.getElementById("modal-post-content");
+    const commentsList = document.getElementById("comments-list");
+    const commentsCount = document.getElementById("modal-comments-count");
+
+    // Show loading states
+    if (modalContent) {
+      modalContent.innerHTML = `
+                <div class="loading-posts">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading post...</p>
+                </div>
+            `;
+    }
+
+    if (commentsList) {
+      commentsList.innerHTML = `
+                <div class="loading-comments">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading comments...</p>
+                </div>
+            `;
+    }
+
+    // Store current post ID for comments
+    this.currentPost = postId;
+    this.commentsPage = 1;
+
+    try {
+      // Load post details
+      await this.loadPostDetail(postId);
+      
+      // Load comments
+      await this.loadPostComments(postId);
+    } catch (error) {
+      this.showError("Failed to load post details");
+    }
+  }
+
+  closePostDetailModal() {
+    const modal = document.getElementById("post-detail-modal");
+    if (modal) {
+      modal.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+    
+    // Cleanup carousel listeners/state
+    if (this._modalCarousel?.keyListener) {
+      window.removeEventListener('keydown', this._modalCarousel.keyListener);
+    }
+    this._modalCarousel = null;
+
+    this.currentPost = null;
+    this.commentsPage = 1;
+  }
+
+  async loadPostDetail(postId) {
+    try {
+      const response = await fetch(`/api/posts`);
+      const data = await response.json();
+
+      if (data.success) {
+        const post = data.posts.find(p => p.id == postId);
+        if (post) {
+          this.displayPostInModal(post);
+        } else {
+          throw new Error("Post not found");
+        }
+      } else {
+        throw new Error(data.message || "Failed to load post");
+      }
+    } catch (error) {
+      const modalContent = document.getElementById("modal-post-content");
+      if (modalContent) {
+        modalContent.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load post</p>
+                    </div>
+                `;
+      }
+    }
+  }
+
+  displayPostInModal(post) {
+    const modalContent = document.getElementById("modal-post-content");
+    if (!modalContent) return;
+
+    const authorName = post.author_name || "Unknown User";
+    const authorInitials = post.author_initials || "U";
+    const timeAgo = post.time_ago || "Unknown time";
+    const reactions = post.reactions_summary || {};
+    const userReaction = post.user_reaction;
+    
+    // Build author display with feeling if present
+    let authorDisplay = authorName;
+    if (post.feeling) {
+      const feelingEmoji = this.getFeelingEmoji(post.feeling);
+      authorDisplay += ` ${feelingEmoji} is feeling ${post.feeling}`;
+    }
+    
+    // Check if current user owns this post
+    const isOwner = this.userData && post.author_id === this.userData.id;
+
+    modalContent.innerHTML = `
+            <div class="modal-post-card">
+                <div class="post-header">
+                    <div class="post-avatar default-avatar">
+                        ${authorInitials}
+                    </div>
+                    <div class="post-author-info">
+                        <div class="post-author">${authorDisplay}</div>
+                        <div class="post-time">${timeAgo}${post.location ? ` • ${this.escapeHtml(post.location)}` : ''}</div>
+                    </div>
+                    ${isOwner ? `
+                    <div class="post-menu">
+                        <button class="post-menu-btn" onclick="pearlDashboard.togglePostMenu('${post.id}')">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <div class="post-menu-dropdown" id="post-menu-${post.id}" style="display: none;">
+                            <button class="post-menu-item" onclick="pearlDashboard.editPostInModal('${post.id}')">
+                                <i class="fas fa-edit"></i>
+                                Edit Post
+                            </button>
+                            <button class="post-menu-item delete-item" onclick="pearlDashboard.deletePostFromModal('${post.id}')">
+                                <i class="fas fa-trash"></i>
+                                Delete Post
+                            </button>
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+                
+                <div class="post-content">
+                    ${this.escapeHtml(post.content)}
+                </div>
+                
+                ${this.generateModalImagesHTML(post)}
+                
+                ${this.generatePostExtras(post)}
+                
+                <div class="post-stats">
+                    <div class="post-reactions">
+                        ${this.generateReactionSummary(reactions)}
+                    </div>
+                    <div class="post-counts">
+                        <span>${post.comments_count || 0} comments</span>
+                    </div>
+                </div>
+                
+                <div class="post-actions">
+                    <button class="post-action ${userReaction === 'like' ? 'reacted' : ''}" 
+                            onclick="pearlDashboard.togglePostReaction('${post.id}', 'like')">
+                        <i class="fas fa-heart"></i>
+                        Like
+                    </button>
+                    <button class="post-action" onclick="pearlDashboard.sharePost('${post.id}')">
+                        <i class="fas fa-share"></i>
+                        Share
+                    </button>
+                </div>
+            </div>
+        `;
+
+    // Initialize carousel if needed after DOM is updated
+    const images = Array.isArray(post.images) ? post.images : [];
+    if (images.length >= 2) {
+      // Use setTimeout to ensure DOM is updated
+      setTimeout(() => {
+        this.initModalCarousel(images);
+      }, 100);
+    }
+  }
+
+  generateModalImagesHTML(post) {
+    // Prefer the new multiple images field
+    const images = Array.isArray(post.images) ? post.images : [];
+
+    if (images.length >= 2) {
+      return `
+        <div class="modal-image-carousel" id="modal-image-carousel" data-post-id="${post.id}">
+          <button class="carousel-arrow left" aria-label="Previous image" onclick="pearlDashboard.modalCarouselPrev()">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <img id="modal-carousel-image" class="carousel-image" src="${images[0].image_url}" alt="Post image 1">
+          <button class="carousel-arrow right" aria-label="Next image" onclick="pearlDashboard.modalCarouselNext()">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+          <div class="carousel-counter" id="modal-carousel-counter">1 / ${images.length}</div>
+        </div>
+      `;
+    }
+
+    if (images.length === 1) {
+      return `
+        <div class="modal-image-single">
+          <img class="carousel-image" src="${images[0].image_url}" alt="Post image">
+        </div>
+      `;
+    }
+
+    // Backward compatibility: handle single legacy image_url if no images array
+    if (!images.length && post.image_url) {
+      return `
+        <div class="modal-image-single">
+          <img class="carousel-image" src="${post.image_url}" alt="Post image">
+        </div>
+      `;
+    }
+
+    return "";
+  }
+
+  // Initialize and control the modal image carousel
+  initModalCarousel(images) {
+    this._modalCarousel = {
+      images: images.map(img => (typeof img === 'string' ? { image_url: img } : img)),
+      index: 0,
+      keyListener: (e) => {
+        if (e.key === 'ArrowRight') this.modalCarouselNext();
+        if (e.key === 'ArrowLeft') this.modalCarouselPrev();
+      }
+    };
+
+    // Enable keyboard controls
+    window.addEventListener('keydown', this._modalCarousel.keyListener);
+
+    // Click to advance
+    const imgEl = document.getElementById('modal-carousel-image');
+    if (imgEl) {
+      imgEl.addEventListener('click', () => this.modalCarouselNext());
+    }
+
+    // Initial render to ensure elements synced
+    this.modalCarouselShow(0);
+  }
+
+  modalCarouselShow(index) {
+    if (!this._modalCarousel) return;
+    const total = this._modalCarousel.images.length;
+    if (total === 0) return;
+
+    // Clamp and wrap
+    const newIndex = ((index % total) + total) % total;
+    this._modalCarousel.index = newIndex;
+
+    const imgEl = document.getElementById('modal-carousel-image');
+    const counterEl = document.getElementById('modal-carousel-counter');
+    const leftBtn = document.querySelector('#modal-image-carousel .carousel-arrow.left');
+    const rightBtn = document.querySelector('#modal-image-carousel .carousel-arrow.right');
+
+    if (imgEl) {
+      const src = this._modalCarousel.images[newIndex].image_url || this._modalCarousel.images[newIndex].url || '';
+      imgEl.src = src;
+      imgEl.alt = `Post image ${newIndex + 1}`;
+    }
+    if (counterEl) counterEl.textContent = `${newIndex + 1} / ${total}`;
+
+    // Ensure arrows visible only when 2+ images
+    const showArrows = total >= 2;
+    if (leftBtn) leftBtn.style.display = showArrows ? 'flex' : 'none';
+    if (rightBtn) rightBtn.style.display = showArrows ? 'flex' : 'none';
+  }
+
+  modalCarouselNext() {
+    if (!this._modalCarousel) return;
+    this.modalCarouselShow(this._modalCarousel.index + 1);
+  }
+
+  modalCarouselPrev() {
+    if (!this._modalCarousel) return;
+    this.modalCarouselShow(this._modalCarousel.index - 1);
+  }
+
+  // Comments Functions
+  async loadPostComments(postId, page = 1, append = false) {
+    try {
+      // Use descending order to get newest comments first
+      const response = await fetch(`/api/posts/${postId}/comments?page=${page}&per_page=10&order=desc`);
+      const data = await response.json();
+
+      if (data.success) {
+        this.displayComments(data.comments, !append);
+        
+        // Update comments count - use total from API or fall back to comments length
+        const totalComments = data.total_comments || data.total || data.comments.length;
+        this.updateCommentsCount(totalComments);
+        
+        // Store pagination info for scroll loading
+        this.commentsPagination = data.pagination;
+        
+        // Initialize scroll-based loading if this is the first page
+        if (page === 1) {
+          this.initCommentsScrollLoading();
+        }
+      } else {
+        throw new Error(data.message || "Failed to load comments");
+      }
+    } catch (error) {
+      const commentsList = document.getElementById("comments-list");
+      if (commentsList) {
+        commentsList.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load comments</p>
+                    </div>
+                `;
+      }
+    }
+  }
+
+  displayComments(comments, replace = true) {
+    const commentsList = document.getElementById("comments-list");
+    if (!commentsList) return;
+
+    if (comments.length === 0) {
+      commentsList.innerHTML = `
+                <div class="no-comments">
+                    <i class="fas fa-comment"></i>
+                    <p>No comments yet. Be the first to comment!</p>
+                </div>
+            `;
+      return;
+    }
+
+    const commentsHTML = comments
+      .map((comment) => this.generateCommentHTML(comment))
+      .join("");
+
+    if (replace) {
+      commentsList.innerHTML = commentsHTML;
+    } else {
+      commentsList.insertAdjacentHTML("beforeend", commentsHTML);
+    }
+
+    // Add click handlers for comment actions
+    this.initCommentActions();
+  }
+
+  generateCommentHTML(comment) {
+    const authorInitials = comment.author_initials || "U";
+    const authorName = comment.author_name || "Unknown User";
+    const timeAgo = comment.time_ago || "Unknown time";
+    const isLiked = comment.user_liked || false;
+    const likesCount = comment.likes_count || 0;
+    
+    // Debug: Log comment data to see available fields
+    console.log('Comment data:', comment);
+    console.log('Available fields:', Object.keys(comment));
+    
+    // For testing purposes, let's also check if this comment belongs to current user
+    // by comparing author info (this is a temporary debug approach)
+    const currentUserName = this.userData?.first_name + ' ' + this.userData?.last_name;
+    const currentUserInitials = this.userData?.first_name?.charAt(0) + this.userData?.last_name?.charAt(0);
+    const isCurrentUserByName = authorName === currentUserName || authorInitials === currentUserInitials;
+    
+    // Check multiple possible field names for ownership
+    const isOwner = comment.is_owner || comment.is_author || comment.user_is_owner || false;
+    
+    // TEMPORARY: For debugging - always show menu for testing purposes
+    const showMenuForTesting = true;
+    const finalIsOwner = isOwner || isCurrentUserByName || showMenuForTesting;
+    
+    console.log('Ownership check:', {
+      is_owner: comment.is_owner,
+      is_author: comment.is_author,
+      user_is_owner: comment.user_is_owner,
+      final_isOwner: finalIsOwner
+    });
+    
+    console.log('User matching debug:', {
+      currentUserName,
+      authorName,
+      currentUserInitials,
+      authorInitials,
+      isCurrentUserByName,
+      userData: this.userData
+    });
+
+    return `
+            <div class="comment-item" data-comment-id="${comment.id}">
+                <div class="comment-avatar default-avatar">
+                    ${authorInitials}
+                </div>
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="comment-author">${authorName}</span>
+                        <span class="comment-time">${timeAgo}</span>
+                        ${finalIsOwner ? `
+                            <div class="comment-menu">
+                                <button class="comment-menu-btn" onclick="pearlDashboard.toggleCommentMenu('${comment.id}')">
+                                    <i class="fas fa-ellipsis-h"></i>
+                                </button>
+                                <div class="comment-menu-dropdown" style="display: none;">
+                                    <button class="comment-menu-option" onclick="pearlDashboard.editComment('${comment.id}')">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    <button class="comment-menu-option delete" onclick="pearlDashboard.deleteComment('${comment.id}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="comment-text" id="comment-text-${comment.id}">
+                        ${this.escapeHtml(comment.content)}
+                    </div>
+                    <div class="comment-edit-form" id="comment-edit-${comment.id}" style="display: none;">
+                        <textarea class="comment-edit-textarea" placeholder="Edit your comment...">${this.escapeHtml(comment.content)}</textarea>
+                        <div class="comment-edit-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="pearlDashboard.cancelEditComment('${comment.id}')">
+                                Cancel
+                            </button>
+                            <button class="btn btn-sm btn-primary" onclick="pearlDashboard.saveEditComment('${comment.id}')">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                    <div class="comment-actions">
+                        <button class="comment-action ${isLiked ? 'liked' : ''}" 
+                                onclick="pearlDashboard.toggleCommentLike('${comment.id}')">
+                            <i class="fas fa-heart"></i>
+                            <span>${likesCount > 0 ? likesCount : 'Like'}</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+  }
+
+  initCommentActions() {
+    // Individual comment action handlers are added inline in generateCommentHTML
+    // Initialize global click handler for closing comment menus
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.comment-menu')) {
+        document.querySelectorAll('.comment-menu-dropdown').forEach(menu => {
+          menu.style.display = 'none';
+        });
+      }
+    });
+  }
+
+  // Comment Menu Functions
+  toggleCommentMenu(commentId) {
+    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    const menu = commentItem?.querySelector('.comment-menu-dropdown');
+    
+    if (!menu) return;
+    
+    // Close all other comment menus
+    document.querySelectorAll('.comment-menu-dropdown').forEach(otherMenu => {
+      if (otherMenu !== menu) {
+        otherMenu.style.display = 'none';
+      }
+    });
+    
+    // Toggle this menu
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
+
+  // Edit Comment Functions
+  editComment(commentId) {
+    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    const commentText = commentItem?.querySelector(`#comment-text-${commentId}`);
+    const editForm = commentItem?.querySelector(`#comment-edit-${commentId}`);
+    const menu = commentItem?.querySelector('.comment-menu-dropdown');
+    
+    if (!commentText || !editForm) return;
+    
+    // Hide menu
+    if (menu) menu.style.display = 'none';
+    
+    // Switch to edit mode
+    commentText.style.display = 'none';
+    editForm.style.display = 'block';
+    
+    // Focus on textarea
+    const textarea = editForm.querySelector('.comment-edit-textarea');
+    if (textarea) {
+      textarea.focus();
+      // Position cursor at end
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+    }
+  }
+
+  cancelEditComment(commentId) {
+    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    const commentText = commentItem?.querySelector(`#comment-text-${commentId}`);
+    const editForm = commentItem?.querySelector(`#comment-edit-${commentId}`);
+    
+    if (!commentText || !editForm) return;
+    
+    // Switch back to view mode
+    editForm.style.display = 'none';
+    commentText.style.display = 'block';
+  }
+
+  async saveEditComment(commentId) {
+    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    const editForm = commentItem?.querySelector(`#comment-edit-${commentId}`);
+    const textarea = editForm?.querySelector('.comment-edit-textarea');
+    const saveBtn = editForm?.querySelector('.btn-primary');
+    
+    if (!textarea || !saveBtn) {
+      console.error('Edit comment elements not found:', { commentId, textarea: !!textarea, saveBtn: !!saveBtn });
+      return;
+    }
+    
+    const newContent = textarea.value.trim();
+    
+    if (!newContent) {
+      this.showError('Comment cannot be empty');
+      return;
+    }
+    
+    console.log('Attempting to edit comment:', { commentId, newContent });
+    
+    // Show loading state
+    const originalHtml = saveBtn.innerHTML;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    saveBtn.disabled = true;
+    
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ content: newContent }),
+      });
+      
+      console.log('Edit comment response status:', response.status);
+      
+      if (!response.ok) {
+        // Try to get error details
+        const errorText = await response.text();
+        console.error('Edit comment failed - response:', { status: response.status, statusText: response.statusText, body: errorText });
+        this.showError(`Failed to update comment (${response.status}): ${response.statusText}`);
+        return;
+      }
+      
+      const data = await response.json();
+      console.log('Edit comment response data:', data);
+      
+      if (data.success) {
+        // Update comment text in UI
+        const commentText = commentItem.querySelector(`#comment-text-${commentId}`);
+        if (commentText) {
+          commentText.innerHTML = this.escapeHtml(newContent);
+        }
+        
+        // Switch back to view mode
+        this.cancelEditComment(commentId);
+      } else {
+        console.error('Edit comment API returned error:', data);
+        this.showError(data.message || 'Failed to update comment');
+      }
+    } catch (error) {
+      console.error('Edit comment network error:', error);
+      this.showError('Network error. Please try again.');
+    } finally {
+      // Reset button state
+      saveBtn.innerHTML = originalHtml;
+      saveBtn.disabled = false;
+    }
+  }
+
+  // Delete Comment Functions
+  async deleteComment(commentId) {
+    
+    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    if (!commentItem) return;
+    
+    // Add deleting animation
+    commentItem.classList.add('deleting');
+    
+    try {
+      const response = await fetch(`/api/comments/${commentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Animate comment removal
+        commentItem.style.opacity = '0';
+        commentItem.style.transform = 'translateX(-100%)';
+        
+        setTimeout(() => {
+          commentItem.remove();
+          
+          // Update comment count
+          const currentCount = parseInt(document.getElementById('modal-comments-count')?.textContent || 0);
+          const newCount = Math.max(0, currentCount - 1);
+          this.updateCommentsCount(newCount);
+        }, 300);
+      } else {
+        this.showError(data.message || 'Failed to delete comment');
+        commentItem.classList.remove('deleting');
+      }
+    } catch (error) {
+      this.showError('Network error. Please try again.');
+      commentItem.classList.remove('deleting');
+    }
+  }
+
+  updateCommentsCount(count) {
+    // Update comment count in the modal
+    const commentsCount = document.getElementById("modal-comments-count");
+    if (commentsCount) {
+      commentsCount.textContent = count;
+    }
+    
+    // Also update comment count in the main feed if we have a current post
+    if (this.currentPost) {
+      // Update comment count in the main feed post card
+      const postCard = document.querySelector(`[data-post-id="${this.currentPost}"]`);
+      if (postCard) {
+        const commentCountElement = postCard.querySelector('.post-counts span');
+        if (commentCountElement) {
+          commentCountElement.textContent = `${count} comments`;
+        }
+      }
+      
+      // Also update the displayed post in the modal if it's showing the same post
+      const modalPostCard = document.querySelector('.modal-post-card');
+      if (modalPostCard) {
+        const modalCommentCountSpan = modalPostCard.querySelector('.post-counts span');
+        if (modalCommentCountSpan) {
+          modalCommentCountSpan.textContent = `${count} comments`;
+        }
+      }
+    }
+  }
+
+  updateLoadMoreCommentsButton(pagination) {
+    const loadMoreSection = document.getElementById("load-more-comments");
+    
+    if (pagination && pagination.has_next) {
+      loadMoreSection.style.display = "block";
+    } else {
+      loadMoreSection.style.display = "none";
+    }
+  }
+
+  loadMoreComments() {
+    if (this.currentPost) {
+      this.commentsPage += 1;
+      this.loadPostComments(this.currentPost, this.commentsPage);
+    }
+  }
+
+  async submitComment() {
+    const commentInput = document.getElementById("comment-input");
+    const submitBtn = document.getElementById("submit-comment-btn");
+    const content = commentInput?.value?.trim();
+
+    if (!content) {
+      this.showError("Please write a comment");
+      return;
+    }
+
+    if (!this.currentPost) {
+      this.showError("No post selected");
+      return;
+    }
+
+    // Show loading state
+    const originalHtml = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    submitBtn.disabled = true;
+
+    try {
+      const response = await fetch(`/api/posts/${this.currentPost}/comments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Clear input
+        commentInput.value = "";
+        
+        // Reload comments to show new one (newest first)
+        this.commentsPage = 1;
+        await this.loadPostComments(this.currentPost);
+        
+        // The comment count is already updated by loadPostComments via updateCommentsCount
+        // We don't need to call updateCommentCountEverywhere again here as it would double-count
+        // The loadPostComments function handles updating both modal and main feed counts
+        
+        // No notification for comment added - silent feedback
+      } else {
+        this.showError(data.message || "Failed to add comment");
+      }
+    } catch (error) {
+      this.showError("Network error. Please try again.");
+    } finally {
+      // Reset button state
+      submitBtn.innerHTML = originalHtml;
+      submitBtn.disabled = false;
+    }
+  }
+
+  async toggleCommentLike(commentId) {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/like`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        // Update comment like display
+        this.updateCommentLikeDisplay(commentId, data.user_liked, data.likes_count);
+      } else {
+        this.showError(data.message || "Failed to like comment");
+      }
+    } catch (error) {
+      this.showError("Network error. Please try again.");
+    }
+  }
+
+  updateCommentLikeDisplay(commentId, isLiked, likesCount) {
+    const commentItem = document.querySelector(`[data-comment-id="${commentId}"]`);
+    if (!commentItem) return;
+
+    const likeBtn = commentItem.querySelector('.comment-action');
+    if (likeBtn) {
+      if (isLiked) {
+        likeBtn.classList.add('liked');
+      } else {
+        likeBtn.classList.remove('liked');
+      }
+      
+      const likeText = likeBtn.querySelector('span');
+      if (likeText) {
+        likeText.textContent = likesCount > 0 ? likesCount : 'Like';
+      }
+    }
+  }
+
+  // Update comment count in both modal and main feed
+  updateCommentCountEverywhere(postId, newCount) {
+    // Update comment count in the modal
+    const modalCommentsCount = document.getElementById("modal-comments-count");
+    if (modalCommentsCount) {
+      modalCommentsCount.textContent = newCount;
+    }
+    
+    // Update comment count in the main feed post card
+    const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+    if (postCard) {
+      const commentCountElement = postCard.querySelector('.post-counts span');
+      if (commentCountElement) {
+        commentCountElement.textContent = `${newCount} comments`;
+      }
+    }
+    
+    // Also update the displayed post in the modal if it's showing the same post
+    const modalPostCard = document.querySelector('.modal-post-card');
+    if (modalPostCard) {
+      const modalCommentCountSpan = modalPostCard.querySelector('.post-counts span');
+      if (modalCommentCountSpan) {
+        modalCommentCountSpan.textContent = `${newCount} comments`;
+      }
+    }
+  }
+  
+  // Initialize scroll-based loading for comments
+  initCommentsScrollLoading() {
+    const commentsList = document.getElementById("comments-list");
+    if (!commentsList) return;
+    
+    // Remove any existing scroll listener
+    if (this.commentsScrollHandler) {
+      commentsList.removeEventListener('scroll', this.commentsScrollHandler);
+    }
+    
+    // Create new scroll handler
+    this.commentsScrollHandler = () => {
+      const { scrollTop, scrollHeight, clientHeight } = commentsList;
+      
+      // Check if user has scrolled near the bottom (within 100px)
+      if (scrollTop + clientHeight >= scrollHeight - 100) {
+        // Check if there are more comments to load
+        if (this.commentsPagination && this.commentsPagination.has_next && !this.loadingMoreComments) {
+          this.loadNextCommentsPage();
+        }
+      }
+    };
+    
+    // Add scroll event listener
+    commentsList.addEventListener('scroll', this.commentsScrollHandler);
+  }
+  
+  async loadNextCommentsPage() {
+    if (this.loadingMoreComments || !this.currentPost) return;
+    
+    this.loadingMoreComments = true;
+    this.commentsPage += 1;
+    
+    try {
+      // Add loading indicator at the bottom of comments
+      const commentsList = document.getElementById("comments-list");
+      const loadingHTML = `
+        <div class="loading-more-comments" style="text-align: center; padding: 16px; color: #666;">
+          <i class="fas fa-spinner fa-spin"></i>
+          <span style="margin-left: 8px;">Loading more comments...</span>
+        </div>
+      `;
+      commentsList.insertAdjacentHTML('beforeend', loadingHTML);
+      
+      // Load next page of comments
+      await this.loadPostComments(this.currentPost, this.commentsPage, true);
+      
+    } catch (error) {
+      console.error('Error loading more comments:', error);
+    } finally {
+      // Remove loading indicator
+      const loadingIndicator = document.querySelector('.loading-more-comments');
+      if (loadingIndicator) {
+        loadingIndicator.remove();
+      }
+      
+      this.loadingMoreComments = false;
+    }
+  }
+
+  // Post Menu Functions
+  togglePostMenu(postId) {
+    const menu = document.getElementById(`post-menu-${postId}`);
+    if (!menu) return;
+    
+    // Close all other post menus
+    document.querySelectorAll('.post-menu-dropdown').forEach(otherMenu => {
+      if (otherMenu !== menu) {
+        otherMenu.style.display = 'none';
+      }
+    });
+    
+    // Toggle this menu
+    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+  }
+
+  // Feed Post Functions (for posts in the main feed)
+  async editPost(postId) {
+    // Close menu first
+    document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+      menu.style.display = 'none';
+    });
+    
+    try {
+      // Get current post data
+      const response = await fetch(`/api/posts`);
+      const data = await response.json();
+      
+      if (data.success) {
+        const post = data.posts.find(p => p.id == postId);
+        if (post) {
+          this.openEditPostModal(post);
+        } else {
+          this.showError('Post not found');
+        }
+      } else {
+        this.showError('Failed to load post data');
+      }
+    } catch (error) {
+      console.error('Edit post error:', error);
+      this.showError('Network error. Please try again.');
+    }
+  }
+  
+  openEditPostModal(post) {
+    const modal = document.getElementById("create-post-modal");
+    if (!modal) return;
+    
+    // Set modal to edit mode
+    this.currentEditingPost = post;
+    
+    // Update modal title
+    const modalTitle = modal.querySelector('.modal-header h3');
+    if (modalTitle) {
+      modalTitle.innerHTML = '<i class="fas fa-edit"></i> Edit Post';
+    }
+    
+    // Update submit button text
+    const submitBtn = document.getElementById('submit-post-btn');
+    if (submitBtn) {
+      submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Post';
+    }
+    
+    // Fill form with existing data
+    const contentTextarea = document.getElementById('post-content');
+    if (contentTextarea) {
+      contentTextarea.value = post.content || '';
+      this.updatePostCharCount();
+    }
+    
+    // Set feeling if exists
+    if (post.feeling) {
+      const feelingDisplay = document.getElementById('feeling-display');
+      const feelingText = document.getElementById('feeling-text');
+      const selectedFeelingInput = document.getElementById('selected-feeling');
+      
+      if (feelingDisplay && feelingText && selectedFeelingInput) {
+        feelingText.textContent = post.feeling;
+        selectedFeelingInput.value = post.feeling;
+        feelingDisplay.style.display = 'flex';
+      }
+    }
+    
+    // Set location if exists
+    if (post.location) {
+      const locationDisplay = document.getElementById('location-display');
+      const locationText = document.getElementById('location-text');
+      const selectedLocationInput = document.getElementById('selected-location');
+      
+      if (locationDisplay && locationText && selectedLocationInput) {
+        locationText.textContent = post.location;
+        selectedLocationInput.value = post.location;
+        locationDisplay.style.display = 'flex';
+      }
+    }
+    
+    // Show existing image if available
+    if (post.image_url) {
+      const imagePreview = document.getElementById('image-preview');
+      const imagePreviewSection = document.getElementById('image-preview-section');
+      
+      if (imagePreview && imagePreviewSection) {
+        imagePreview.src = post.image_url;
+        imagePreviewSection.style.display = 'block';
+        
+        // Remove any existing image note first
+        const existingNote = document.getElementById('existing-image-note');
+        if (existingNote) {
+          existingNote.remove();
+        }
+        
+        // Add a note that this is the existing image
+        const existingImageNote = document.createElement('div');
+        existingImageNote.id = 'existing-image-note';
+        existingImageNote.innerHTML = '<small style="color: #666; font-style: italic;">Current image (select new image to replace)</small>';
+        imagePreviewSection.appendChild(existingImageNote);
+      }
+    }
+    
+    // Show modal
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on textarea
+    setTimeout(() => {
+      if (contentTextarea) contentTextarea.focus();
+    }, 300);
+  }
+
+  async deletePost(postId) {
+    // Close menu first
+    document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+      menu.style.display = 'none';
+    });
+    
+    // Confirm deletion with SweetAlert2
+    const result = await Swal.fire({
+      title: 'Delete Post?',
+      text: 'This action cannot be undone and will delete all comments and reactions.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="fas fa-trash"></i> Delete',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      focusCancel: true
+    });
+    
+    if (!result.isConfirmed) return;
+    
+    const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+    
+    try {
+      // Add deleting animation to the post card
+      if (postCard) {
+        postCard.classList.add('deleting');
+        postCard.style.opacity = '0.5';
+        postCard.style.pointerEvents = 'none';
+      }
+      
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Animate post removal from feed
+        if (postCard) {
+          postCard.style.opacity = '0';
+          postCard.style.transform = 'scale(0.9)';
+          setTimeout(() => {
+            postCard.remove();
+          }, 300);
+        }
+        
+        this.showNotification("Post deleted successfully!", "success");
+        
+        // Refresh feed after a short delay to ensure consistency
+        setTimeout(() => {
+          if (this.currentTab === "feed") {
+            this.loadFeedContent();
+          }
+        }, 500);
+      } else {
+        this.showError(data.message || 'Failed to delete post');
+        // Reset post card state on failure
+        if (postCard) {
+          postCard.classList.remove('deleting');
+          postCard.style.opacity = '1';
+          postCard.style.pointerEvents = 'auto';
+        }
+      }
+    } catch (error) {
+      console.error('Delete post error:', error);
+      this.showError('Network error. Please try again.');
+      // Reset post card state on error
+      if (postCard) {
+        postCard.classList.remove('deleting');
+        postCard.style.opacity = '1';
+        postCard.style.pointerEvents = 'auto';
+      }
+    }
+  }
+
+  // Modal Post Functions (for posts in the detail modal)
+  editPostInModal(postId) {
+    // TODO: Implement post editing in modal
+    this.showNotification("Edit post functionality coming soon!", "info");
+    
+    // Close menu
+    document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+      menu.style.display = 'none';
+    });
+  }
+
+  async deletePostFromModal(postId) {
+    // Close menu first
+    document.querySelectorAll('.post-menu-dropdown').forEach(menu => {
+      menu.style.display = 'none';
+    });
+    
+    // Confirm deletion with SweetAlert2
+    const result = await Swal.fire({
+      title: 'Delete Post?',
+      text: 'This action cannot be undone and will delete all comments and reactions.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: '<i class="fas fa-trash"></i> Delete',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+      focusCancel: true
+    });
+    
+    if (!result.isConfirmed) return;
+    
+    try {
+      // Show loading state
+      const modalContent = document.getElementById("modal-post-content");
+      if (modalContent) {
+        modalContent.innerHTML = `
+          <div class="loading-posts">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Deleting post...</p>
+          </div>
+        `;
+      }
+      
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Close modal
+        this.closePostDetailModal();
+        
+        // Remove post from main feed if it exists
+        const postCard = document.querySelector(`[data-post-id="${postId}"]`);
+        if (postCard) {
+          postCard.style.opacity = '0';
+          postCard.style.transform = 'scale(0.9)';
+          setTimeout(() => {
+            postCard.remove();
+          }, 300);
+        }
+        
+        this.showNotification("Post deleted successfully!", "success");
+        
+        // Refresh feed to ensure consistency
+        setTimeout(() => {
+          if (this.currentTab === "feed") {
+            this.loadFeedContent();
+          }
+        }, 500);
+      } else {
+        this.showError(data.message || 'Failed to delete post');
+        // Reload the post detail if deletion failed
+        await this.loadPostDetail(postId);
+      }
+    } catch (error) {
+      console.error('Delete post error:', error);
+      this.showError('Network error. Please try again.');
+      // Reload the post detail if deletion failed
+      await this.loadPostDetail(postId);
+    }
+  }
+
+  // Utility function for HTML escaping with line break preservation
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    // Preserve line breaks by converting newlines to <br> tags
+    return div.innerHTML.replace(/\n/g, '<br>');
+  }
+
+  // Get the appropriate emoji for a feeling
+  getFeelingEmoji(feeling) {
+    const feelingEmojis = {
+      'happy': '😊',
+      'excited': '😄',
+      'grateful': '🖤',
+      'blessed': '🙏',
+      'motivated': '🔥',
+      'proud': '🥇',
+      'relaxed': '🍃',
+      'adventurous': '⛰️',
+      'creative': '🎨',
+      'nostalgic': '🕐',
+      'thoughtful': '🧠',
+      'chill': '☕'
+    };
+    
+    return feelingEmojis[feeling.toLowerCase()] || '😊'; // Default to happy emoji
+  }
 }
 
 // Notification styles (injected dynamically)
@@ -2532,6 +4889,243 @@ const notificationStyles = `
         border-radius: 50%;
         border: 2px solid #2c3e50;
         background: #22c55e;
+    }
+
+    /* Comment menu styles */
+    .comment-menu {
+        position: relative;
+        margin-left: auto;
+    }
+
+    .comment-menu-btn {
+        background: none;
+        border: none;
+        color: #65676b;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        transition: background 0.2s ease;
+    }
+
+    .comment-menu-btn:hover {
+        background: #f0f2f5;
+        color: #1c1e21;
+    }
+
+    .comment-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #e4e6ea;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        min-width: 120px;
+        overflow: hidden;
+    }
+
+    .comment-menu-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        padding: 8px 12px;
+        background: none;
+        border: none;
+        color: #1c1e21;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background 0.2s ease;
+        text-align: left;
+    }
+
+    .comment-menu-option:hover {
+        background: #f0f2f5;
+    }
+
+    .comment-menu-option.delete {
+        color: #ef4444;
+    }
+
+    .comment-menu-option.delete:hover {
+        background: #fef2f2;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+    }
+
+    .comment-edit-form {
+        margin-top: 8px;
+    }
+
+    .comment-edit-textarea {
+        width: 100%;
+        min-height: 60px;
+        padding: 8px 12px;
+        border: 1px solid #e4e6ea;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.4;
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.2s ease;
+    }
+
+    .comment-edit-textarea:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .comment-edit-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 12px;
+        border-radius: 6px;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5a6fd8;
+    }
+
+    .btn-primary:disabled {
+        background: #a0aec0;
+        cursor: not-allowed;
+    }
+
+    /* Comment deletion animation */
+    .comment-item.deleting {
+        opacity: 0.5;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .comment-item {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Post menu styles */
+    .post-menu {
+        position: relative;
+        margin-left: auto;
+    }
+
+    .post-menu-btn {
+        background: none;
+        border: none;
+        color: #65676b;
+        cursor: pointer;
+        padding: 6px 8px;
+        border-radius: 50%;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .post-menu-btn:hover {
+        background: #f0f2f5;
+        color: #1c1e21;
+    }
+
+    .post-menu-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border: 1px solid #e4e6ea;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        min-width: 140px;
+        overflow: hidden;
+        margin-top: 4px;
+    }
+
+    .post-menu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        padding: 10px 16px;
+        background: none;
+        border: none;
+        color: #1c1e21;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background 0.2s ease;
+        text-align: left;
+        font-weight: 500;
+    }
+
+    .post-menu-item:hover {
+        background: #f0f2f5;
+    }
+
+    .post-menu-item.delete-item {
+        color: #ef4444;
+    }
+
+    .post-menu-item.delete-item:hover {
+        background: #fef2f2;
+    }
+
+    .post-menu-item i {
+        width: 16px;
+        font-size: 14px;
+    }
+
+    /* Post deletion animation */
+    .post-card.deleting {
+        opacity: 0.5;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .post-card {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    /* Ensure proper post header layout */
+    .post-header {
+        position: relative;
+    }
+
+    .post-author-info {
+        flex: 1;
     }
 `;
 

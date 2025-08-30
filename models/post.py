@@ -28,11 +28,29 @@ class Post(db.Model):
     
     def to_dict(self):
         """Convert post object to dictionary"""
+        # Get images for this post, ordered by image_order
+        images = []
+        try:
+            # Try to access the images relationship
+            if hasattr(self, 'images') and self.images is not None:
+                images = [img.to_dict() for img in sorted(self.images, key=lambda x: x.image_order)]
+            else:
+                # Fallback: query PostImage directly if relationship not loaded
+                from . import db
+                from .post_image import PostImage
+                post_images = PostImage.query.filter_by(post_id=self.id).order_by(PostImage.image_order).all()
+                images = [img.to_dict() for img in post_images]
+        except Exception as e:
+            # If there's any issue, return empty images list
+            print(f"Error loading images for post {self.id}: {e}")
+            images = []
+        
         return {
             'id': self.id,
             'user_id': self.user_id,
             'content': self.content,
-            'image_url': self.image_url,
+            'image_url': self.image_url,  # Keep for backward compatibility
+            'images': images,  # New multiple images support
             'feeling': self.feeling,
             'location': self.location,
             'likes_count': self.likes_count,

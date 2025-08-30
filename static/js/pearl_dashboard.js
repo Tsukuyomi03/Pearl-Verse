@@ -5,7 +5,7 @@
 
 class PearlDashboard {
   constructor() {
-    this.currentTab = "feed";
+    this.currentTab = this.getStoredTab() || "feed";
     this.userData = null;
     this.init();
   }
@@ -23,8 +23,11 @@ class PearlDashboard {
     // Initialize modals
     this.initModals();
 
-    // Load initial content
-    this.loadTabContent("feed");
+    // Load initial content based on stored or default tab
+    this.loadTabContent(this.currentTab);
+    
+    // Set the active tab based on stored state
+    this.setActiveTab(this.currentTab);
   }
 
   // Tab Management
@@ -56,6 +59,47 @@ class PearlDashboard {
     // Load tab content
     this.loadTabContent(tabId);
     this.currentTab = tabId;
+    
+    // Save tab state to localStorage
+    this.saveTabState(tabId);
+  }
+
+  // Tab State Persistence
+  getStoredTab() {
+    try {
+      return localStorage.getItem('pearlDashboard_activeTab');
+    } catch (error) {
+      console.warn('Failed to read tab state from localStorage:', error);
+      return null;
+    }
+  }
+
+  saveTabState(tabId) {
+    try {
+      localStorage.setItem('pearlDashboard_activeTab', tabId);
+    } catch (error) {
+      console.warn('Failed to save tab state to localStorage:', error);
+    }
+  }
+
+  setActiveTab(tabId) {
+    // Update active tab button
+    document.querySelectorAll(".tab-btn").forEach((btn) => {
+      btn.classList.remove("active");
+    });
+    const activeBtn = document.querySelector(`[data-tab="${tabId}"]`);
+    if (activeBtn) {
+      activeBtn.classList.add("active");
+    }
+
+    // Update active tab pane
+    document.querySelectorAll(".tab-pane").forEach((pane) => {
+      pane.classList.remove("active");
+    });
+    const activePane = document.getElementById(`${tabId}-tab`);
+    if (activePane) {
+      activePane.classList.add("active");
+    }
   }
 
   // Load tab-specific content
@@ -861,16 +905,33 @@ class PearlDashboard {
 
   // Info Content
   async loadInfoContent() {
-    if (!this.userData) return;
+    console.log('Loading info content, userData:', !!this.userData);
+    
+    // If no user data, wait a bit and try again
+    if (!this.userData) {
+      console.log('No user data available, attempting to reload...');
+      // Try to reload user data
+      await this.loadUserData();
+      
+      // If still no user data, show loading state
+      if (!this.userData) {
+        console.warn('Still no user data available for info content');
+        // Don't return early - still initialize bio editing as DOM elements exist
+      }
+    }
 
-    // Load user bio
+    // Load user bio (works even without userData - will show placeholder)
     await this.loadUserBio();
     
     // Load showcase cards
     await this.loadShowcaseCards();
     
-    // Initialize bio editing
-    this.initBioEditing();
+    // Always initialize bio editing when info tab is accessed
+    // Use a longer delay to ensure DOM elements are fully rendered
+    setTimeout(() => {
+      console.log('Initializing bio editing...');
+      this.initBioEditing();
+    }, 200);
     
     // Initialize showcase management
     this.initShowcaseManagement();
@@ -958,7 +1019,20 @@ class PearlDashboard {
     const bioTextarea = document.getElementById("bio-textarea");
     const charCount = document.getElementById("bio-char-count");
 
-    if (!editBtn) return;
+    console.log('Bio editing elements found:', {
+      editBtn: !!editBtn,
+      cancelBtn: !!cancelBtn,
+      saveBtn: !!saveBtn,
+      bioDisplay: !!bioDisplay,
+      bioEdit: !!bioEdit,
+      bioTextarea: !!bioTextarea,
+      charCount: !!charCount
+    });
+
+    if (!editBtn) {
+      console.error('Edit bio button not found!');
+      return;
+    }
 
     editBtn.addEventListener("click", () => {
       // Enter edit mode

@@ -382,40 +382,6 @@ def api_current_user():
             'message': 'An error occurred while fetching user data.'
         }), 500
 
-@app.route('/api/update-bio', methods=['POST'])
-def api_update_bio():
-    """API endpoint to update user bio"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in'):
-            return jsonify({'success': False, 'message': 'Not logged in'}), 401
-        
-        # Get JSON data from request
-        data = request.get_json()
-        if not data:
-            return jsonify({'success': False, 'message': 'No data provided'}), 400
-        
-        bio = data.get('bio', '').strip()
-        
-        # Get user from database
-        user = db.session.get(User, session.get('user_id'))
-        if not user:
-            return jsonify({'success': False, 'message': 'User not found'}), 404
-        
-        # Update bio
-        user.bio = bio
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Bio updated successfully'
-        }), 200
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while updating bio.'
-        }), 500
 
 @app.route('/api/logout', methods=['POST'])
 def api_logout():

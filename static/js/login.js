@@ -628,6 +628,13 @@ $(document).ready(function() {
     `);
 });
 
+// ===== SERVICE WORKER REGISTRATION =====
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/static/sw.js').catch(err => {
+        console.log('Service Worker registration failed:', err);
+    });
+}
+
 // ===== JQUERY EXTENSIONS =====
 $.extend($.fn, {
     shake: function(duration = 500) {
@@ -651,9 +658,3 @@ $.extend($.fn, {
     }
 });
 
-// ===== SERVICE WORKER REGISTRATION =====
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(err => {
-        console.log('Service Worker registration failed:', err);
-    });
-}

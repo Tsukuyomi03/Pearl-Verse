@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from config import get_config
-from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, Post, PostReaction, SocialMediaLink, Comment, CommentLike, PostImage
+from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim
 import os
 import re
 import string
@@ -168,11 +168,19 @@ def validate_referral_code(referral_code):
 @app.route('/')
 def index():
     """Main landing page"""
+    # If user is already logged in, redirect to dashboard
+    if session.get('logged_in'):
+        return redirect('/pearl_dashboard')
+    
     return render_template('index.html')
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     """Login route"""
+    # If user is already logged in, redirect to dashboard
+    if request.method == 'GET' and session.get('logged_in'):
+        return redirect('/pearl_dashboard')
+    
     if request.method == 'POST':
         try:
             # Get form data
@@ -237,6 +245,10 @@ def login():
 @app.route('/register', methods=['GET'])
 def register():
     """Register route - only GET for displaying the form"""
+    # If user is already logged in, redirect to dashboard
+    if session.get('logged_in'):
+        return redirect('/pearl_dashboard')
+    
     return render_template('register.html')
 
 @app.route('/dashboard')
@@ -371,6 +383,10 @@ def api_current_user():
                 'bio': getattr(user, 'bio', None),
                 'location': getattr(user, 'location', None),
                 'website': getattr(user, 'website', None),
+                'date_of_birth': user.date_of_birth.isoformat() if user.date_of_birth else None,
+                'birth_month': user.birth_month,
+                'birth_day': user.birth_day,
+                'birth_year': user.birth_year,
                 'created_at': user.created_at.isoformat() if user.created_at else None
             }
         }
@@ -414,7 +430,7 @@ def api_register():
             return jsonify({'success': False, 'message': 'No data provided'}), 400
         
         # Extract and validate required fields
-        required_fields = ['firstName', 'lastName', 'username', 'email', 'password', 'dateOfBirth']
+        required_fields = ['firstName', 'lastName', 'username', 'email', 'password']
         for field in required_fields:
             field_value = data.get(field)
             if not field_value or (isinstance(field_value, str) and not field_value.strip()):
@@ -429,7 +445,55 @@ def api_register():
         username = (data.get('username') or '').strip().lower()
         email = (data.get('email') or '').strip().lower()
         password = data.get('password') or ''
+        
+        # Handle date of birth - support both combined and separate fields
         date_of_birth_str = (data.get('dateOfBirth') or '').strip()
+        birth_year = data.get('birthYear')
+        birth_month = data.get('birthMonth') 
+        birth_day = data.get('birthDay')
+        
+        # If separate fields are provided, combine them
+        if not date_of_birth_str and birth_year and birth_month and birth_day:
+            try:
+                # Validate the separate fields
+                year = int(birth_year)
+                month = int(birth_month)
+                day = int(birth_day)
+                
+                # Basic range validation
+                if not (1900 <= year <= datetime.now().year):
+                    return jsonify({
+                        'success': False,
+                        'message': 'Please enter a valid birth year'
+                    }), 400
+                
+                if not (1 <= month <= 12):
+                    return jsonify({
+                        'success': False,
+                        'message': 'Please enter a valid birth month'
+                    }), 400
+                
+                if not (1 <= day <= 31):
+                    return jsonify({
+                        'success': False,
+                        'message': 'Please enter a valid birth day'
+                    }), 400
+                
+                # Format as YYYY-MM-DD
+                date_of_birth_str = f"{year}-{month:02d}-{day:02d}"
+                
+            except (ValueError, TypeError):
+                return jsonify({
+                    'success': False,
+                    'message': 'Please enter valid numeric values for birth date'
+                }), 400
+        
+        # Validate that we have a date of birth in some form
+        if not date_of_birth_str:
+            return jsonify({
+                'success': False,
+                'message': 'Date of birth is required'
+            }), 400
         
         # Validate email format
         if not validate_email(email):
@@ -456,6 +520,14 @@ def api_register():
         # Validate and parse date of birth
         try:
             date_of_birth = datetime.strptime(date_of_birth_str, '%Y-%m-%d').date()
+            
+            # Additional validation to ensure the date is actually valid
+            # (datetime.strptime might accept some invalid dates)
+            if (date_of_birth.year != int(date_of_birth_str.split('-')[0]) or 
+                date_of_birth.month != int(date_of_birth_str.split('-')[1]) or 
+                date_of_birth.day != int(date_of_birth_str.split('-')[2])):
+                raise ValueError("Invalid date components")
+            
             # Check if user is at least 13 years old
             today = date.today()
             age = today.year - date_of_birth.year - ((today.month, today.day) < (date_of_birth.month, date_of_birth.day))
@@ -464,10 +536,18 @@ def api_register():
                     'success': False,
                     'message': 'You must be at least 13 years old to register'
                 }), 400
+                
+            # Check if date is not in the future
+            if date_of_birth > today:
+                return jsonify({
+                    'success': False,
+                    'message': 'Birth date cannot be in the future'
+                }), 400
+                
         except ValueError:
             return jsonify({
                 'success': False,
-                'message': 'Please enter a valid date of birth'
+                'message': 'Please enter a valid date of birth (YYYY-MM-DD format)'
             }), 400
         
         # Check if username already exists
@@ -515,6 +595,9 @@ def api_register():
             first_name=first_name,
             last_name=last_name,
             date_of_birth=date_of_birth,
+            birth_year=int(birth_year) if birth_year else None,
+            birth_month=int(birth_month) if birth_month else None,
+            birth_day=int(birth_day) if birth_day else None,
             referral_code=referral_code,
             wallet_address=wallet_address,
             pearl=starting_pearls,
@@ -596,9 +679,13 @@ def api_register():
         
     except Exception as e:
         db.session.rollback()
+        print(f"Registration error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
-            'message': 'An error occurred during registration. Please try again.'
+            'message': 'An error occurred during registration. Please try again.',
+            'error_details': str(e) if app.config.get('DEBUG') else None
         }), 500
 
 @app.route('/api/preview-card')
@@ -774,6 +861,17 @@ def get_daily_claim_status():
             7: 5000
         }
         
+        # Define EXP reward amounts for each day (1-7)
+        exp_amounts = {
+            1: 100,
+            2: 100,
+            3: 100,
+            4: 100,
+            5: 100,
+            6: 100,
+            7: 500  # Bonus EXP on day 7
+        }
+        
         # Create 7-day status array based on current streak position
         claim_status = []
         for day in range(1, 8):
@@ -802,6 +900,7 @@ def get_daily_claim_status():
                 'date': today.isoformat(),  # Use today's date for reference
                 'claimed': day_claimed,
                 'reward': reward_amounts[day],
+                'exp_reward': exp_amounts[day],
                 'is_today': is_current_day,
                 'can_claim': can_claim
             })
@@ -892,7 +991,19 @@ def claim_daily_reward():
             7: 5000
         }
         
+        # Define EXP reward amounts for each day (1-7)
+        exp_amounts = {
+            1: 100,
+            2: 100,
+            3: 100,
+            4: 100,
+            5: 100,
+            6: 100,
+            7: 500  # Bonus EXP on day 7
+        }
+        
         pearl_reward = reward_amounts[current_streak]
+        exp_reward = exp_amounts[current_streak]
         
         # Store original balance for verification
         original_balance = user.pearl
@@ -903,20 +1014,32 @@ def claim_daily_reward():
             claim_date=today,
             day_number=current_streak,
             pearl_amount=pearl_reward,
+            exp_amount=exp_reward,
             streak_count=current_streak
         )
         
-        # Add pearls to user's account
-        user.pearl += pearl_reward
-        expected_balance = original_balance + pearl_reward
+        # Store original EXP for verification
+        original_exp = user.exp
         
-        # Verify balance update
+        # Add pearls and EXP to user's account
+        user.pearl += pearl_reward
+        user.exp += exp_reward
+        expected_balance = original_balance + pearl_reward
+        expected_exp = original_exp + exp_reward
+        
+        # Verify balance and EXP updates
         if user.pearl != expected_balance:
             db.session.rollback()
-            
             return jsonify({
                 'success': False,
                 'message': 'Balance synchronization error. Please try again.'
+            }), 500
+            
+        if user.exp != expected_exp:
+            db.session.rollback()
+            return jsonify({
+                'success': False,
+                'message': 'EXP synchronization error. Please try again.'
             }), 500
         
         # Create transaction record for the daily claim
@@ -924,7 +1047,7 @@ def claim_daily_reward():
             user_id=user_id,
             transaction_type='daily_claim',
             amount=pearl_reward,
-            description=f'Daily claim reward - Day {current_streak} ({pearl_reward} pearls)',
+            description=f'Daily claim reward - Day {current_streak} ({pearl_reward} pearls, {exp_reward} EXP)',
             reference_id=f'CLAIM-{today.strftime("%Y%m%d")}-{user_id}',
             created_at=datetime.now()
         )
@@ -940,23 +1063,27 @@ def claim_daily_reward():
         db.session.commit()
         
         # Log successful transaction
-        print(f"Daily claim successful: User {user_id} claimed {pearl_reward} pearls, new balance: {user.pearl}")
+        print(f"Daily claim successful: User {user_id} claimed {pearl_reward} pearls and {exp_reward} EXP, new balance: {user.pearl}, new EXP: {user.exp}")
         
         # Check if this completes a 7-day cycle
         cycle_completed = current_streak == 7
         bonus_message = ""
         if cycle_completed:
-            bonus_message = " Congratulations! You've completed a 7-day cycle!"
+            bonus_message = " Congratulations! You've completed a 7-day cycle and earned bonus EXP!"
         
         return jsonify({
             'success': True,
-            'message': f'Daily reward claimed! You earned {pearl_reward} pearls.{bonus_message}',
+            'message': f'Daily reward claimed! You earned {pearl_reward} pearls and {exp_reward} EXP.{bonus_message}',
             'claimed_amount': pearl_reward,
+            'exp_claimed_amount': exp_reward,
             'original_balance': original_balance,
+            'original_exp': original_exp,
             'new_pearl_balance': user.pearl,
+            'new_exp_balance': user.exp,
             'current_streak': current_streak,
             'cycle_completed': cycle_completed,
             'next_reward': reward_amounts[1] if cycle_completed else reward_amounts[current_streak + 1] if current_streak < 7 else reward_amounts[1],
+            'next_exp_reward': exp_amounts[1] if cycle_completed else exp_amounts[current_streak + 1] if current_streak < 7 else exp_amounts[1],
             'claim_details': new_claim.to_dict()
         }), 200
         
@@ -1052,7 +1179,7 @@ def get_transaction_history():
         query = Transaction.query.filter(Transaction.user_id == user_id)
         
         # Apply transaction type filter if provided
-        if transaction_type and transaction_type in ['send', 'receive', 'bought', 'referral', 'daily_claim']:
+        if transaction_type and transaction_type in ['send', 'receive', 'bought', 'referral', 'daily_claim', 'battle_pass']:
             if transaction_type == 'send':
                 query = query.filter(Transaction.transaction_type == 'transfer_sent')
             elif transaction_type == 'receive':
@@ -1063,6 +1190,8 @@ def get_transaction_history():
                 query = query.filter(Transaction.transaction_type == 'referral_bonus')
             elif transaction_type == 'daily_claim':
                 query = query.filter(Transaction.transaction_type == 'daily_claim')
+            elif transaction_type == 'battle_pass':
+                query = query.filter(Transaction.transaction_type == 'battle_pass_reward')
         
         # Order by most recent first
         query = query.order_by(Transaction.created_at.desc())
@@ -1269,25 +1398,16 @@ def get_profile_statistics():
         # Count following (users this user follows)
         following_count = Follow.query.filter_by(follower_id=user_id).count()
         
-        # Count posts by this user
-        posts_count = Post.query.filter_by(user_id=user_id).count()
-        
         # Get recent followers for display
         recent_followers = Follow.query.filter_by(
             following_id=user_id
         ).order_by(Follow.created_at.desc()).limit(5).all()
-        
-        # Get recent posts for display
-        recent_posts = Post.query.filter_by(
-            user_id=user_id
-        ).order_by(Post.created_at.desc()).limit(3).all()
         
         return jsonify({
             'success': True,
             'user_id': user_id,
             'followers_count': followers_count,
             'following_count': following_count,
-            'posts_count': posts_count,
             'profile_info': {
                 'username': user.username,
                 'first_name': user.first_name,
@@ -1302,7 +1422,6 @@ def get_profile_statistics():
                 'follower_name': f"{follow.follower.first_name} {follow.follower.last_name}" if follow.follower else 'Unknown',
                 'followed_at': follow.created_at.isoformat() if follow.created_at else None
             } for follow in recent_followers],
-            'recent_posts': [post.to_dict() for post in recent_posts]
         }), 200
         
     except Exception as e:
@@ -1346,6 +1465,12 @@ def update_personal_info():
         last_name = data.get('last_name', '').strip().upper()   # Convert to uppercase
         email = data.get('email', '').strip().lower()
         
+        # Birthday fields
+        birth_month = data.get('birth_month')
+        birth_day = data.get('birth_day')
+        birth_year = data.get('birth_year')
+        location = data.get('location', '').strip() if data.get('location') else None
+        
         # Validate required fields
         if not first_name:
             return jsonify({
@@ -1381,10 +1506,84 @@ def update_personal_info():
                     'message': 'This email address is already in use by another account'
                 }), 400
         
+        # Validate birthday fields if provided
+        if birth_month is not None or birth_day is not None or birth_year is not None:
+            # Convert to integers if they're strings
+            try:
+                if birth_month is not None:
+                    birth_month = int(birth_month)
+                if birth_day is not None:
+                    birth_day = int(birth_day)
+                if birth_year is not None:
+                    birth_year = int(birth_year)
+            except (ValueError, TypeError):
+                return jsonify({
+                    'success': False,
+                    'message': 'Invalid birthday values. Please enter valid numbers.'
+                }), 400
+            
+            # Validate ranges
+            if birth_month is not None and (birth_month < 1 or birth_month > 12):
+                return jsonify({
+                    'success': False,
+                    'message': 'Month must be between 1 and 12'
+                }), 400
+            
+            if birth_day is not None and (birth_day < 1 or birth_day > 31):
+                return jsonify({
+                    'success': False,
+                    'message': 'Day must be between 1 and 31'
+                }), 400
+            
+            if birth_year is not None:
+                current_year = date.today().year
+                if birth_year < 1900 or birth_year > current_year:
+                    return jsonify({
+                        'success': False,
+                        'message': f'Year must be between 1900 and {current_year}'
+                    }), 400
+                
+                # Calculate age if we have all components
+                if birth_month is not None and birth_day is not None:
+                    try:
+                        birth_date = date(birth_year, birth_month, birth_day)
+                        today = date.today()
+                        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+                        
+                        if age < 13:
+                            return jsonify({
+                                'success': False,
+                                'message': 'You must be at least 13 years old'
+                            }), 400
+                        
+                        if age > 120:
+                            return jsonify({
+                                'success': False,
+                                'message': 'Please enter a valid birth year'
+                            }), 400
+                            
+                    except ValueError:
+                        return jsonify({
+                            'success': False,
+                            'message': 'Invalid date combination. Please check your birthday.'
+                        }), 400
+        
         # Update user information
         user.first_name = first_name
         user.last_name = last_name
         user.email = email
+        
+        # Update birthday fields if provided
+        if birth_month is not None:
+            user.birth_month = birth_month
+        if birth_day is not None:
+            user.birth_day = birth_day
+        if birth_year is not None:
+            user.birth_year = birth_year
+        
+        # Update location if provided
+        if location is not None:
+            user.location = location
         
         # Commit changes
         db.session.commit()
@@ -1807,7 +2006,7 @@ def save_social_links():
             'github': r'^https?://(www\.)?github\.com/.+$',
             'youtube': r'^https?://(www\.)?(youtube\.com|youtu\.be)/.+$',
             'tiktok': r'^https?://(www\.)?tiktok\.com/.+$',
-            'discord': r'^.+#\d{4}$',  # Discord username format
+            'discord': r'^(https?://)?(discord\.gg/[A-Za-z0-9]+|.+#\d{4}|@?[A-Za-z0-9_.]+)$',  # Discord server invite, old username#1234, or new username
             'twitch': r'^https?://(www\.)?twitch\.tv/.+$',
             'snapchat': r'^.+$',  # Snapchat username
             'whatsapp': r'^\+?[1-9]\d{1,14}$',  # WhatsApp phone number
@@ -1815,7 +2014,7 @@ def save_social_links():
             'reddit': r'^https?://(www\.)?reddit\.com/.+$',
             'pinterest': r'^https?://(www\.)?pinterest\.com/.+$',
             'steam': r'^https?://steamcommunity\.com/.+$',
-            'website': r'^https?://.+$'  # Generic URL pattern
+            'facebook': r'^https?://(www\.)?facebook\.com/.+$'  # Facebook URL pattern
         }
         
         saved_links = []
@@ -1844,9 +2043,9 @@ def save_social_links():
                     
                     # Special handling for platforms that don't use URLs
                     if platform in ['discord', 'snapchat', 'telegram']:
-                        # For Discord, validate username format
+                        # For Discord, validate server invite link or username format
                         if platform == 'discord' and not re.match(platform_patterns['discord'], link_value):
-                            errors.append(f'{platform.title()}: Please enter a valid Discord username (e.g., username#1234)')
+                            errors.append(f'{platform.title()}: Please enter a valid Discord server invite link (e.g., https://discord.gg/yourserver) or username (e.g., username#1234)')
                             continue
                     elif platform == 'whatsapp':
                         # For WhatsApp, validate phone number format
@@ -2023,489 +2222,6 @@ def get_social_links():
             'message': 'An error occurred while saving your social media links'
         }), 500
 
-# Posts API Routes
-
-# Helper: Valid reaction types
-VALID_REACTIONS = {'like', 'love', 'haha', 'wow', 'sad', 'angry'}
-
-@app.route('/api/posts', methods=['POST'])
-def create_post():
-    """Create a new post for the logged-in user"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to create a post'
-            }), 401
-        
-        user_id = session['user_id']
-        user = db.session.get(User, user_id)
-        
-        if not user:
-            return jsonify({
-                'success': False,
-                'message': 'User not found'
-            }), 404
-        
-        # Handle both JSON and FormData requests
-        content = ''
-        image_url = ''
-        feeling = ''
-        location = ''
-        
-        # Check if this is a FormData request (from modal) or JSON request (from simple form)
-        if request.content_type and 'multipart/form-data' in request.content_type:
-            # Handle FormData (from create post modal)
-            content = request.form.get('content', '').strip()
-            feeling = request.form.get('feeling', '').strip()
-            location = request.form.get('location', '').strip()
-            
-            # Handle file uploads if any
-            uploaded_files = []
-            for key in request.files:
-                if key.startswith('image_'):
-                    file = request.files[key]
-                    if file and file.filename:
-                        uploaded_files.append(file)
-            
-            # Process and save uploaded images
-            uploaded_image_urls = []
-            if uploaded_files:
-                try:
-                    # Handle multiple images (up to 10 images per post)
-                    max_images = 10
-                    if len(uploaded_files) > max_images:
-                        return jsonify({
-                            'success': False,
-                            'message': f'Maximum {max_images} images allowed per post'
-                        }), 400
-                    
-                    for file in uploaded_files:
-                        # Save each uploaded file
-                        saved_url, error_message = save_uploaded_file(file, user_id)
-                        
-                        if error_message:
-                            return jsonify({
-                                'success': False,
-                                'message': f'Image upload failed: {error_message}'
-                            }), 400
-                        
-                        uploaded_image_urls.append(saved_url)
-                        print(f"Image uploaded successfully: {saved_url}")
-                    
-                    # For backward compatibility, set the first image as the main image_url
-                    if uploaded_image_urls:
-                        image_url = uploaded_image_urls[0]
-                    
-                except Exception as e:
-                    print(f"Error uploading image: {e}")
-                    return jsonify({
-                        'success': False,
-                        'message': 'Error uploading image. Please try again.'
-                    }), 500
-        
-        else:
-            # Handle JSON data (from simple post creation)
-            data = request.get_json()
-            if not data:
-                return jsonify({
-                    'success': False,
-                    'message': 'No data provided'
-                }), 400
-            
-            # Extract fields from request (support both field names for backward compatibility)
-            content = data.get('content', '').strip() or data.get('caption', '').strip()
-            image_url = data.get('image_url', '').strip() or data.get('photos', '').strip()
-            feeling = data.get('feeling', '').strip()
-            location = data.get('location', '').strip()
-        
-        # Parse feeling from content if not explicitly provided
-        if not feeling and content:
-            import re
-            # Look for pattern like <Feeling excited>, <feeling happy>, etc.
-            feeling_pattern = r'<[Ff]eeling\s+([^>]+)>'
-            feeling_match = re.search(feeling_pattern, content)
-            if feeling_match:
-                feeling = feeling_match.group(1).strip().lower()
-                # Remove the feeling tag from content
-                content = re.sub(feeling_pattern, '', content).strip()
-                print(f"Extracted feeling '{feeling}' from content")
-        
-        # Common validation for both request types
-        # Validate content/caption (required)
-        if not content:
-            return jsonify({
-                'success': False,
-                'message': 'Post caption is required'
-            }), 400
-        
-        if len(content) > 1000:  # Set reasonable character limit
-            return jsonify({
-                'success': False,
-                'message': 'Post caption must be 1000 characters or less'
-            }), 400
-        
-        # Validate image URL if provided (optional) - skip validation for placeholder uploads
-        if image_url and not image_url.startswith('placeholder_'):
-            # Allow local upload paths (/uploads/...) and external URLs (http/https)
-            if not (image_url.startswith('/uploads/') or image_url.startswith('http://') or image_url.startswith('https://')):
-                return jsonify({
-                    'success': False,
-                    'message': 'Invalid photo URL format'
-                }), 400
-        
-        # Validate feeling length if provided (optional)
-        if feeling and len(feeling) > 100:
-            return jsonify({
-                'success': False,
-                'message': 'Feeling must be 100 characters or less'
-            }), 400
-        
-        # Validate location length if provided (optional)
-        if location and len(location) > 255:
-            return jsonify({
-                'success': False,
-                'message': 'Location must be 255 characters or less'
-            }), 400
-        
-        # Create new post
-        new_post = Post(
-            user_id=user_id,
-            content=content,
-            image_url=image_url if image_url else None,
-            feeling=feeling if feeling else None,
-            location=location if location else None,
-            likes_count=0,
-            comments_count=0
-        )
-        
-        db.session.add(new_post)
-        db.session.flush()  # Get post ID before commit
-        
-        # Create PostImage records for uploaded images
-        if 'uploaded_image_urls' in locals() and uploaded_image_urls:
-            for index, img_url in enumerate(uploaded_image_urls):
-                post_image = PostImage(
-                    post_id=new_post.id,
-                    image_url=img_url,
-                    image_order=index
-                )
-                db.session.add(post_image)
-                print(f"Created PostImage record: {img_url} (order: {index})")
-        
-        db.session.commit()
-        
-        print(f"Post created successfully by user {user_id}: {content[:50]}...")
-        
-        return jsonify({
-            'success': True,
-            'message': 'Post created successfully!',
-            'post': new_post.to_dict()
-        }), 201
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"Create post error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while creating your post. Please try again.'
-        }), 500
-
-@app.route('/api/posts/<int:post_id>', methods=['PUT'])
-def edit_post(post_id):
-    """Edit a post content, feeling, and location if the requester is the owner"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False, 
-                'message': 'Please log in to edit posts'
-            }), 401
-        
-        user_id = session['user_id']
-        user = db.session.get(User, user_id)
-        
-        if not user:
-            return jsonify({
-                'success': False,
-                'message': 'User not found'
-            }), 404
-        
-        # Get the post to edit
-        post = db.session.get(Post, post_id)
-        if not post:
-            return jsonify({
-                'success': False, 
-                'message': 'Post not found'
-            }), 404
-        
-        # Check if user owns this post
-        if post.user_id != user_id:
-            return jsonify({
-                'success': False, 
-                'message': 'You do not have permission to edit this post'
-            }), 403
-        
-        # Handle both JSON and FormData requests (similar to create_post)
-        content = ''
-        feeling = ''
-        location = ''
-        
-        # Check if this is a FormData request or JSON request
-        if request.content_type and 'multipart/form-data' in request.content_type:
-            # Handle FormData (from modal edit)
-            content = request.form.get('content', '').strip()
-            feeling = request.form.get('feeling', '').strip()
-            location = request.form.get('location', '').strip()
-        else:
-            # Handle JSON data
-            data = request.get_json()
-            if not data:
-                return jsonify({
-                    'success': False,
-                    'message': 'No data provided'
-                }), 400
-            
-            content = data.get('content', '').strip()
-            feeling = data.get('feeling', '').strip()
-            location = data.get('location', '').strip()
-        
-        # Validate content (required)
-        if not content:
-            return jsonify({
-                'success': False, 
-                'message': 'Post content is required'
-            }), 400
-        
-        if len(content) > 1000:
-            return jsonify({
-                'success': False, 
-                'message': 'Post content must be 1000 characters or less'
-            }), 400
-        
-        # Validate feeling length if provided (optional)
-        if feeling and len(feeling) > 100:
-            return jsonify({
-                'success': False,
-                'message': 'Feeling must be 100 characters or less'
-            }), 400
-        
-        # Validate location length if provided (optional)
-        if location and len(location) > 255:
-            return jsonify({
-                'success': False,
-                'message': 'Location must be 255 characters or less'
-            }), 400
-        
-        # Update post fields
-        post.content = content
-        post.feeling = feeling if feeling else None
-        post.location = location if location else None
-        post.updated_at = datetime.now()
-        
-        db.session.commit()
-        
-        print(f"Post {post_id} updated successfully by user {user_id}: {content[:50]}...")
-        
-        return jsonify({
-            'success': True, 
-            'message': 'Post updated successfully!',
-            'post': post.to_dict()
-        }), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"Edit post error: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({
-            'success': False, 
-            'message': 'An error occurred while updating your post. Please try again.'
-        }), 500
-
-@app.route('/api/posts/<int:post_id>', methods=['DELETE'])
-def delete_post(post_id):
-    """Delete a post if the requester is the owner. Also delete related reactions, comments, comment likes, and image files."""
-    try:
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({'success': False, 'message': 'Please log in to delete posts'}), 401
-        user_id = session['user_id']
-        post = db.session.get(Post, post_id)
-        if not post:
-            return jsonify({'success': False, 'message': 'Post not found'}), 404
-        if post.user_id != user_id:
-            return jsonify({'success': False, 'message': 'You do not have permission to delete this post'}), 403
-        
-        # Store image paths for deletion after database operations
-        image_paths_to_delete = []
-        
-        # Collect main image URL for deletion (backward compatibility)
-        if post.image_url:
-            # Extract filename from URL path (e.g., "/uploads/filename.jpg" -> "filename.jpg")
-            if post.image_url.startswith('/uploads/'):
-                filename = post.image_url.replace('/uploads/', '')
-                image_paths_to_delete.append(os.path.join(UPLOAD_FOLDER, filename))
-        
-        # Collect PostImage files for deletion
-        post_images = PostImage.query.filter_by(post_id=post_id).all()
-        for post_image in post_images:
-            if post_image.image_url and post_image.image_url.startswith('/uploads/'):
-                filename = post_image.image_url.replace('/uploads/', '')
-                image_paths_to_delete.append(os.path.join(UPLOAD_FOLDER, filename))
-        
-        print(f"Deleting post {post_id} and all related data...")
-        
-        # Delete related data in the correct order (deepest dependencies first)
-        # 1. Delete comment likes (depends on comments)
-        comment_ids = [comment.id for comment in Comment.query.filter_by(post_id=post_id).all()]
-        if comment_ids:
-            deleted_comment_likes = CommentLike.query.filter(CommentLike.comment_id.in_(comment_ids)).delete(synchronize_session=False)
-            print(f"Deleted {deleted_comment_likes} comment likes")
-        
-        # 2. Delete comments (depends on post)
-        deleted_comments = Comment.query.filter_by(post_id=post_id).delete()
-        print(f"Deleted {deleted_comments} comments")
-        
-        # 3. Delete post reactions (depends on post)
-        deleted_reactions = PostReaction.query.filter_by(post_id=post_id).delete()
-        print(f"Deleted {deleted_reactions} post reactions")
-        
-        # 4. Delete PostImage records (depends on post)
-        deleted_post_images = PostImage.query.filter_by(post_id=post_id).delete()
-        print(f"Deleted {deleted_post_images} PostImage records")
-        
-        # 5. Delete the post record itself
-        db.session.delete(post)
-        db.session.commit()
-        
-        print(f"Post {post_id} deleted successfully from database")
-        
-        # Delete image files from filesystem after successful database deletion
-        for image_path in image_paths_to_delete:
-            if os.path.exists(image_path):
-                try:
-                    os.remove(image_path)
-                    print(f"Deleted image file: {image_path}")
-                except Exception as file_error:
-                    print(f"Warning: Could not delete image file {image_path}: {file_error}")
-                    # Don't fail the request if file deletion fails - post is already deleted from database
-        
-        return jsonify({'success': True, 'message': 'Post deleted successfully'}), 200
-    except Exception as e:
-        db.session.rollback()
-        print(f"Delete post error: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({'success': False, 'message': 'An error occurred while deleting the post'}), 500
-
-@app.route('/api/posts', methods=['GET'])
-def get_posts():
-    """Get posts with pagination - shows latest posts first"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to view posts'
-            }), 401
-        
-        user_id = session['user_id']
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
-        user_only = request.args.get('user_only', 'false').lower() == 'true'
-        
-        # Limit per_page to reasonable values
-        per_page = min(max(per_page, 1), 20)
-        
-        # Build query with eager loading of images
-        if user_only:
-            # Get only posts from the current user
-            query = Post.query.options(db.joinedload(Post.images)).filter_by(user_id=user_id)
-        else:
-            # Get all posts (for feed)
-            query = Post.query.options(db.joinedload(Post.images))
-        
-        # Order by most recent first
-        query = query.order_by(Post.created_at.desc())
-        
-        # Get paginated results
-        posts_pagination = query.paginate(
-            page=page, per_page=per_page, error_out=False
-        )
-        
-        # Format posts for frontend
-        formatted_posts = []
-        for post in posts_pagination.items:
-            post_dict = post.to_dict()
-            
-            # Add time ago formatting
-            try:
-                from datetime import datetime, timedelta
-                created_at = datetime.fromisoformat(post_dict['created_at'].replace('Z', '+00:00')) if post_dict['created_at'] else datetime.now()
-                time_diff = datetime.now() - created_at
-                
-                if time_diff.days > 0:
-                    time_ago = f"{time_diff.days} day{'s' if time_diff.days > 1 else ''} ago"
-                elif time_diff.seconds > 3600:
-                    hours = time_diff.seconds // 3600
-                    time_ago = f"{hours} hour{'s' if hours > 1 else ''} ago"
-                elif time_diff.seconds > 60:
-                    minutes = time_diff.seconds // 60
-                    time_ago = f"{minutes} minute{'s' if minutes > 1 else ''} ago"
-                else:
-                    time_ago = "Just now"
-                
-                post_dict['time_ago'] = time_ago
-            except Exception as e:
-                post_dict['time_ago'] = "Recently"
-            
-            # Add user's initials for avatar
-            if post.author:
-                post_dict['author_initials'] = f"{post.author.first_name[0]}{post.author.last_name[0]}"
-            else:
-                post_dict['author_initials'] = "?"
-            
-            # Build reactions summary and current user's reaction
-            try:
-                reactions = PostReaction.query.filter_by(post_id=post.id).all()
-                summary = {}
-                for r in reactions:
-                    summary[r.reaction] = summary.get(r.reaction, 0) + 1
-                post_dict['reactions_summary'] = summary
-                # Maintain likes_count for backward compatibility (count of 'like')
-                post_dict['likes_count'] = summary.get('like', 0)
-                # User reaction
-                user_reaction = next((r.reaction for r in reactions if r.user_id == user_id), None)
-                post_dict['user_reaction'] = user_reaction
-                post_dict['liked_by_user'] = user_reaction == 'like'
-            except Exception:
-                post_dict['reactions_summary'] = {}
-                post_dict['user_reaction'] = None
-            
-            formatted_posts.append(post_dict)
-        
-        return jsonify({
-            'success': True,
-            'posts': formatted_posts,
-            'pagination': {
-                'page': page,
-                'per_page': per_page,
-                'total': posts_pagination.total,
-                'pages': posts_pagination.pages,
-                'has_prev': posts_pagination.has_prev,
-                'has_next': posts_pagination.has_next
-            },
-            'total_posts': posts_pagination.total
-        }), 200
-        
-    except Exception as e:
-        print(f"Get posts error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while fetching posts'
-        }), 500
-
 @app.route('/api/social-links/single', methods=['POST'])
 def add_single_social_link():
     """Add or update a single social media link"""
@@ -2558,9 +2274,9 @@ def add_single_social_link():
             'github': r'^https?://(www\.)?github\.com/.+$',
             'youtube': r'^https?://(www\.)?(youtube\.com|youtu\.be)/.+$',
             'tiktok': r'^https?://(www\.)?tiktok\.com/.+$',
-            'discord': r'^.+#\d{4}$',  # Discord username format
+            'discord': r'^(https?://)?(discord\.gg/[A-Za-z0-9]+|.+#\d{4}|@?[A-Za-z0-9_.]+)$',  # Discord server invite, old username#1234, or new username
             'twitch': r'^https?://(www\.)?twitch\.tv/.+$',
-            'website': r'^https?://.+$'  # Generic URL pattern
+            'facebook': r'^https?://(www\.)?facebook\.com/.+$'  # Facebook URL pattern
         }
         
         # Validate platform is supported
@@ -2576,7 +2292,7 @@ def add_single_social_link():
             if not re.match(pattern, url):
                 return jsonify({
                     'success': False,
-                    'message': 'Please enter a valid Discord username (e.g., username#1234)'
+                    'message': 'Please enter a valid Discord server invite link (e.g., https://discord.gg/yourserver) or username (e.g., username#1234)'
                 }), 400
         else:
             if not re.match(pattern, url, re.IGNORECASE):
@@ -2628,111 +2344,6 @@ def add_single_social_link():
             'success': False,
             'message': 'An error occurred while saving the social media link'
         }), 500
-
-
-@app.route('/api/posts/<int:post_id>/react', methods=['POST'])
-def react_to_post(post_id):
-    """React to a post with one of the supported reactions. Single reaction per user.
-    If the same reaction is sent again, remove it (dis-react).
-    If a different reaction exists, update it.
-    """
-    try:
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({'success': False, 'message': 'Please log in to react to posts'}), 401
-        user_id = session['user_id']
-
-        data = request.get_json() or {}
-        reaction = (data.get('reaction') or '').strip().lower()
-        if reaction not in VALID_REACTIONS:
-            return jsonify({'success': False, 'message': 'Invalid reaction type'}), 400
-
-        post = db.session.get(Post, post_id)
-        if not post:
-            return jsonify({'success': False, 'message': 'Post not found'}), 404
-
-        existing = PostReaction.query.filter_by(user_id=user_id, post_id=post_id).first()
-
-        action = None
-        if existing and existing.reaction == reaction:
-            # Remove reaction (dis-react)
-            db.session.delete(existing)
-            action = 'removed'
-            if reaction == 'like':
-                post.likes_count = max(0, (post.likes_count or 0) - 1)
-        elif existing and existing.reaction != reaction:
-            # Switch reaction
-            prev = existing.reaction
-            existing.reaction = reaction
-            action = 'switched'
-            # Maintain likes_count for backward compatibility
-            if prev == 'like' and post.likes_count and post.likes_count > 0:
-                post.likes_count -= 1
-            if reaction == 'like':
-                post.likes_count = (post.likes_count or 0) + 1
-        else:
-            # New reaction
-            new_r = PostReaction(user_id=user_id, post_id=post_id, reaction=reaction)
-            db.session.add(new_r)
-            action = 'added'
-            if reaction == 'like':
-                post.likes_count = (post.likes_count or 0) + 1
-
-        db.session.commit()
-
-        # Build updated summary
-        reactions = PostReaction.query.filter_by(post_id=post_id).all()
-        summary = {}
-        for r in reactions:
-            summary[r.reaction] = summary.get(r.reaction, 0) + 1
-        user_reaction = next((r.reaction for r in reactions if r.user_id == user_id), None)
-
-        return jsonify({
-            'success': True,
-            'message': 'Reaction updated',
-            'action': action,
-            'reactions_summary': summary,
-            'user_reaction': user_reaction,
-            'new_like_count': summary.get('like', 0)
-        }), 200
-    except Exception as e:
-        db.session.rollback()
-        print(f"React error: {str(e)}")
-        return jsonify({'success': False, 'message': 'An error occurred while processing your reaction'}), 500
-
-# Backward-compatible like endpoint: treat as 'like' reaction
-@app.route('/api/posts/<int:post_id>/like', methods=['POST'])
-def toggle_post_like(post_id):
-    try:
-        # Proxy to react_to_post with 'like'
-        request_data = request.get_json() or {}
-        request_data['reaction'] = 'like'
-        # Temporarily set json on request is non-trivial; directly call logic
-        # Re-implement minimal logic here by calling same function body
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({'success': False, 'message': 'Please log in to like posts'}), 401
-        user_id = session['user_id']
-        post = db.session.get(Post, post_id)
-        if not post:
-            return jsonify({'success': False, 'message': 'Post not found'}), 404
-        existing = PostReaction.query.filter_by(user_id=user_id, post_id=post_id).first()
-        if existing and existing.reaction == 'like':
-            db.session.delete(existing)
-        elif existing and existing.reaction != 'like':
-            if existing.reaction == 'like':
-                pass
-            existing.reaction = 'like'
-        else:
-            db.session.add(PostReaction(user_id=user_id, post_id=post_id, reaction='like'))
-        # Update likes_count to actual count
-        db.session.commit()
-        likes = PostReaction.query.filter_by(post_id=post_id, reaction='like').count()
-        post.likes_count = likes
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'OK', 'new_like_count': likes}), 200
-    except Exception as e:
-        db.session.rollback()
-        print(f"Toggle like error: {str(e)}")
-        return jsonify({'success': False, 'message': 'An error occurred while processing your request'}), 500
 
 @app.route('/api/social-links/toggle', methods=['POST'])
 def toggle_social_link():
@@ -2878,16 +2489,16 @@ def delete_social_link(link_id):
             'message': 'An error occurred while deleting the social media link'
         }), 500
 
-# Comment API Routes
-@app.route('/api/posts/<int:post_id>/comments', methods=['POST'])
-def add_comment_to_post(post_id):
-    """Add a comment to a specific post"""
+# Battle Pass API Routes
+@app.route('/api/battle-pass/claimed-rewards', methods=['GET'])
+def get_battle_pass_claimed_rewards():
+    """Get all claimed battle pass rewards for the logged-in user"""
     try:
         # Check if user is logged in
         if not session.get('logged_in') or not session.get('user_id'):
             return jsonify({
                 'success': False,
-                'message': 'Please log in to add comments'
+                'message': 'Please log in to view your battle pass progress'
             }), 401
         
         user_id = session['user_id']
@@ -2899,362 +2510,244 @@ def add_comment_to_post(post_id):
                 'message': 'User not found'
             }), 404
         
-        # Check if post exists
-        post = db.session.get(Post, post_id)
-        if not post:
+        # Get all claimed levels for this user
+        claimed_levels = BattlePassClaim.get_user_claimed_levels(user_id)
+        
+        # Get detailed claim information
+        claims = BattlePassClaim.query.filter_by(user_id=user_id).order_by(BattlePassClaim.level).all()
+        
+        # Calculate total pearls earned from battle pass
+        total_pearls_from_bp = BattlePassClaim.get_user_total_pearl_rewards(user_id)
+        
+        return jsonify({
+            'success': True,
+            'user_id': user_id,
+            'current_level': user.level,
+            'claimed_levels': claimed_levels,
+            'claims': [claim.to_dict() for claim in claims],
+            'total_pearls_earned': total_pearls_from_bp
+        }), 200
+        
+    except Exception as e:
+        print(f"Battle pass claimed rewards error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching battle pass data'
+        }), 500
+
+@app.route('/api/battle-pass/claim-reward/<int:level>', methods=['POST'])
+def claim_battle_pass_reward(level):
+    """Claim a battle pass reward for a specific level"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
             return jsonify({
                 'success': False,
-                'message': 'Post not found'
+                'message': 'Please log in to claim battle pass rewards'
+            }), 401
+        
+        user_id = session['user_id']
+        # Use SELECT FOR UPDATE to lock the user record and prevent race conditions
+        user = User.query.filter_by(id=user_id).with_for_update().first()
+        
+        if not user:
+            db.session.rollback()
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
             }), 404
         
-        # Get JSON data from request
-        data = request.get_json()
-        if not data:
+        # Validate level parameter
+        if level < 1 or level > 100:
+            db.session.rollback()
             return jsonify({
                 'success': False,
-                'message': 'No data provided'
+                'message': 'Invalid level. Must be between 1 and 100.'
             }), 400
         
-        content = data.get('content', '').strip()
-        
-        # Validate content
-        if not content:
+        # Check if user has reached this level
+        if user.level < level:
+            db.session.rollback()
             return jsonify({
                 'success': False,
-                'message': 'Comment content is required'
+                'message': f'You must reach level {level} to claim this reward. Current level: {user.level}'
             }), 400
         
-        if len(content) > 500:  # Set reasonable character limit for comments
-            return jsonify({
-                'success': False,
-                'message': 'Comment must be 500 characters or less'
-            }), 400
-        
-        # Create new comment
-        new_comment = Comment(
+        # Check if reward has already been claimed
+        existing_claim = BattlePassClaim.query.filter_by(
             user_id=user_id,
-            post_id=post_id,
-            content=content,
-            likes_count=0
-        )
-        
-        # Update post comments count
-        post.comments_count = (post.comments_count or 0) + 1
-        
-        db.session.add(new_comment)
-        db.session.commit()
-        
-        print(f"Comment added successfully by user {user_id} on post {post_id}: {content[:50]}...")
-        
-        return jsonify({
-            'success': True,
-            'message': 'Comment added successfully!',
-            'comment': new_comment.to_dict(current_user_id=user_id),
-            'new_comments_count': post.comments_count
-        }), 201
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"Add comment error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while adding your comment. Please try again.'
-        }), 500
-
-@app.route('/api/posts/<int:post_id>/comments', methods=['GET'])
-def get_post_comments(post_id):
-    """Get comments for a specific post with pagination (newest first)"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to view comments'
-            }), 401
-        
-        user_id = session['user_id']
-        
-        # Check if post exists
-        post = db.session.get(Post, post_id)
-        if not post:
-            return jsonify({
-                'success': False,
-                'message': 'Post not found'
-            }), 404
-        
-        # Get pagination parameters
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 10, type=int)
-        order = request.args.get('order', 'desc').lower()  # desc for newest first, asc for oldest first
-        
-        # Limit per_page to reasonable values
-        per_page = min(max(per_page, 1), 50)
-        
-        # Build query for comments
-        query = Comment.query.filter_by(post_id=post_id)
-        
-        # Order by creation time (newest first by default)
-        if order == 'asc':
-            query = query.order_by(Comment.created_at.asc())
-        else:
-            query = query.order_by(Comment.created_at.desc())
-        
-        # Get paginated results
-        comments_pagination = query.paginate(
-            page=page, per_page=per_page, error_out=False
-        )
-        
-        # Format comments for frontend
-        formatted_comments = []
-        for comment in comments_pagination.items:
-            comment_dict = comment.to_dict(current_user_id=user_id)
-            
-            # Add time ago formatting
-            try:
-                created_at = datetime.fromisoformat(comment_dict['created_at'].replace('Z', '+00:00')) if comment_dict['created_at'] else datetime.now()
-                time_diff = datetime.now() - created_at
-                
-                if time_diff.days > 0:
-                    time_ago = f"{time_diff.days} day{'s' if time_diff.days > 1 else ''} ago"
-                elif time_diff.seconds > 3600:
-                    hours = time_diff.seconds // 3600
-                    time_ago = f"{hours} hour{'s' if hours > 1 else ''} ago"
-                elif time_diff.seconds > 60:
-                    minutes = time_diff.seconds // 60
-                    time_ago = f"{minutes} minute{'s' if minutes > 1 else ''} ago"
-                else:
-                    time_ago = "Just now"
-                
-                comment_dict['time_ago'] = time_ago
-            except Exception as e:
-                comment_dict['time_ago'] = "Recently"
-            
-            # Add user's initials for avatar
-            if comment.author:
-                comment_dict['author_initials'] = f"{comment.author.first_name[0]}{comment.author.last_name[0]}"
-            else:
-                comment_dict['author_initials'] = "?"
-            
-            # Check if current user has liked this comment
-            user_liked = CommentLike.query.filter_by(
-                user_id=user_id,
-                comment_id=comment.id
-            ).first() is not None
-            comment_dict['user_liked'] = user_liked
-            
-            formatted_comments.append(comment_dict)
-        
-        return jsonify({
-            'success': True,
-            'comments': formatted_comments,
-            'pagination': {
-                'page': page,
-                'per_page': per_page,
-                'total': comments_pagination.total,
-                'pages': comments_pagination.pages,
-                'has_prev': comments_pagination.has_prev,
-                'has_next': comments_pagination.has_next
-            },
-            'total_comments': comments_pagination.total
-        }), 200
-        
-    except Exception as e:
-        print(f"Get comments error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while fetching comments'
-        }), 500
-
-@app.route('/api/comments/<int:comment_id>', methods=['PUT'])
-def update_comment(comment_id):
-    """Update a comment"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to update comments'
-            }), 401
-        
-        user_id = session['user_id']
-        
-        # Check if comment exists
-        comment = db.session.get(Comment, comment_id)
-        if not comment:
-            return jsonify({
-                'success': False,
-                'message': 'Comment not found'
-            }), 404
-        
-        # Check if user owns this comment
-        if comment.user_id != user_id:
-            return jsonify({
-                'success': False,
-                'message': 'You can only edit your own comments'
-            }), 403
-        
-        # Get JSON data from request
-        data = request.get_json()
-        if not data:
-            return jsonify({
-                'success': False,
-                'message': 'No data provided'
-            }), 400
-        
-        content = data.get('content', '').strip()
-        
-        # Validate content
-        if not content:
-            return jsonify({
-                'success': False,
-                'message': 'Comment content is required'
-            }), 400
-        
-        if len(content) > 500:
-            return jsonify({
-                'success': False,
-                'message': 'Comment must be 500 characters or less'
-            }), 400
-        
-        # Update comment
-        comment.content = content
-        comment.updated_at = datetime.now()
-        
-        db.session.commit()
-        
-        print(f"Comment {comment_id} updated by user {user_id}")
-        
-        return jsonify({
-            'success': True,
-            'message': 'Comment updated successfully!',
-            'comment': comment.to_dict()
-        }), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"Update comment error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while updating your comment'
-        }), 500
-
-@app.route('/api/comments/<int:comment_id>', methods=['DELETE'])
-def delete_comment(comment_id):
-    """Delete a comment"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to delete comments'
-            }), 401
-        
-        user_id = session['user_id']
-        
-        # Check if comment exists
-        comment = db.session.get(Comment, comment_id)
-        if not comment:
-            return jsonify({
-                'success': False,
-                'message': 'Comment not found'
-            }), 404
-        
-        # Check if user owns this comment
-        if comment.user_id != user_id:
-            return jsonify({
-                'success': False,
-                'message': 'You can only delete your own comments'
-            }), 403
-        
-        # Get post to update comment count
-        post = db.session.get(Post, comment.post_id)
-        
-        # Delete all likes for this comment first
-        CommentLike.query.filter_by(comment_id=comment_id).delete()
-        
-        # Delete the comment
-        db.session.delete(comment)
-        
-        # Update post comments count
-        if post:
-            post.comments_count = max(0, (post.comments_count or 0) - 1)
-        
-        db.session.commit()
-        
-        print(f"Comment {comment_id} deleted by user {user_id}")
-        
-        return jsonify({
-            'success': True,
-            'message': 'Comment deleted successfully!',
-            'new_comments_count': post.comments_count if post else 0
-        }), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"Delete comment error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while deleting your comment'
-        }), 500
-
-@app.route('/api/comments/<int:comment_id>/like', methods=['POST'])
-def toggle_comment_like(comment_id):
-    """Like or unlike a comment"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to like comments'
-            }), 401
-        
-        user_id = session['user_id']
-        
-        # Check if comment exists
-        comment = db.session.get(Comment, comment_id)
-        if not comment:
-            return jsonify({
-                'success': False,
-                'message': 'Comment not found'
-            }), 404
-        
-        # Check if user has already liked this comment
-        existing_like = CommentLike.query.filter_by(
-            user_id=user_id,
-            comment_id=comment_id
+            level=level
         ).first()
         
-        if existing_like:
-            # Unlike the comment
-            db.session.delete(existing_like)
-            comment.likes_count = max(0, (comment.likes_count or 0) - 1)
-            action = 'unliked'
-            liked = False
-        else:
-            # Like the comment
-            new_like = CommentLike(
-                user_id=user_id,
-                comment_id=comment_id
-            )
-            db.session.add(new_like)
-            comment.likes_count = (comment.likes_count or 0) + 1
-            action = 'liked'
-            liked = True
+        if existing_claim:
+            db.session.rollback()
+            return jsonify({
+                'success': False,
+                'message': f'Level {level} reward has already been claimed'
+            }), 400
         
+        # All levels now get pearl rewards only
+        pearl_amount = level * 100
+        reward_type = 'pearls'
+        reward_data = {
+            'icon': 'fa-gem',
+            'title': 'Pearl Bonus',
+            'value': f'{pearl_amount} Pearls',
+            'type': 'pearls'
+        }
+        pearls_awarded = pearl_amount
+        
+        # Store original balance for verification
+        original_balance = user.pearl
+        
+        # Create the battle pass claim record
+        new_claim = BattlePassClaim(
+            user_id=user_id,
+            level=level,
+            reward_type=reward_type,
+            reward_data=reward_data,
+            pearls_awarded=pearls_awarded
+        )
+        
+        # Add pearls to user's account if applicable
+        if pearls_awarded > 0:
+            user.pearl += pearls_awarded
+            expected_balance = original_balance + pearls_awarded
+            
+            # Verify balance update
+            if user.pearl != expected_balance:
+                db.session.rollback()
+                return jsonify({
+                    'success': False,
+                    'message': 'Balance synchronization error. Please try again.'
+                }), 500
+            
+            # Create transaction record for pearl rewards
+            reward_transaction = Transaction(
+                user_id=user_id,
+                transaction_type='battle_pass_reward',
+                amount=pearls_awarded,
+                description=f'Battle Pass Level {level} reward ({pearls_awarded} pearls)',
+                reference_id=f'BP-{level}-{user_id}-{int(datetime.now().timestamp())}',
+                created_at=datetime.now()
+            )
+            
+            db.session.add(reward_transaction)
+        else:
+            # Create transaction record for non-pearl rewards (items, trophies, etc.)
+            reward_transaction = Transaction(
+                user_id=user_id,
+                transaction_type='battle_pass_reward',
+                amount=0,
+                description=f'Battle Pass Level {level} reward ({reward_data["title"]})',
+                reference_id=f'BP-{level}-{user_id}-{int(datetime.now().timestamp())}',
+                created_at=datetime.now()
+            )
+            
+            db.session.add(reward_transaction)
+        
+        # Add the claim record to the session
+        db.session.add(new_claim)
+        
+        # Flush to get the claim ID and validate constraints
+        db.session.flush()
+        
+        # Final commit - balance, claim record, and transaction are updated atomically
         db.session.commit()
+        
+        # Log successful transaction
+        print(f"Battle pass reward claimed: User {user_id} claimed level {level} reward, pearls: {pearls_awarded}, new balance: {user.pearl}")
+        
+        # Prepare success message
+        if pearls_awarded > 0:
+            success_message = f'Level {level} reward claimed! You earned {pearls_awarded} pearls.'
+        else:
+            success_message = f'Level {level} reward claimed! You earned {reward_data["title"]}.'
         
         return jsonify({
             'success': True,
-            'message': f'Comment {action} successfully!',
-            'user_liked': liked,
-            'likes_count': comment.likes_count
+            'message': success_message,
+            'level': level,
+            'reward_type': reward_type,
+            'reward_data': reward_data,
+            'pearls_awarded': pearls_awarded,
+            'original_balance': original_balance,
+            'new_pearl_balance': user.pearl,
+            'claim_details': new_claim.to_dict()
         }), 200
         
     except Exception as e:
+        # Always rollback on any error to maintain data consistency
         db.session.rollback()
+        print(f"Battle pass claim error: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'success': False,
-            'message': 'An error occurred while processing your request'
+            'message': 'An error occurred while claiming your battle pass reward. Please try again.',
+            'error_details': str(e) if app.config.get('DEBUG') else None
+        }), 500
+
+@app.route('/api/battle-pass/data', methods=['GET'])
+def get_battle_pass_data():
+    """Get battle pass data including claimed status for the logged-in user"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view battle pass data'
+            }), 401
+        
+        user_id = session['user_id']
+        user = db.session.get(User, user_id)
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Get claimed levels
+        claimed_levels = BattlePassClaim.get_user_claimed_levels(user_id)
+        
+        # Generate battle pass tiers with claim status
+        tiers = []
+        for level in range(1, 101):  # Levels 1-100
+            # Calculate if this level has rewards (all levels now have rewards)
+            has_reward = True
+            is_claimed = level in claimed_levels
+            
+            # All levels now get pearl rewards only
+            pearl_amount = level * 100
+            reward = {
+                'icon': 'fa-gem',
+                'title': 'Pearl Bonus',
+                'value': f'{pearl_amount} Pearls',
+                'type': 'pearls',
+                'claimed': is_claimed
+            }
+            
+            tiers.append({
+                'level': level,
+                'has_reward': has_reward,
+                'reward': reward,
+                'exp_reward': 50 + (level * 10) if not has_reward else 0  # EXP for levels without item rewards
+            })
+        
+        return jsonify({
+            'success': True,
+            'user_level': user.level,
+            'user_exp': user.exp,
+            'tiers': tiers,
+            'claimed_levels': claimed_levels
+        }), 200
+        
+    except Exception as e:
+        print(f"Battle pass data error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching battle pass data'
         }), 500
 
 def create_tables():

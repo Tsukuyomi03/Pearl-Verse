@@ -15,6 +15,7 @@ class DailyClaim(db.Model):
     claim_date = db.Column(db.Date, nullable=False)
     day_number = db.Column(db.Integer, nullable=False)  # 1-7 for the 7-day cycle
     pearl_amount = db.Column(db.Integer, nullable=False)
+    exp_amount = db.Column(db.Integer, nullable=False, default=100)  # EXP reward amount
     streak_count = db.Column(db.Integer, default=1)
     claimed_at = db.Column(db.TIMESTAMP, server_default=db.func.current_timestamp())
     
@@ -29,6 +30,7 @@ class DailyClaim(db.Model):
             'claim_date': self.claim_date.isoformat() if self.claim_date else None,
             'day_number': self.day_number,
             'pearl_amount': self.pearl_amount,
+            'exp_amount': self.exp_amount,
             'streak_count': self.streak_count,
             'claimed_at': self.claimed_at.isoformat() if self.claimed_at else None
         }

@@ -1,0 +1,186 @@
+/* ===== POST MODAL OVERFLOW FIX ===== */
+/* This file specifically fixes the comment section overflow issue in post modals */
+/* Load this AFTER post_modals.css to override problematic styles */
+
+/* Reset and fix the post detail modal structure */
+#post-detail-modal .modal-content {
+    height: calc(100vh - 40px);
+    max-height: calc(100vh - 40px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#post-detail-modal .modal-header {
+    flex-shrink: 0;
+}
+
+#post-detail-modal .modal-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fix the post content area */
+#post-detail-modal #modal-post-content {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fix the comments section structure */
+#post-detail-modal .comments-section {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 24px;
+    border-top: 1px solid #e9ecef;
+    padding-top: 20px;
+    overflow: hidden;
+}
+
+/* Fix comments header */
+#post-detail-modal .comments-header {
+    flex-shrink: 0;
+    margin-bottom: 20px;
+}
+
+/* Fix add comment form */
+#post-detail-modal .add-comment-form {
+    flex-shrink: 0;
+    margin-bottom: 16px;
+}
+
+#post-detail-modal .comment-input-container {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#post-detail-modal .comment-input-wrapper {
+    flex: 1;
+    min-width: 0;
+}
+
+#post-detail-modal .comment-textarea {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    max-height: 120px;
+}
+
+/* Fix comments list - this is the critical part */
+#post-detail-modal .comments-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding-right: 8px; /* Account for scrollbar */
+}
+
+/* Ensure individual comment items don't overflow */
+#post-detail-modal .comment-item {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f8f9fa;
+}
+
+#post-detail-modal .comment-content {
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+#post-detail-modal .comment-text {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    max-width: 100%;
+}
+
+/* Fix load more comments */
+#post-detail-modal .load-more-comments {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Custom scrollbar for comments list */
+#post-detail-modal .comments-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+#post-detail-modal .comments-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#post-detail-modal .comments-list::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#post-detail-modal .comments-list::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Mobile fixes */
+@media (max-width: 768px) {
+    #post-detail-modal .modal-content {
+        height: calc(100vh - 20px);
+        max-height: calc(100vh - 20px);
+    }
+    
+    #post-detail-modal .modal-body {
+        padding: 20px 16px;
+    }
+    
+    #post-detail-modal .comments-section {
+        max-height: none; /* Let flex handle it */
+    }
+    
+    #post-detail-modal .comment-textarea {
+        max-height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    #post-detail-modal .modal-content {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    #post-detail-modal .comment-textarea {
+        max-height: 80px;
+    }
+}
+
+/* Force containment - last resort rules */
+#post-detail-modal * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#post-detail-modal .comments-section,
+#post-detail-modal .comments-section * {
+    overflow-x: hidden !important;
+}

@@ -48,214 +48,278 @@
 
             <!-- Settings Content -->
             <div class="settings-content">
-                
-                <!-- Profile Information Section -->
-                <section class="settings-section" id="profileSection">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-id-card" aria-hidden="true"></i>
-                            <span>Profile Information</span>
-                        </h2>
-                        <p class="section-description">Update your personal information and profile details</p>
-                    </div>
-                    
-                    <div class="section-content">
-                        <form class="settings-form" id="profileForm">
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="firstName" class="form-label">
-                                        <i class="fas fa-id-badge" aria-hidden="true"></i>
-                                        <span>First Name</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="firstName" 
-                                        name="firstName" 
-                                        class="form-input"
-                                        placeholder="Enter your first name"
-                                        value="Player"
-                                        required
-                                    >
-                                    <div class="input-error" id="firstNameError"></div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="lastName" class="form-label">
-                                        <i class="fas fa-id-badge" aria-hidden="true"></i>
-                                        <span>Last Name</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="lastName" 
-                                        name="lastName" 
-                                        class="form-input"
-                                        placeholder="Enter your last name"
-                                        value="Name"
-                                        required
-                                    >
-                                    <div class="input-error" id="lastNameError"></div>
-                                </div>
+                <!-- Two-Column Layout -->
+                <div class="settings-grid">
+                    <!-- Left Column: Personal Information -->
+                    <div class="settings-column settings-left-column">
+                        <!-- Profile Information Section -->
+                        <section class="settings-section" id="profileSection">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <i class="fas fa-id-card" aria-hidden="true"></i>
+                                    <span>Profile Information</span>
+                                </h2>
+                                <p class="section-description">Update your personal information and profile details</p>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="email" class="form-label">
-                                    <i class="fas fa-at" aria-hidden="true"></i>
-                                    <span>Email Address</span>
-                                </label>
-                                <input 
-                                    type="email" 
-                                    id="email" 
-                                    name="email" 
-                                    class="form-input"
-                                    placeholder="Enter your email address"
-                                    value="player@example.com"
-                                    required
-                                >
-                                <div class="input-error" id="emailError"></div>
+                            <div class="section-content">
+                                <form class="settings-form" id="profileForm">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label for="firstName" class="form-label">
+                                                <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                                <span>First Name</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="firstName" 
+                                                name="firstName" 
+                                                class="form-input"
+                                                placeholder="Enter your first name"
+                                                value="Player"
+                                                required
+                                            >
+                                            <div class="input-error" id="firstNameError"></div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="lastName" class="form-label">
+                                                <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                                <span>Last Name</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="lastName" 
+                                                name="lastName" 
+                                                class="form-input"
+                                                placeholder="Enter your last name"
+                                                value="Name"
+                                                required
+                                            >
+                                            <div class="input-error" id="lastNameError"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">
+                                            <i class="fas fa-at" aria-hidden="true"></i>
+                                            <span>Email Address</span>
+                                        </label>
+                                        <input 
+                                            type="email" 
+                                            id="email" 
+                                            name="email" 
+                                            class="form-input"
+                                            placeholder="Enter your email address"
+                                            value="player@example.com"
+                                            required
+                                        >
+                                        <div class="input-error" id="emailError"></div>
+                                    </div>
+                                    
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label class="form-label">
+                                                <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                                                <span>Date of Birth</span>
+                                            </label>
+                                            <div class="birthday-inputs">
+                                                <select id="birthMonth" name="birthMonth" class="form-input birthday-select" required>
+                                                    <option value="">Month</option>
+                                                    <option value="1">January</option>
+                                                    <option value="2">February</option>
+                                                    <option value="3">March</option>
+                                                    <option value="4">April</option>
+                                                    <option value="5">May</option>
+                                                    <option value="6">June</option>
+                                                    <option value="7">July</option>
+                                                    <option value="8">August</option>
+                                                    <option value="9">September</option>
+                                                    <option value="10">October</option>
+                                                    <option value="11">November</option>
+                                                    <option value="12">December</option>
+                                                </select>
+                                                <select id="birthDay" name="birthDay" class="form-input birthday-select" required>
+                                                    <option value="">Day</option>
+                                                    <!-- Days 1-31 will be populated by JavaScript -->
+                                                </select>
+                                                <select id="birthYear" name="birthYear" class="form-input birthday-select" required>
+                                                    <option value="">Year</option>
+                                                    <!-- Years will be populated by JavaScript -->
+                                                </select>
+                                            </div>
+                                            <div class="input-error" id="birthdayError"></div>
+                                            <div class="input-help" id="ageDisplay"></div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="location" class="form-label">
+                                                <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+                                                <span>Location</span>
+                                                <span class="optional-label">(Optional)</span>
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="location" 
+                                                name="location" 
+                                                class="form-input"
+                                                placeholder="Enter your location"
+                                                maxlength="100"
+                                            >
+                                            <div class="input-error" id="locationError"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="cancelProfile">
+                                            <i class="fas fa-xmark" aria-hidden="true"></i>
+                                            <span>Cancel</span>
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="saveProfile">
+                                            <i class="fas fa-floppy-disk" aria-hidden="true"></i>
+                                            <span>Save Changes</span>
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
-                            
-                            <div class="form-grid">
-                                <div class="form-group">
-                                    <label for="dateOfBirth" class="form-label">
-                                        <i class="fas fa-calendar-days" aria-hidden="true"></i>
-                                        <span>Date of Birth</span>
-                                    </label>
-                                    <input 
-                                        type="date" 
-                                        id="dateOfBirth" 
-                                        name="dateOfBirth" 
-                                        class="form-input date-input"
-                                        max="" 
-                                        required
-                                    >
-                                    <div class="input-error" id="dateOfBirthError"></div>
-                                    <div class="input-help" id="ageDisplay"></div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="location" class="form-label">
-                                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
-                                        <span>Location</span>
-                                        <span class="optional-label">(Optional)</span>
-                                    </label>
-                                    <input 
-                                        type="text" 
-                                        id="location" 
-                                        name="location" 
-                                        class="form-input"
-                                        placeholder="Enter your location"
-                                        maxlength="100"
-                                    >
-                                    <div class="input-error" id="locationError"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" id="cancelProfile">
-                                    <i class="fas fa-xmark" aria-hidden="true"></i>
-                                    <span>Cancel</span>
-                                </button>
-                                <button type="submit" class="btn btn-primary" id="saveProfile">
-                                    <i class="fas fa-floppy-disk" aria-hidden="true"></i>
-                                    <span>Save Changes</span>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </section>
+                        </section>
 
-                <!-- Password Change Section -->
-                <section class="settings-section" id="passwordSection">
-                    <div class="section-header">
-                        <h2 class="section-title">
-                            <i class="fas fa-shield-halved" aria-hidden="true"></i>
-                            <span>Change Password</span>
-                        </h2>
-                        <p class="section-description">Update your account password for enhanced security</p>
-                    </div>
-                    
-                    <div class="section-content">
-                        <form class="settings-form" id="passwordForm">
-                            <div class="form-group">
-                                <label for="currentPassword" class="form-label">
-                                    <i class="fas fa-lock" aria-hidden="true"></i>
-                                    <span>Current Password</span>
-                                </label>
-                                <div class="password-input-wrapper">
-                                    <input 
-                                        type="password" 
-                                        id="currentPassword" 
-                                        name="currentPassword" 
-                                        class="form-input password-input"
-                                        placeholder="Enter your current password"
-                                        required
-                                    >
-                                    <button type="button" class="password-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <div class="input-error" id="currentPasswordError"></div>
+                        <!-- Bio Section -->
+                        <section class="settings-section" id="bioSection">
+                            <div class="section-header">
+                                <h2 class="section-title">
+                                    <i class="fas fa-edit" aria-hidden="true"></i>
+                                    <span>Bio</span>
+                                </h2>
+                                <p class="section-description">Tell others about yourself and share your interests</p>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="newPassword" class="form-label">
-                                    <i class="fas fa-key" aria-hidden="true"></i>
-                                    <span>New Password</span>
-                                </label>
-                                <div class="password-input-wrapper">
-                                    <input 
-                                        type="password" 
-                                        id="newPassword" 
-                                        name="newPassword" 
-                                        class="form-input password-input"
-                                        placeholder="Enter your new password"
-                                        required
-                                    >
-                                    <button type="button" class="password-toggle" data-target="newPassword" aria-label="Toggle password visibility">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
+                            <div class="section-content">
+                                <div class="bio-content">
+                                    <div class="bio-display" id="bio-display">
+                                        <p id="user-bio">Tell others about yourself...</p>
+                                    </div>
+                                    <div class="bio-edit" id="bio-edit" style="display: none;">
+                                        <textarea id="bio-textarea" class="bio-textarea form-input" placeholder="Tell others about yourself..." maxlength="500" rows="4"></textarea>
+                                        <div class="character-count">
+                                            <span id="bio-char-count">0</span>/500 characters
+                                        </div>
+                                        <div class="form-actions bio-actions">
+                                            <button type="button" class="btn btn-secondary" id="cancel-bio-btn">
+                                                <i class="fas fa-times"></i>
+                                                <span>Cancel</span>
+                                            </button>
+                                            <button type="button" class="btn btn-primary" id="save-bio-btn">
+                                                <i class="fas fa-save"></i>
+                                                <span>Save Bio</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="bio-actions-display">
+                                        <button class="btn btn-primary" id="edit-bio-btn">
+                                            <i class="fas fa-pencil-alt"></i>
+                                            <span>Edit Bio</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="password-strength" id="passwordStrength"></div>
-                                <div class="input-error" id="newPasswordError"></div>
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="confirmPassword" class="form-label">
-                                    <i class="fas fa-check-double" aria-hidden="true"></i>
-                                    <span>Confirm New Password</span>
-                                </label>
-                                <div class="password-input-wrapper">
-                                    <input 
-                                        type="password" 
-                                        id="confirmPassword" 
-                                        name="confirmPassword" 
-                                        class="form-input password-input"
-                                        placeholder="Confirm your new password"
-                                        required
-                                    >
-                                    <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Toggle password visibility">
-                                        <i class="fas fa-eye" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <div class="input-error" id="confirmPasswordError"></div>
-                            </div>
-                            
-                            <div class="form-actions">
-                                <button type="button" class="btn btn-secondary" id="cancelPassword">
-                                    <i class="fas fa-xmark" aria-hidden="true"></i>
-                                    <span>Cancel</span>
-                                </button>
-                                <button type="submit" class="btn btn-primary" id="changePassword">
+                        </section>
+
+                        <!-- Password Change Section -->
+                        <section class="settings-section" id="passwordSection">
+                            <div class="section-header">
+                                <h2 class="section-title">
                                     <i class="fas fa-shield-halved" aria-hidden="true"></i>
-                                    <span>Update Password</span>
-                                </button>
+                                    <span>Change Password</span>
+                                </h2>
+                                <p class="section-description">Update your account password for enhanced security</p>
                             </div>
-                        </form>
+                            
+                            <div class="section-content">
+                                <form class="settings-form" id="passwordForm">
+                                    <div class="form-group">
+                                        <label for="currentPassword" class="form-label">
+                                            <i class="fas fa-lock" aria-hidden="true"></i>
+                                            <span>Current Password</span>
+                                        </label>
+                                        <div class="password-input-wrapper">
+                                            <input 
+                                                type="password" 
+                                                id="currentPassword" 
+                                                name="currentPassword" 
+                                                class="form-input password-input"
+                                                placeholder="Enter your current password"
+                                                required
+                                            >
+                                            <button type="button" class="password-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="input-error" id="currentPasswordError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="newPassword" class="form-label">
+                                            <i class="fas fa-key" aria-hidden="true"></i>
+                                            <span>New Password</span>
+                                        </label>
+                                        <div class="password-input-wrapper">
+                                            <input 
+                                                type="password" 
+                                                id="newPassword" 
+                                                name="newPassword" 
+                                                class="form-input password-input"
+                                                placeholder="Enter your new password"
+                                                required
+                                            >
+                                            <button type="button" class="password-toggle" data-target="newPassword" aria-label="Toggle password visibility">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="password-strength" id="passwordStrength"></div>
+                                        <div class="input-error" id="newPasswordError"></div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="confirmPassword" class="form-label">
+                                            <i class="fas fa-check-double" aria-hidden="true"></i>
+                                            <span>Confirm New Password</span>
+                                        </label>
+                                        <div class="password-input-wrapper">
+                                            <input 
+                                                type="password" 
+                                                id="confirmPassword" 
+                                                name="confirmPassword" 
+                                                class="form-input password-input"
+                                                placeholder="Confirm your new password"
+                                                required
+                                            >
+                                            <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Toggle password visibility">
+                                                <i class="fas fa-eye" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <div class="input-error" id="confirmPasswordError"></div>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="button" class="btn btn-secondary" id="cancelPassword">
+                                            <i class="fas fa-xmark" aria-hidden="true"></i>
+                                            <span>Cancel</span>
+                                        </button>
+                                        <button type="submit" class="btn btn-primary" id="changePassword">
+                                            <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                                            <span>Update Password</span>
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
                     </div>
-                </section>
 
-                <!-- Social Links Section -->
-                <section class="settings-section" id="socialSection">
+                    <!-- Right Column: Social Links -->
+                    <div class="settings-column settings-right-column">
+                        <!-- Social Links Section -->
+                        <section class="settings-section" id="socialSection">
                     <div class="section-header">
                         <h2 class="section-title">
                             <i class="fas fa-link" aria-hidden="true"></i>
@@ -721,17 +785,17 @@
                                     </div>
                                 </div>
 
-                                <!-- Custom Website -->
-                                <div class="social-link-group" data-platform="website">
+                                <!-- Facebook -->
+                                <div class="social-link-group" data-platform="facebook">
                                     <div class="social-header">
                                         <div class="social-info">
-                                            <i class="fas fa-globe social-icon website" aria-hidden="true"></i>
-                                            <span class="social-name">Custom Website</span>
+                                            <i class="fab fa-facebook-f social-icon facebook" aria-hidden="true"></i>
+                                            <span class="social-name">Facebook</span>
                                             <span class="social-visibility-status">Hidden from dashboard</span>
                                         </div>
                                         <div class="social-toggle">
-                                            <label class="toggle-switch" aria-label="Show website on dashboard">
-                                                <input type="checkbox" class="social-checkbox" name="website_enabled" aria-describedby="website-desc">
+                                            <label class="toggle-switch" aria-label="Show Facebook on dashboard">
+                                                <input type="checkbox" class="social-checkbox" name="facebook_enabled" aria-describedby="facebook-desc">
                                                 <span class="toggle-slider" aria-hidden="true"></span>
                                             </label>
                                         </div>
@@ -739,22 +803,14 @@
                                     <div class="social-input-group">
                                         <input 
                                             type="url" 
-                                            name="website_url" 
+                                            name="facebook_url" 
                                             class="form-input social-input"
-                                            placeholder="https://your-website.com"
-                                            aria-label="Website URL"
-                                            id="website-desc"
+                                            placeholder="https://facebook.com/username"
+                                            aria-label="Facebook profile URL"
+                                            id="facebook-desc"
                                             disabled
                                         >
-                                        <input 
-                                            type="text" 
-                                            name="website_name" 
-                                            class="form-input social-input"
-                                            placeholder="Website Display Name"
-                                            aria-label="Website display name"
-                                            disabled
-                                        >
-                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="website">
+                                        <button type="button" class="btn btn-sm btn-primary social-save-btn" data-platform="facebook">
                                             <i class="fas fa-save"></i>
                                             <span>Save</span>
                                         </button>
@@ -764,6 +820,8 @@
                         </form>
                     </div>
                 </section>
+                    </div>
+                </div>
             </div>
         </div>
     </main>

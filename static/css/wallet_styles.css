@@ -287,8 +287,10 @@
 .daily-claim-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
+    gap: 12px;
     padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .claim-day {
@@ -296,39 +298,67 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px;
-    border-radius: 8px;
+    padding: 12px 8px;
+    border-radius: 10px;
     background: rgba(255, 255, 255, 0.05);
-    border: none;
-    min-height: 120px;
+    border: 2px solid transparent;
+    min-height: 110px;
+    max-height: 110px;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
     color: white;
     position: relative;
     overflow: hidden;
+    text-align: center;
+    aspect-ratio: 1;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .claim-day i {
-    font-size: 24px;
-    margin-bottom: 8px;
+    font-size: 20px;
+    margin-bottom: 6px;
+    transition: all 0.3s ease;
 }
 
 .day-number {
     font-weight: 600;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
+    font-size: 13px;
+    line-height: 1.2;
 }
 
 .reward-amount {
-    font-size: 12px;
+    font-size: 11px;
     color: #bdc3c7;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.exp-amount {
+    font-size: 10px;
+    color: #9b59b6;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 100%;
+    font-weight: 600;
 }
 
 .claim-text {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     color: #2ecc71;
-    margin-top: 8px;
-    letter-spacing: 1px;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 .claim-day.claimed {
@@ -479,18 +509,143 @@
     background: rgba(52, 152, 219, 0.2);
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+/* Responsive adjustments for consistent claim button sizes */
+@media (max-width: 1200px) {
+    .daily-claim-grid {
+        grid-template-columns: repeat(7, 1fr);
+        gap: 10px;
+        padding: 15px;
+    }
+    
+    .claim-day {
+        min-height: 100px;
+        max-height: 100px;
+        padding: 10px 6px;
+    }
+    
+    .claim-day i {
+        font-size: 18px;
+        margin-bottom: 5px;
+    }
+    
+    .reward-amount {
+        font-size: 10px;
+    }
+    
+    .exp-amount {
+        font-size: 9px;
+    }
+}
+
+@media (max-width: 992px) {
     .wallet-row {
         flex-direction: column;
     }
     
     .daily-claim-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(7, 1fr);
+        gap: 8px;
+        padding: 15px;
     }
     
-    .daily-claim-grid .claim-day:nth-child(n+5) {
-        grid-column: span 2;
+    .claim-day {
+        min-height: 90px;
+        max-height: 90px;
+        padding: 8px 4px;
+    }
+    
+    .claim-day i {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    
+    .day-number {
+        font-size: 12px;
+        margin-bottom: 3px;
+    }
+    
+    .reward-amount {
+        font-size: 9px;
+    }
+    
+    .exp-amount {
+        font-size: 8px;
+    }
+    
+    .claim-text {
+        font-size: 8px;
+        margin-top: 3px;
+    }
+}
+
+@media (max-width: 768px) {
+    .daily-claim-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        padding: 15px;
+        grid-template-rows: repeat(3, auto);
+    }
+    
+    .claim-day {
+        min-height: 85px;
+        max-height: 85px;
+        padding: 8px 6px;
+        border-radius: 8px;
+    }
+    
+    .claim-day i {
+        font-size: 16px;
+        margin-bottom: 4px;
+    }
+    
+    .day-number {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+    
+    .reward-amount {
+        font-size: 9px;
+    }
+    
+    .claim-text {
+        font-size: 7px;
+        margin-top: 2px;
+    }
+    
+    /* Layout: First 3 days in row 1, next 3 in row 2, last 1 in row 3 center */
+    .daily-claim-grid .claim-day:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .daily-claim-grid .claim-day:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    .daily-claim-grid .claim-day:nth-child(3) {
+        grid-column: 3;
+        grid-row: 1;
+    }
+    
+    .daily-claim-grid .claim-day:nth-child(4) {
+        grid-column: 1;
+        grid-row: 2;
+    }
+    
+    .daily-claim-grid .claim-day:nth-child(5) {
+        grid-column: 2;
+        grid-row: 2;
+    }
+    
+    .daily-claim-grid .claim-day:nth-child(6) {
+        grid-column: 3;
+        grid-row: 2;
+    }
+    
+    .daily-claim-grid .claim-day:nth-child(7) {
+        grid-column: 2;
+        grid-row: 3;
     }
     
     .action-buttons {
@@ -498,9 +653,76 @@
     }
 }
 
+@media (max-width: 640px) {
+    .daily-claim-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 12px;
+    }
+    
+    .claim-day {
+        min-height: 80px;
+        max-height: 80px;
+        padding: 6px 4px;
+    }
+    
+    .claim-day i {
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+    
+    .day-number {
+        font-size: 10px;
+        margin-bottom: 2px;
+    }
+    
+    .reward-amount {
+        font-size: 8px;
+    }
+    
+    .exp-amount {
+        font-size: 7px;
+    }
+    
+    .claim-text {
+        font-size: 7px;
+        margin-top: 2px;
+    }
+}
+
 @media (max-width: 480px) {
     .daily-claim-grid {
         grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+        padding: 10px;
+    }
+    
+    .claim-day {
+        min-height: 75px;
+        max-height: 75px;
+        padding: 6px 3px;
+        border-radius: 6px;
+    }
+    
+    .claim-day i {
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+    
+    .day-number {
+        font-size: 10px;
+        margin-bottom: 1px;
+    }
+    
+    .reward-amount {
+        font-size: 8px;
+        line-height: 1.1;
+    }
+    
+    .claim-text {
+        font-size: 6px;
+        margin-top: 1px;
+        letter-spacing: 0.3px;
     }
     
     .daily-claim-grid .claim-day {
@@ -509,6 +731,44 @@
     
     .action-buttons {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 360px) {
+    .daily-claim-grid {
+        padding: 8px;
+        gap: 4px;
+    }
+    
+    .claim-day {
+        min-height: 70px;
+        max-height: 70px;
+        padding: 4px 2px;
+    }
+    
+    .claim-day i {
+        font-size: 12px;
+        margin-bottom: 2px;
+    }
+    
+    .day-number {
+        font-size: 9px;
+        margin-bottom: 1px;
+    }
+    
+    .reward-amount {
+        font-size: 7px;
+        line-height: 1;
+    }
+    
+    .exp-amount {
+        font-size: 6px;
+        line-height: 1;
+    }
+    
+    .claim-text {
+        font-size: 6px;
+        margin-top: 1px;
     }
 }
 

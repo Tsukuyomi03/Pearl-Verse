@@ -16,7 +16,10 @@ class User(db.Model):
     password = db.Column(db.String(255), nullable=False)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
-    date_of_birth = db.Column(db.Date, nullable=True)
+    date_of_birth = db.Column(db.Date, nullable=True)  # Keep for backward compatibility
+    birth_month = db.Column(db.Integer, nullable=True)  # Month (1-12)
+    birth_day = db.Column(db.Integer, nullable=True)    # Day (1-31)
+    birth_year = db.Column(db.Integer, nullable=True)   # Year (4 digits)
     referral_code = db.Column(db.String(20), unique=True)
     wallet_address = db.Column(db.String(255))
     pearl = db.Column(db.Integer, default=0)
@@ -42,6 +45,9 @@ class User(db.Model):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'date_of_birth': self.date_of_birth.isoformat() if self.date_of_birth else None,
+            'birth_month': self.birth_month,
+            'birth_day': self.birth_day,
+            'birth_year': self.birth_year,
             'referral_code': self.referral_code,
             'wallet_address': self.wallet_address,
             'pearl': self.pearl,

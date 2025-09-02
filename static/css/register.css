@@ -62,6 +62,12 @@ body {
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: hidden;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for better mobile support */
+    padding-top: max(2rem, env(safe-area-inset-top, 0));
+    padding-bottom: max(2rem, env(safe-area-inset-bottom, 0));
+    padding-left: env(safe-area-inset-left, 0);
+    padding-right: env(safe-area-inset-right, 0);
 }
 
 /* ============================================
@@ -262,8 +268,9 @@ body {
     overflow: hidden;
     animation: slideInUp 0.6s ease-out;
     max-width: 500px;
-    margin: 2rem auto;
+    margin: 0 auto;
     position: relative;
+    width: 100%;
 }
 
 .register-card::before {
@@ -542,6 +549,105 @@ body {
 .form-control.is-invalid {
     border-color: var(--danger-color);
     background-image: none;
+}
+
+/* Disabled form controls */
+.form-control:disabled,
+.form-select:disabled,
+.form-control.disabled,
+.form-select.disabled {
+    background: var(--secondary-bg) !important;
+    border-color: var(--text-muted) !important;
+    border-style: dashed !important;
+    color: var(--text-muted) !important;
+    opacity: 0.5;
+    cursor: not-allowed;
+    -webkit-text-fill-color: var(--text-muted) !important;
+    filter: grayscale(0.3);
+}
+
+.form-control:disabled::placeholder,
+.form-select:disabled::placeholder {
+    color: var(--text-muted);
+    opacity: 0.4;
+}
+
+/* Add a visual indicator for disabled birthday fields */
+.form-control:disabled:hover,
+.form-select:disabled:hover {
+    border-color: var(--text-muted) !important;
+    box-shadow: none !important;
+}
+
+/* Birthday field specific styles */
+.birthday-field-disabled {
+    position: relative;
+}
+
+.birthday-field-disabled::after {
+    content: "Select year first";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.7;
+}
+
+.birthday-field-disabled.month-disabled::after {
+    content: "Select year first";
+}
+
+.birthday-field-disabled.day-disabled::after {
+    content: "Select month first";
+}
+
+/* Enhanced Birthday Dropdowns */
+.birthday-select {
+    position: relative;
+    background: linear-gradient(to bottom, var(--input-bg) 0%, var(--secondary-bg) 100%);
+    border-width: 2px;
+    font-weight: 500;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.birthday-select option {
+    background-color: var(--card-bg);
+    padding: 8px;
+}
+
+.birthday-select:focus {
+    background: linear-gradient(to bottom, var(--secondary-bg) 0%, var(--input-bg) 100%);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.birthday-select:not(:disabled):hover {
+    border-color: var(--primary-color);
+    background: linear-gradient(to bottom, var(--secondary-bg) 0%, var(--input-bg) 100%);
+}
+
+/* Year dropdown */
+.birthday-select.year-select {
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Month dropdown */
+.birthday-select.month-select {
+    border-left: 4px solid var(--info-color);
+}
+
+/* Day dropdown */
+.birthday-select.day-select {
+    border-left: 4px solid var(--success-color);
+}
+
+/* Apply a special effect when dropdown is in focus and not disabled */
+.birthday-select:not(:disabled):focus {
+    transform: translateY(-1px);
+    transition: transform 0.2s ease;
 }
 
 /* Name inputs should display in uppercase */
@@ -876,8 +982,13 @@ body {
    ============================================ */
 
 @media (max-width: 768px) {
+    body {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+    
     .register-card {
-        margin: 1rem;
+        margin: 0.5rem;
         border-radius: var(--radius-lg);
     }
     
@@ -926,6 +1037,27 @@ body {
 }
 
 @media (max-width: 480px) {
+    body {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+    
+    .register-card {
+        margin: 0.25rem;
+    }
+    
+    .register-header {
+        padding: 1.5rem 1rem 1rem;
+    }
+    
+    .register-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .logo-container i {
+        font-size: 2.5rem;
+    }
+    
     .steps-container {
         padding: 1rem 0.5rem;
     }
@@ -940,6 +1072,11 @@ body {
     
     .register-form {
         padding: 0 1rem 1rem;
+    }
+    
+    .step-title {
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
     }
     
     .register-footer {

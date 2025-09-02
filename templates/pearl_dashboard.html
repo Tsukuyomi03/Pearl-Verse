@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Pearl Dashboard - Pearl Verse</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
@@ -20,7 +23,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/wallet_styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_qr_styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_header_update.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/post_modals.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/battle_pass_styles.css') }}">
 </head>
 <body>
     <!-- Include Modular Side Navigation -->
@@ -82,13 +85,13 @@
             <!-- Navigation Tabs -->
             <div class="profile-tabs">
                 <nav class="tab-navigation">
-                    <button class="tab-btn active" data-tab="feed">
-                        <i class="fas fa-home"></i>
-                        <span>Feed</span>
-                    </button>
-                    <button class="tab-btn" data-tab="wallet">
+                    <button class="tab-btn active" data-tab="wallet">
                         <i class="fas fa-wallet"></i>
                         <span>Wallet</span>
+                    </button>
+                    <button class="tab-btn" data-tab="level">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Level</span>
                     </button>
                     <button class="tab-btn" data-tab="info">
                         <i class="fas fa-info-circle"></i>
@@ -99,50 +102,8 @@
             
             <!-- Tab Content -->
             <div class="tab-content">
-                <!-- Feed Tab -->
-                <div class="tab-pane active" id="feed-tab">
-                    <div class="feed-container">
-                        <div class="feed-layout">
-                            <!-- Active Socials Card -->
-                            <div class="active-socials-card">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-users"></i> Active Socials</h3>
-                                </div>
-                                <div class="socials-list" id="active-socials">
-                                    <!-- Content will be loaded by JavaScript -->
-                                </div>
-                            </div>
-                            
-                            <!-- Posts and Create Post Card -->
-                            <div class="posts-card">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-newspaper"></i> Posts & Activity</h3>
-                                </div>
-                                
-                                <!-- Create Post Section -->
-                                <div class="create-post-section">
-                                    <div class="create-post-header">
-                                        <div class="mini-avatar default-avatar">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <input type="text" class="post-input" placeholder="What's on your mind?" readonly>
-                                    </div>
-                                </div>
-                                
-                                <!-- Posts Feed -->
-                                <div class="posts-feed" id="posts-feed">
-                                    <div class="loading-posts">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <p>Loading your feed...</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 <!-- Wallet Tab -->
-                <div class="tab-pane" id="wallet-tab">
+                <div class="tab-pane active" id="wallet-tab">
                     <div class="wallet-container">
                         
                         <!-- Row 1: Wallet Actions & Referral Cards -->
@@ -272,22 +233,29 @@
                     </div>
                 </div>
                 
+                <!-- Level Tab - Battle Pass Style -->
+                <div class="tab-pane" id="level-tab">
+                    <div class="level-content" id="level-content">
+                        <!-- Battle Pass content will be dynamically generated by JavaScript -->
+                        <div class="loading-posts" style="padding: 40px; text-align: center;">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 12px;"></i>
+                            <p>Loading Battle Pass...</p>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Info Tab -->
                 <div class="tab-pane" id="info-tab">
                     <div class="info-container">
-                        <!-- Row 1: Personal Information & Bio Cards -->
+                        <!-- Row 1: Personal Info and Active Socials (2-column layout) -->
                         <div class="info-row">
                             <!-- Personal Information Card -->
-                            <div class="info-card">
+                            <div class="info-card personal-info-card half-width">
                                 <div class="card-header">
                                     <h3><i class="fas fa-user"></i> Personal Information</h3>
                                 </div>
                                 <div class="card-content">
                                     <div class="info-grid">
-                                        <div class="info-item">
-                                            <label>Full Name</label>
-                                            <span id="info-full-name">Loading...</span>
-                                        </div>
                                         <div class="info-item">
                                             <label>Username</label>
                                             <span id="info-username">@username</span>
@@ -297,6 +265,10 @@
                                             <span id="info-email">email@example.com</span>
                                         </div>
                                         <div class="info-item">
+                                            <label>Birthday</label>
+                                            <span id="info-birthday">Not Provided</span>
+                                        </div>
+                                        <div class="info-item">
                                             <label>Member Since</label>
                                             <span id="info-member-since">Loading...</span>
                                         </div>
@@ -304,42 +276,18 @@
                                 </div>
                             </div>
                             
-                            <!-- Bio Card -->
-                            <div class="info-card">
+                            <!-- Active Socials Card -->
+                            <div class="active-socials-card info-card half-width">
                                 <div class="card-header">
-                                    <h3><i class="fas fa-edit"></i> Bio</h3>
-                                    <button class="edit-bio-btn" id="edit-bio-btn">
-                                        <i class="fas fa-pencil-alt"></i>
-                                        Edit
-                                    </button>
+                                    <h3><i class="fas fa-users"></i> Active Socials</h3>
                                 </div>
-                                <div class="card-content">
-                                    <div class="bio-content">
-                                        <div class="bio-display" id="bio-display">
-                                            <p id="user-bio">Tell others about yourself...</p>
-                                        </div>
-                                        <div class="bio-edit" id="bio-edit" style="display: none;">
-                                            <textarea id="bio-textarea" class="bio-textarea" placeholder="Tell others about yourself..." maxlength="500"></textarea>
-                                            <div class="bio-actions">
-                                                <button class="btn btn-secondary" id="cancel-bio-btn">
-                                                    <i class="fas fa-times"></i>
-                                                    Cancel
-                                                </button>
-                                                <button class="btn btn-primary" id="save-bio-btn">
-                                                    <i class="fas fa-save"></i>
-                                                    Save
-                                                </button>
-                                            </div>
-                                            <div class="character-count">
-                                                <span id="bio-char-count">0</span>/500
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="socials-list" id="active-socials">
+                                    <!-- Content will be loaded by JavaScript -->
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Row 2: Showcase Card -->
+                        <!-- Row 3: Showcase Card -->
                         <div class="info-row">
                             <div class="info-card full-width">
                                 <div class="card-header">
@@ -541,256 +489,14 @@
         </div>
     </div>
     
-    <!-- Create Post Modal -->
-    <div id="create-post-modal" class="modal">
-        <div class="modal-content create-post-modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-edit"></i> Create Post</h3>
-                <button class="close-modal" id="close-create-post-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="create-post-form" enctype="multipart/form-data">
-                    <!-- User Info Header -->
-                    <div class="post-creator-header">
-                        <div class="creator-avatar default-avatar">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="creator-info">
-                            <span class="creator-name" id="creator-name">Loading...</span>
-                            <div class="post-privacy">
-                                <i class="fas fa-globe"></i>
-                                <span>Public</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Post Content -->
-                    <div class="form-group">
-                        <textarea id="post-content" name="content" class="post-textarea" 
-                            placeholder="What's on your mind?" maxlength="1000" required></textarea>
-                        <div class="character-count">
-                            <span id="post-char-count">0</span>/1000
-                        </div>
-                    </div>
-                    
-                    <!-- Image Preview -->
-                    <div class="image-preview-section" id="image-preview-section" style="display: none;">
-                        <div class="image-preview-container" id="image-preview-container">
-                            <!-- Multiple image previews will be added here dynamically -->
-                        </div>
-                        <div class="image-upload-info">
-                            <p>You can upload up to 10 images per post</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Feeling & Location Display -->
-                    <div class="post-extras">
-                        <div class="feeling-display" id="feeling-display" style="display: none;">
-                            <i class="fas fa-smile"></i>
-                            <span>Feeling <span id="feeling-text"></span></span>
-                            <button type="button" class="remove-feeling-btn" id="remove-feeling-btn">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="location-display" id="location-display" style="display: none;">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span id="location-text"></span>
-                            <button type="button" class="remove-location-btn" id="remove-location-btn">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Hidden inputs -->
-                    <input type="hidden" id="selected-feeling" name="feeling">
-                    <input type="hidden" id="selected-location" name="location">
-                    <input type="file" id="image-upload" name="image_files" accept="image/*" multiple style="display: none;">
-                    
-                    <!-- Post Actions -->
-                    <div class="post-actions-bar">
-                        <button type="button" class="post-action-btn" id="add-photo-btn">
-                            <i class="fas fa-image"></i>
-                            Photo
-                        </button>
-                        <button type="button" class="post-action-btn" id="add-feeling-btn">
-                            <i class="fas fa-smile"></i>
-                            Feeling
-                        </button>
-                        <button type="button" class="post-action-btn" id="add-location-btn">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Location
-                        </button>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" id="cancel-create-post-btn">
-                    <i class="fas fa-times"></i>
-                    Cancel
-                </button>
-                <button type="submit" form="create-post-form" class="btn btn-primary" id="submit-post-btn">
-                    <i class="fas fa-paper-plane"></i>
-                    Post
-                </button>
-            </div>
-        </div>
-    </div>
     
-    <!-- Post Detail Modal -->
-    <div id="post-detail-modal" class="modal">
-        <div class="modal-content post-detail-modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-comment"></i> Post Details</h3>
-                <button class="close-modal" id="close-post-detail-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- Post Content -->
-                <div id="modal-post-content">
-                    <!-- Post will be loaded here dynamically -->
-                </div>
-                
-                <!-- Comments Section -->
-                <div class="comments-section">
-                    <div class="comments-header">
-                        <h4><i class="fas fa-comments"></i> Comments</h4>
-                        <span class="comments-count" id="modal-comments-count">0</span>
-                    </div>
-                    
-                    <!-- Add Comment Form -->
-                    <div class="add-comment-form">
-                        <div class="comment-input-container">
-                            <div class="commenter-avatar default-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="comment-input-wrapper">
-                                <textarea id="comment-input" class="comment-textarea" 
-                                    placeholder="Write a comment..." maxlength="500"></textarea>
-                                <div class="comment-actions">
-                                    <button type="button" class="btn btn-primary btn-sm" id="submit-comment-btn">
-                                        <i class="fas fa-paper-plane"></i>
-                                        Comment
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Comments List -->
-                    <div class="comments-list" id="comments-list">
-                        <div class="loading-comments">
-                            <i class="fas fa-spinner fa-spin"></i>
-                            <p>Loading comments...</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Load More Comments -->
-                    <div class="load-more-comments" id="load-more-comments" style="display: none;">
-                        <button class="btn btn-secondary btn-sm" id="load-more-comments-btn">
-                            Load More Comments
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Feeling Selection Modal -->
-    <div id="feeling-modal" class="modal">
-        <div class="modal-content feeling-modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-smile"></i> How are you feeling?</h3>
-                <button class="close-modal" id="close-feeling-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="feelings-grid">
-                    <button type="button" class="feeling-option" data-feeling="happy">
-                        <i class="fas fa-smile"></i>
-                        <span>Happy</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="excited">
-                        <i class="fas fa-grin-stars"></i>
-                        <span>Excited</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="grateful">
-                        <i class="fas fa-heart"></i>
-                        <span>Grateful</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="blessed">
-                        <i class="fas fa-pray"></i>
-                        <span>Blessed</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="motivated">
-                        <i class="fas fa-fire"></i>
-                        <span>Motivated</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="proud">
-                        <i class="fas fa-medal"></i>
-                        <span>Proud</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="relaxed">
-                        <i class="fas fa-leaf"></i>
-                        <span>Relaxed</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="adventurous">
-                        <i class="fas fa-mountain"></i>
-                        <span>Adventurous</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="creative">
-                        <i class="fas fa-palette"></i>
-                        <span>Creative</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="nostalgic">
-                        <i class="fas fa-clock"></i>
-                        <span>Nostalgic</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="thoughtful">
-                        <i class="fas fa-brain"></i>
-                        <span>Thoughtful</span>
-                    </button>
-                    <button type="button" class="feeling-option" data-feeling="chill">
-                        <i class="fas fa-coffee"></i>
-                        <span>Chill</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Image Viewer Modal -->
-    <div id="image-viewer-modal" class="modal">
-        <div class="modal-content image-viewer-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-image"></i> Image Viewer</h3>
-                <button class="close-modal" id="close-image-viewer">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body image-viewer-body">
-                <div class="image-viewer-container">
-                    <button class="image-nav-btn prev-btn" id="prev-image-btn" aria-label="Previous image">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <div class="image-display">
-                        <img id="viewer-image" class="viewer-image" src="" alt="Image viewer">
-                        <div class="image-counter" id="image-counter">1 / 1</div>
-                    </div>
-                    <button class="image-nav-btn next-btn" id="next-image-btn" aria-label="Next image">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
     
     <!-- Scripts -->
     <!-- jQuery Library -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
     
     <!-- QR Code Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>

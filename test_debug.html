@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test - Floating Reaction Panels</title>
+    <link href="static/css/floating_reactions.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-post {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .facebook-action-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .facebook-action-btn:hover {
+            background: #f2f3f5;
+        }
+        .facebook-reactions-menu {
+            display: none;
+            position: fixed;
+            z-index: 2147483647;
+            background: #ffffff;
+            border: 1px solid #dadde1;
+            border-radius: 30px;
+            padding: 8px 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            min-width: 300px;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px) scale(0.9);
+            transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+            pointer-events: none;
+            align-items: center;
+            justify-content: space-around;
+            gap: 8px;
+            will-change: transform, opacity;
+        }
+        .facebook-reactions-menu.show {
+            display: flex !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            transform: translateX(-50%) translateY(0) scale(1) !important;
+        }
+        .facebook-reaction-emoji {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            font-size: 28px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .facebook-reaction-emoji:hover {
+            background: #f2f3f5;
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Debug Test - Floating Reaction Panels</h1>
+        <p>Open browser console to see debug logs when hovering over React buttons.</p>
+        
+        <div class="test-post">
+            <div class="facebook-post" data-post-id="1">
+                <p>This is a test post #1. Hover over the React button below to test the floating panel.</p>
+                
+                <div class="facebook-post-actions">
+                    <div class="facebook-reactions-dropdown">
+                        <button class="facebook-action-btn"
+                                data-post-id="1"
+                                onmouseenter="showReactionPanel(1)"
+                                onmouseleave="hideReactionPanelDelayed(1)"
+                                onclick="quickReactToPost(1)">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>Like</span>
+                        </button>
+                        <div class="facebook-reactions-menu" id="reactions-menu-1"
+                             onmouseenter="keepReactionPanel(1)"
+                             onmouseleave="hideReactionPanel(1)">
+                            <button class="facebook-reaction-emoji" onclick="console.log('Like clicked')">👍</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Love clicked')">❤️</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Haha clicked')">😆</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Wow clicked')">😮</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Sad clicked')">😢</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Angry clicked')">😠</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-post">
+            <div class="facebook-post" data-post-id="2">
+                <p>This is a test post #2. Try this one too to see if multiple panels work correctly.</p>
+                
+                <div class="facebook-post-actions">
+                    <div class="facebook-reactions-dropdown">
+                        <button class="facebook-action-btn"
+                                data-post-id="2"
+                                onmouseenter="showReactionPanel(2)"
+                                onmouseleave="hideReactionPanelDelayed(2)"
+                                onclick="quickReactToPost(2)">
+                            <i class="fas fa-thumbs-up"></i>
+                            <span>Like</span>
+                        </button>
+                        <div class="facebook-reactions-menu" id="reactions-menu-2"
+                             onmouseenter="keepReactionPanel(2)"
+                             onmouseleave="hideReactionPanel(2)">
+                            <button class="facebook-reaction-emoji" onclick="console.log('Like clicked')">👍</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Love clicked')">❤️</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Haha clicked')">😆</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Wow clicked')">😮</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Sad clicked')">😢</button>
+                            <button class="facebook-reaction-emoji" onclick="console.log('Angry clicked')">😠</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Include the debug functions from dashboard.js
+        let reactionPanelTimeouts = {};
+        let activeReactionPanels = new Set();
+
+        // Show reaction panel on hover/focus
+        function showReactionPanel(postId) {
+            console.log('DEBUG: showReactionPanel called for post:', postId);
+            clearTimeout(reactionPanelTimeouts[postId]);
+            
+            const panelId = `reactions-menu-${postId}`;
+            const panel = document.getElementById(panelId);
+            const button = document.querySelector(`[data-post-id="${postId}"]`);
+            
+            console.log('DEBUG: Found panel:', !!panel, 'Found button:', !!button);
+            
+            if (!panel || !button) {
+                console.warn('Reaction panel or button not found for post:', postId);
+                return;
+            }
+            
+            // Hide any other active panels first
+            activeReactionPanels.forEach(id => {
+                if (id !== panelId) {
+                    hideReactionPanelImmediate(id.replace('reactions-menu-', ''));
+                }
+            });
+            
+            // Calculate dynamic positioning
+            const buttonRect = button.getBoundingClientRect();
+            console.log('DEBUG: Button rect:', buttonRect);
+            
+            // Position the panel above the button
+            const panelTop = buttonRect.top - 60; // 60px above button
+            const panelLeft = buttonRect.left + (buttonRect.width / 2); // Center on button
+            
+            console.log('DEBUG: Positioning panel at:', { top: panelTop, left: panelLeft });
+            
+            // Apply positioning with high specificity
+            panel.style.setProperty('position', 'fixed', 'important');
+            panel.style.setProperty('top', `${panelTop}px`, 'important');
+            panel.style.setProperty('left', `${panelLeft}px`, 'important');
+            panel.style.setProperty('transform', 'translateX(-50%) translateY(10px) scale(0.9)', 'important');
+            panel.style.setProperty('z-index', '2147483647', 'important');
+            panel.style.setProperty('background', '#ffffff', 'important');
+            panel.style.setProperty('border', '1px solid #dadde1', 'important');
+            panel.style.setProperty('border-radius', '30px', 'important');
+            panel.style.setProperty('padding', '8px 16px', 'important');
+            panel.style.setProperty('box-shadow', '0 12px 40px rgba(0, 0, 0, 0.15)', 'important');
+            panel.style.setProperty('min-width', '300px', 'important');
+            panel.style.setProperty('backdrop-filter', 'blur(10px)', 'important');
+            panel.style.setProperty('opacity', '0', 'important');
+            panel.style.setProperty('pointer-events', 'none', 'important');
+            
+            // Add debug class temporarily
+            panel.classList.add('debug');
+            
+            // Show this panel
+            panel.style.setProperty('display', 'flex', 'important');
+            
+            console.log('DEBUG: Panel displayed, triggering animation...');
+            
+            // Trigger animation after a brief delay to ensure display is set
+            requestAnimationFrame(() => {
+                panel.classList.add('show');
+                panel.style.setProperty('transform', 'translateX(-50%) translateY(0) scale(1)', 'important');
+                panel.style.setProperty('opacity', '1', 'important');
+                panel.style.setProperty('pointer-events', 'auto', 'important');
+                activeReactionPanels.add(panelId);
+                
+                console.log('DEBUG: Animation applied, panel should be visible');
+                
+                // Remove debug class after a short time
+                setTimeout(() => {
+                    panel.classList.remove('debug');
+                }, 2000);
+            });
+        }
+
+        // Hide reaction panel with delay (for smooth interaction)
+        function hideReactionPanelDelayed(postId) {
+            reactionPanelTimeouts[postId] = setTimeout(() => {
+                hideReactionPanel(postId);
+            }, 300); // 300ms delay
+        }
+
+        // Keep reaction panel open (when hovering over panel itself)
+        function keepReactionPanel(postId) {
+            clearTimeout(reactionPanelTimeouts[postId]);
+        }
+
+        // Hide reaction panel immediately
+        function hideReactionPanel(postId) {
+            hideReactionPanelImmediate(postId);
+        }
+
+        function hideReactionPanelImmediate(postId) {
+            const panelId = `reactions-menu-${postId}`;
+            const panel = document.getElementById(panelId);
+            
+            if (!panel) return;
+            
+            // Start hide animation
+            panel.classList.remove('show');
+            activeReactionPanels.delete(panelId);
+            
+            // Hide completely after animation
+            setTimeout(() => {
+                if (!panel.classList.contains('show')) {
+                    panel.style.display = 'none';
+                }
+            }, 200);
+        }
+
+        // Quick react (click without hovering)
+        function quickReactToPost(postId) {
+            console.log('DEBUG: Quick react for post:', postId);
+            hideReactionPanelImmediate(postId);
+        }
+    </script>
+</body>
+</html>
+</html>

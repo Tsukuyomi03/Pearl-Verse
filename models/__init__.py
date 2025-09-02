@@ -15,12 +15,8 @@ from .referral import Referral
 from .transaction import Transaction
 from .transfer import Transfer
 from .follow import Follow
-from .post import Post
-from .post_reaction import PostReaction
 from .social_media_link import SocialMediaLink
-from .comment import Comment
-from .comment_like import CommentLike
-from .post_image import PostImage
+from .battle_pass_claim import BattlePassClaim
 
 # Export all models for easy importing
 __all__ = [
@@ -31,10 +27,6 @@ __all__ = [
     'Transaction',
     'Transfer',
     'Follow',
-    'Post',
-    'PostReaction',
     'SocialMediaLink',
-    'Comment',
-    'CommentLike',
-    'PostImage'
+    'BattlePassClaim',
 ]

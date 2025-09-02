@@ -43,7 +43,9 @@ $(document).ready(function() {
         firstName: $('#firstName'),
         lastName: $('#lastName'),
         username: $('#username'),
-        dateOfBirth: $('#dateOfBirth'),
+        birthDay: $('#birthDay'),
+        birthMonth: $('#birthMonth'),
+        birthYear: $('#birthYear'),
         email: $('#email'),
         password: $('#password'),
         confirmPassword: $('#confirmPassword'),
@@ -66,7 +68,7 @@ $(document).ready(function() {
         setupPasswordToggles();
         setupPasswordStrength();
         setupFormValidation();
-        setupDatePicker();
+        setupBirthdayFields();
         initializeStep(1);
         
         // Add smooth entrance animation
@@ -243,96 +245,204 @@ $(document).ready(function() {
     }
 
     // ============================================
-    // Date Picker Setup
+    // Birthday Fields Setup
     // ============================================
     
-    function setupDatePicker() {
-        // Initialize Flatpickr for date of birth input
-        if (elements.dateOfBirth.length && typeof flatpickr !== 'undefined') {
-            // Calculate date range (13 to 100 years ago)
-            const today = new Date();
-            const maxDate = new Date();
-            maxDate.setFullYear(today.getFullYear() - CONFIG.validation.ageMin); // 13 years ago
-            
-            const minDate = new Date();
-            minDate.setFullYear(today.getFullYear() - 100); // 100 years ago
-            
-            elements.dateOfBirth.flatpickr({
-                // Date constraints
-                minDate: minDate,
-                maxDate: maxDate,
-                defaultDate: null,
-                
-                // Interface options
-                allowInput: true,
-                clickOpens: true,
-                
-                // Format options
-                dateFormat: 'Y-m-d',
-                altInput: true,
-                altFormat: 'F j, Y', // "January 15, 1990"
-                
-                // Theme and styling
-                theme: 'dark',
-                
-                // Localization
-                locale: {
-                    firstDayOfWeek: 1 // Monday
-                },
-                
-                // Animation and behavior
-                animate: true,
-                position: 'auto',
-                
-                // Placeholder and styling
-                placeholder: 'Select your date of birth',
-                
-                // Events
-                onChange: function(selectedDates, dateStr, instance) {
-                    // Trigger validation when date changes
-                    elements.dateOfBirth.trigger('change');
-                    
-                    // Add visual feedback
-                    if (selectedDates.length > 0) {
-                        elements.dateOfBirth.addClass('is-valid').removeClass('is-invalid');
-                    }
-                },
-                
-                onOpen: function(selectedDates, dateStr, instance) {
-                    // Add custom styling when calendar opens
-                    const calendarContainer = instance.calendarContainer;
-                    calendarContainer.style.zIndex = '9999';
-                },
-                
-                onReady: function(selectedDates, dateStr, instance) {
-                    // Custom styling for the input
-                    const input = instance.input;
-                    input.style.cursor = 'pointer';
-                    
-                    // Add calendar icon to the input
-                    const wrapper = input.parentNode;
-                    if (!wrapper.querySelector('.flatpickr-calendar-icon')) {
-                        const icon = document.createElement('i');
-                        icon.className = 'bi bi-calendar-event flatpickr-calendar-icon';
-                        icon.style.cssText = `
-                            position: absolute;
-                            right: 12px;
-                            top: 50%;
-                            transform: translateY(-50%);
-                            color: var(--text-muted);
-                            pointer-events: none;
-                            z-index: 10;
-                        `;
-                        wrapper.style.position = 'relative';
-                        wrapper.appendChild(icon);
-                    }
-                }
-            });
-            
-            console.log('✓ Flatpickr date picker initialized successfully');
-        } else {
-            console.warn('⚠ Flatpickr not available, falling back to native date input');
+    function setupBirthdayFields() {
+        // Initialize all dropdowns
+        populateYearDropdown();
+        initializeBirthdayDropdowns();
+        setupBirthdayValidation();
+        
+        console.log('✓ Birthday fields initialized successfully');
+    }
+    
+    function populateYearDropdown() {
+        const currentYear = new Date().getFullYear();
+        const minYear = currentYear - 100; // 100 years ago
+        const maxYear = currentYear - CONFIG.validation.ageMin; // 13 years ago
+        
+        // Clear existing options except the placeholder
+        elements.birthYear.find('option:not(:first)').remove();
+        
+        // Add years in descending order (most recent first)
+        for (let year = maxYear; year >= minYear; year--) {
+            elements.birthYear.append(`<option value="${year}">${year}</option>`);
         }
+    }
+    
+    function initializeBirthdayDropdowns() {
+        // Initially disable month and day dropdowns
+        elements.birthMonth.prop('disabled', true).addClass('disabled');
+        elements.birthDay.prop('disabled', true).addClass('disabled');
+        
+        // Clear month and day options (keep only placeholders)
+        elements.birthMonth.find('option:not(:first)').remove();
+        elements.birthDay.find('option:not(:first)').remove();
+    }
+    
+    function populateMonthDropdown(selectedYear) {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-indexed
+        
+        // Clear existing options except placeholder
+        elements.birthMonth.find('option:not(:first)').remove();
+        
+        // Determine max month based on selected year
+        let maxMonth = 12;
+        if (parseInt(selectedYear) === currentYear) {
+            maxMonth = currentMonth; // Only show months up to current month for current year
+        }
+        
+        // Populate month options
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        
+        for (let month = 1; month <= maxMonth; month++) {
+            elements.birthMonth.append(`<option value="${month}">${monthNames[month - 1]}</option>`);
+        }
+        
+        // Enable month dropdown
+        elements.birthMonth.prop('disabled', false).removeClass('disabled');
+    }
+    
+    function populateDayDropdown(selectedYear, selectedMonth) {
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentDay = currentDate.getDate();
+        
+        // Clear existing options except placeholder
+        elements.birthDay.find('option:not(:first)').remove();
+        
+        if (!selectedMonth || !selectedYear) {
+            return;
+        }
+        
+        // Get number of days in the selected month/year
+        const daysInMonth = new Date(selectedYear, selectedMonth, 0).getDate();
+        
+        // Determine max day based on selected year/month
+        let maxDay = daysInMonth;
+        if (parseInt(selectedYear) === currentYear && parseInt(selectedMonth) === currentMonth) {
+            maxDay = Math.min(currentDay, daysInMonth); // Only show days up to today for current year/month
+        }
+        
+        // Populate day options
+        for (let day = 1; day <= maxDay; day++) {
+            elements.birthDay.append(`<option value="${day}">${day}</option>`);
+        }
+        
+        // Enable day dropdown
+        elements.birthDay.prop('disabled', false).removeClass('disabled');
+    }
+    
+    function setupBirthdayValidation() {
+        // Year selection enables month dropdown and populates it
+        elements.birthYear.on('change', function() {
+            const selectedYear = $(this).val();
+            
+            if (selectedYear) {
+                // Reset month and day selections
+                elements.birthMonth.val('');
+                elements.birthDay.val('');
+                
+                // Disable day dropdown until month is selected
+                elements.birthDay.prop('disabled', true).addClass('disabled');
+                elements.birthDay.find('option:not(:first)').remove();
+                
+                // Populate and enable month dropdown
+                populateMonthDropdown(selectedYear);
+            } else {
+                // Reset everything if no year selected
+                initializeBirthdayDropdowns();
+            }
+            
+            validateBirthday();
+        });
+        
+        // Month selection enables day dropdown and populates it
+        elements.birthMonth.on('change', function() {
+            const selectedMonth = $(this).val();
+            const selectedYear = elements.birthYear.val();
+            
+            if (selectedMonth && selectedYear) {
+                // Reset day selection
+                elements.birthDay.val('');
+                
+                // Populate and enable day dropdown
+                populateDayDropdown(selectedYear, selectedMonth);
+            } else {
+                // Disable day dropdown if month not selected
+                elements.birthDay.prop('disabled', true).addClass('disabled');
+                elements.birthDay.find('option:not(:first)').remove();
+            }
+            
+            validateBirthday();
+        });
+        
+        // Validate birthday when day changes
+        elements.birthDay.on('change', function() {
+            validateBirthday();
+        });
+    }
+    
+    function validateBirthday() {
+        const day = elements.birthDay.val();
+        const month = elements.birthMonth.val();
+        const year = elements.birthYear.val();
+        
+        // Clear previous validation states
+        elements.birthDay.removeClass('is-invalid is-valid');
+        elements.birthMonth.removeClass('is-invalid is-valid');
+        elements.birthYear.removeClass('is-invalid is-valid');
+        
+        // Check if all fields are filled
+        if (!day || !month || !year) {
+            if (day || month || year) {
+                // Some fields filled, show validation for empty ones
+                if (!day) elements.birthDay.addClass('is-invalid');
+                if (!month) elements.birthMonth.addClass('is-invalid');
+                if (!year) elements.birthYear.addClass('is-invalid');
+            }
+            return false;
+        }
+        
+        // Validate date
+        const birthDate = new Date(year, month - 1, day);
+        
+        // Check if date is valid (handles invalid dates like Feb 30)
+        if (birthDate.getDate() != day || birthDate.getMonth() != month - 1 || birthDate.getFullYear() != year) {
+            elements.birthDay.addClass('is-invalid');
+            elements.birthMonth.addClass('is-invalid');
+            elements.birthYear.addClass('is-invalid');
+            return false;
+        }
+        
+        // Check age requirement
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        
+        if (age < CONFIG.validation.ageMin) {
+            elements.birthDay.addClass('is-invalid');
+            elements.birthMonth.addClass('is-invalid');
+            elements.birthYear.addClass('is-invalid');
+            return false;
+        }
+        
+        // All valid
+        elements.birthDay.addClass('is-valid');
+        elements.birthMonth.addClass('is-valid');
+        elements.birthYear.addClass('is-valid');
+        return true;
     }
 
     // ============================================
@@ -340,24 +450,6 @@ $(document).ready(function() {
     // ============================================
     
     function setupFormValidation() {
-        // Age validation for date of birth
-        elements.dateOfBirth.on('change', function() {
-            const birthDate = new Date($(this).val());
-            const today = new Date();
-            const age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            
-            if (age < CONFIG.validation.ageMin) {
-                showValidationError($(this), `You must be at least ${CONFIG.validation.ageMin} years old to register.`);
-            } else {
-                clearValidationError($(this));
-            }
-        });
-        
         // Password confirmation
         elements.confirmPassword.on('input', function() {
             if ($(this).val() !== elements.password.val()) {
@@ -413,23 +505,13 @@ $(document).ready(function() {
                 errorMessage = 'Passwords must match.';
                 break;
                 
-            case 'dateOfBirth':
-                if (value) {
-                    const birthDate = new Date(value);
-                    const today = new Date();
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-                    
-                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                        age--;
-                    }
-                    
-                    isValid = age >= CONFIG.validation.ageMin;
-                    errorMessage = `You must be at least ${CONFIG.validation.ageMin} years old to register.`;
-                } else {
-                    isValid = false;
-                    errorMessage = 'Date of birth is required.';
-                }
+            case 'birthDay':
+            case 'birthMonth':
+            case 'birthYear':
+                isValid = value.length > 0;
+                errorMessage = 'This field is required.';
+                // Trigger overall birthday validation
+                setTimeout(() => validateBirthday(), 0);
                 break;
                 
             case 'terms':
@@ -480,6 +562,13 @@ $(document).ready(function() {
                 isValid = false;
             }
         });
+        
+        // Special validation for birthday fields in step 1
+        if (currentStep === 1) {
+            if (!validateBirthday()) {
+                isValid = false;
+            }
+        }
         
         return isValid;
     }
@@ -597,11 +686,18 @@ $(document).ready(function() {
     }
     
     function collectFormData() {
+        // Send separate birthday fields as expected by backend
+        const day = elements.birthDay.val();
+        const month = elements.birthMonth.val();
+        const year = elements.birthYear.val();
+        
         return {
             firstName: elements.firstName.val().trim(),
             lastName: elements.lastName.val().trim(),
             username: elements.username.val().trim(),
-            dateOfBirth: elements.dateOfBirth.val(),
+            birthYear: year,
+            birthMonth: month,
+            birthDay: day,
             email: elements.email.val().trim().toLowerCase(),
             password: elements.password.val(),
             confirmPassword: elements.confirmPassword.val(),

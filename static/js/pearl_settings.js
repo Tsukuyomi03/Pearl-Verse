@@ -10,6 +10,7 @@ class PearlSettings {
         this.setupSocialToggles();
         this.setupFormSubmissions();
         this.setupPasswordStrength();
+        this.setupBioEditing();
         this.loadUserData();
     }
 
@@ -150,17 +151,18 @@ class PearlSettings {
                 
                 console.log(`DEBUG: Toggle changed - platform: ${platform}, isActive: ${isActive}`);
                 
-                // Update UI state immediately
+                // Update UI state immediately - ALWAYS enable inputs when toggled on
                 if (e.target.checked) {
                     // Enable the social platform
                     socialGroup.classList.add('enabled');
                     socialInputs.forEach(input => {
                         input.disabled = false;
+                        input.removeAttribute('readonly');
                     });
                     
                     // Update visibility status
                     if (visibilityStatus) {
-                        visibilityStatus.textContent = 'Visible on dashboard';
+                        visibilityStatus.textContent = 'Ready to add link';
                         visibilityStatus.classList.add('visible');
                     }
                 } else {
@@ -179,80 +181,12 @@ class PearlSettings {
                     }
                 }
                 
-                // Call backend API to update database immediately
-                try {
-                    console.log(`DEBUG: Calling backend API to toggle ${platform} to ${isActive}`);
-                    const response = await fetch('/api/social-links/toggle', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            platform: platform,
-                            is_active: isActive
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    console.log(`DEBUG: Backend response:`, result);
-                    
-                    if (result.success) {
-                        // Show success notification
-                        this.showNotification(result.message, 'success');
-                        console.log(`Successfully ${isActive ? 'activated' : 'deactivated'} ${platform}`);
-                    } else {
-                        // If backend call failed, revert the checkbox state
-                        console.error('Backend toggle failed:', result.message);
-                        e.target.checked = !isActive;
-                        this.showNotification(result.message, 'error');
-                        
-                        // Revert UI state
-                        if (!isActive) {
-                            socialGroup.classList.add('enabled');
-                            socialInputs.forEach(input => {
-                                input.disabled = false;
-                            });
-                            if (visibilityStatus) {
-                                visibilityStatus.textContent = 'Visible on dashboard';
-                                visibilityStatus.classList.add('visible');
-                            }
-                        } else {
-                            socialGroup.classList.remove('enabled');
-                            socialInputs.forEach(input => {
-                                input.disabled = true;
-                            });
-                            if (visibilityStatus) {
-                                visibilityStatus.textContent = 'Hidden from dashboard';
-                                visibilityStatus.classList.remove('visible');
-                            }
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error calling toggle API:', error);
-                    // Revert checkbox state on error
-                    e.target.checked = !isActive;
-                    this.showNotification('Network error while updating social link', 'error');
-                    
-                    // Revert UI state
-                    if (!isActive) {
-                        socialGroup.classList.add('enabled');
-                        socialInputs.forEach(input => {
-                            input.disabled = false;
-                        });
-                        if (visibilityStatus) {
-                            visibilityStatus.textContent = 'Visible on dashboard';
-                            visibilityStatus.classList.add('visible');
-                        }
-                    } else {
-                        socialGroup.classList.remove('enabled');
-                        socialInputs.forEach(input => {
-                            input.disabled = true;
-                        });
-                        if (visibilityStatus) {
-                            visibilityStatus.textContent = 'Hidden from dashboard';
-                            visibilityStatus.classList.remove('visible');
-                        }
-                    }
+                // Note: No immediate backend call - let user enter data first
+                // Backend will be called when user clicks the Save button
+                if (isActive) {
+                    this.showNotification(`${platform.charAt(0).toUpperCase() + platform.slice(1)} enabled. Enter your link and click Save.`, 'info');
+                } else {
+                    this.showNotification(`${platform.charAt(0).toUpperCase() + platform.slice(1)} disabled.`, 'info');
                 }
             });
         });
@@ -660,7 +594,7 @@ class PearlSettings {
             const platforms = [
                 'discord', 'twitter', 'instagram', 'youtube', 'tiktok',
                 'github', 'linkedin', 'twitch', 'snapchat', 'whatsapp',
-                'telegram', 'reddit', 'pinterest', 'steam', 'website'
+                'telegram', 'reddit', 'pinterest', 'steam', 'facebook'
             ];
             
             platforms.forEach(platform => {
@@ -687,13 +621,7 @@ class PearlSettings {
                 if (linkValue && linkValue.trim()) {
                     socialData[`${platform}Link`] = linkValue.trim();
                     
-                    // Add display name for website
-                    if (platform === 'website') {
-                        const websiteName = formData.get(`${platform}_name`);
-                        if (websiteName && websiteName.trim()) {
-                            socialData[`${platform}Name`] = websiteName.trim();
-                        }
-                    }
+                    // Note: Facebook doesn't need display name like the old website field
                 }
             });
 
@@ -770,11 +698,9 @@ class PearlSettings {
                     } else if (platform === 'telegram') {
                         const input = socialGroup.querySelector('input[name="telegram_username"]');
                         linkValue = input ? input.value.trim() : '';
-                    } else if (platform === 'website') {
-                        const urlInput = socialGroup.querySelector('input[name="website_url"]');
-                        const nameInput = socialGroup.querySelector('input[name="website_name"]');
-                        linkValue = urlInput ? urlInput.value.trim() : '';
-                        displayName = nameInput ? nameInput.value.trim() : '';
+                    } else if (platform === 'facebook') {
+                        const input = socialGroup.querySelector(`input[name="${platform}_url"]`);
+                        linkValue = input ? input.value.trim() : '';
                     } else {
                         const input = socialGroup.querySelector(`input[name="${platform}_url"]`);
                         linkValue = input ? input.value.trim() : '';
@@ -782,9 +708,23 @@ class PearlSettings {
                     
                     // Validate that there's a link if enabled
                     if (isEnabled && !linkValue) {
-                        this.showNotification(`Please enter a ${platform} link before enabling it.`, 'error');
+                        this.showNotification(`Please enter a ${platform} link before saving.`, 'error');
                         this.setSocialButtonLoading(button, false);
                         return;
+                    }
+                    
+                    // If there's a link but toggle is off, automatically enable it
+                    if (linkValue && !isEnabled) {
+                        checkbox.checked = true;
+                        isEnabled = true;
+                        
+                        // Update UI to reflect the automatic enabling
+                        socialGroup.classList.add('enabled');
+                        const visibilityStatus = socialGroup.querySelector('.social-visibility-status');
+                        if (visibilityStatus) {
+                            visibilityStatus.textContent = 'Visible on dashboard';
+                            visibilityStatus.classList.add('visible');
+                        }
                     }
                     
                     // Prepare the data to send
@@ -794,10 +734,7 @@ class PearlSettings {
                         is_active: isEnabled
                     };
                     
-                    // Add display name for website
-                    if (platform === 'website' && displayName) {
-                        data.display_name = displayName;
-                    }
+                    // Note: Facebook doesn't need display name
                     
                     console.log(`Sending data for ${platform}:`, data);
                     
@@ -1076,6 +1013,12 @@ class PearlSettings {
             locationInput.value = user.location;
         }
         
+        // Populate bio section
+        const bioElement = document.getElementById('user-bio');
+        if (bioElement) {
+            bioElement.textContent = user.bio || 'Tell others about yourself...';
+        }
+        
         // Update topnav profile display with real user data
         if (window.modularTopnav) {
             window.modularTopnav.updateUserProfile({
@@ -1098,7 +1041,7 @@ class PearlSettings {
         const platforms = [
             'discord', 'twitter', 'instagram', 'youtube', 'tiktok',
             'github', 'linkedin', 'twitch', 'snapchat', 'whatsapp',
-            'telegram', 'reddit', 'pinterest', 'steam', 'website'
+            'telegram', 'reddit', 'pinterest', 'steam', 'facebook'
         ];
         
         platforms.forEach(platform => {
@@ -1163,13 +1106,7 @@ class PearlSettings {
                     inputField.value = linkData.url;
                 }
                 
-                // For website, also populate the display name if available
-                if (platform === 'website' && linkData.display_name) {
-                    const nameField = socialGroup.querySelector(`input[name="${platform}_name"]`);
-                    if (nameField) {
-                        nameField.value = linkData.display_name;
-                    }
-                }
+                // Note: Facebook doesn't need display name like the old website field
             }
         });
     }
@@ -1203,6 +1140,138 @@ class PearlSettings {
         ageDisplay.classList.add('show', 'age-display');
     }
 
+    // Bio editing functionality
+    setupBioEditing() {
+        const editBtn = document.getElementById("edit-bio-btn");
+        const cancelBtn = document.getElementById("cancel-bio-btn");
+        const saveBtn = document.getElementById("save-bio-btn");
+        const bioDisplay = document.getElementById("bio-display");
+        const bioEdit = document.getElementById("bio-edit");
+        const bioTextarea = document.getElementById("bio-textarea");
+        const charCount = document.getElementById("bio-char-count");
+
+        console.log('Bio editing elements found:', {
+            editBtn: !!editBtn,
+            cancelBtn: !!cancelBtn,
+            saveBtn: !!saveBtn,
+            bioDisplay: !!bioDisplay,
+            bioEdit: !!bioEdit,
+            bioTextarea: !!bioTextarea,
+            charCount: !!charCount
+        });
+
+        if (!editBtn) {
+            console.log('Edit bio button not found - bio editing not available');
+            return;
+        }
+
+        editBtn.addEventListener("click", () => {
+            // Enter edit mode
+            bioDisplay.style.display = "none";
+            bioEdit.style.display = "block";
+            
+            // Set current bio text
+            const currentBio = document.getElementById("user-bio").textContent;
+            bioTextarea.value = currentBio === "Tell others about yourself..." ? "" : currentBio;
+            
+            // Update character count
+            this.updateBioCharCount();
+            
+            // Focus textarea
+            bioTextarea.focus();
+        });
+
+        cancelBtn?.addEventListener("click", () => {
+            this.cancelBioEdit();
+        });
+
+        saveBtn?.addEventListener("click", () => {
+            this.saveBio();
+        });
+
+        bioTextarea?.addEventListener("input", () => {
+            this.updateBioCharCount();
+        });
+
+        // Save on Enter+Ctrl
+        bioTextarea?.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && e.ctrlKey) {
+                e.preventDefault();
+                this.saveBio();
+            }
+            if (e.key === "Escape") {
+                this.cancelBioEdit();
+            }
+        });
+    }
+
+    updateBioCharCount() {
+        const bioTextarea = document.getElementById("bio-textarea");
+        const charCount = document.getElementById("bio-char-count");
+        
+        if (bioTextarea && charCount) {
+            const length = bioTextarea.value.length;
+            charCount.textContent = length;
+            
+            // Change color based on character count
+            if (length > 450) {
+                charCount.style.color = "#ef4444"; // Red when approaching limit
+            } else if (length > 400) {
+                charCount.style.color = "#f59e0b"; // Orange when getting close
+            } else {
+                charCount.style.color = "#a0aec0"; // Default color
+            }
+        }
+    }
+
+    cancelBioEdit() {
+        const bioDisplay = document.getElementById("bio-display");
+        const bioEdit = document.getElementById("bio-edit");
+        
+        bioDisplay.style.display = "block";
+        bioEdit.style.display = "none";
+    }
+
+    async saveBio() {
+        const bioTextarea = document.getElementById("bio-textarea");
+        const saveBtn = document.getElementById("save-bio-btn");
+        const newBio = bioTextarea.value.trim();
+        
+        // Show loading state
+        const originalHtml = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        saveBtn.disabled = true;
+        
+        try {
+            const response = await fetch("/api/profile/update-bio", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ bio: newBio }),
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Update UI
+                const bioText = newBio || "Tell others about yourself...";
+                document.getElementById("user-bio").textContent = bioText;
+                
+                this.showNotification("Bio updated successfully!", "success");
+                this.cancelBioEdit();
+            } else {
+                this.showNotification(data.message || "Failed to update bio", "error");
+            }
+        } catch (error) {
+            this.showNotification("Network error. Please try again.", "error");
+        } finally {
+            // Reset button state
+            saveBtn.innerHTML = originalHtml;
+            saveBtn.disabled = false;
+        }
+    }
+
     // Utility function for delays
     delay(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
@@ -1211,7 +1280,7 @@ class PearlSettings {
 
 // Initialize settings page when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    new PearlSettings();
+    window.pearlSettings = new PearlSettings();
 });
 
 // Export for potential external use

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Register - Pearl Verse</title>
     
     <!-- Bootstrap CSS -->
@@ -29,7 +29,7 @@
     <div class="bg-pattern"></div>
     
     <!-- Main Container -->
-    <div class="container-fluid vh-100 d-flex align-items-center justify-content-center">
+    <div class="container-fluid d-flex justify-content-center">
         <div class="row w-100 justify-content-center">
             <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
                 <div class="register-card">
@@ -119,12 +119,37 @@
                                 </div>
 
                                 <div class="form-group mb-4">
-                                    <label for="dateOfBirth" class="form-label">
+                                    <label class="form-label">
                                         <i class="bi bi-calendar-event me-2"></i>Date of Birth
                                     </label>
-                                    <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
-                                    <div class="invalid-feedback">
-                                        Please enter your date of birth.
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <select class="form-control birthday-select year-select" id="birthYear" name="birthYear" required>
+                                                <option value="">📅 Year</option>
+                                                <!-- Years will be populated by JavaScript -->
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Please select a year.
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <select class="form-control birthday-select month-select" id="birthMonth" name="birthMonth" required>
+                                                <option value="">📅 Month</option>
+                                                <!-- Months will be populated by JavaScript -->
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Please select a month.
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <select class="form-control birthday-select day-select" id="birthDay" name="birthDay" required>
+                                                <option value="">📅 Day</option>
+                                                <!-- Days will be populated by JavaScript -->
+                                            </select>
+                                            <div class="invalid-feedback">
+                                                Please select a day.
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

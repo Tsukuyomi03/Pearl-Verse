@@ -17,6 +17,7 @@ from .transfer import Transfer
 from .follow import Follow
 from .social_media_link import SocialMediaLink
 from .battle_pass_claim import BattlePassClaim
+from .avatar_shop_item import AvatarShopItem, UserAvatarItem, UserAvatarConfiguration
 
 # Export all models for easy importing
 __all__ = [
@@ -29,4 +30,7 @@ __all__ = [
     'Follow',
     'SocialMediaLink',
     'BattlePassClaim',
+    'AvatarShopItem',
+    'UserAvatarItem',
+    'UserAvatarConfiguration',
 ]

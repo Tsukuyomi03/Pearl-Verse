@@ -472,10 +472,23 @@ class ModularTopnav {
         const isMobile = window.innerWidth <= 1024;
         
         if (isMobile || !sidenav || sidenav.classList.contains('collapsed')) {
-            this.topnav.style.left = '0';
+            // Mobile or collapsed sidenav - full width
+            this.topnav.style.left = '0px';
+            this.topnav.style.width = '100%';
+            this.topnav.style.right = '0px';
         } else {
-            this.topnav.style.left = '240px';
+            // Desktop with expanded sidenav - adjust for sidenav width
+            const sidenavWidth = sidenav ? (sidenav.offsetWidth || 280) : 280;
+            this.topnav.style.left = `${sidenavWidth}px`;
+            this.topnav.style.width = `calc(100% - ${sidenavWidth}px)`;
+            this.topnav.style.right = '0px';
         }
+        
+        // Force a repaint to ensure proper rendering
+        this.topnav.style.transform = 'translateZ(0)';
+        setTimeout(() => {
+            this.topnav.style.transform = '';
+        }, 10);
     }
     
     // Public API methods

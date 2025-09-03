@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Avatar Shop - Pearl Verse</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/scrollbar-hide.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_avatar_shop.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_sidenav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_topnav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_botnav.css') }}">
+</head>
+<body class="scrollbar-hide-global">
+    <!-- Include Modular Side Navigation -->
+    {% include 'modular_sidenav.html' %}
+    
+    <!-- Include Modular Top Navigation -->
+    {% include 'modular_topnav.html' %}
+    
+    <!-- Include Modular Bottom Navigation -->
+    {% include 'modular_botnav.html' %}
+    
+    <!-- Main Avatar Shop Content -->
+    <main class="avatar-shop-main">
+        <div class="avatar-shop-container">
+            <!-- Header Section -->
+            <div class="avatar-shop-header">
+                <h1 class="avatar-shop-title">Avatar Shop</h1>
+                <p class="avatar-shop-subtitle">Customize your digital identity and express yourself in the Pearl Verse</p>
+            </div>
+            
+            <!-- Main Content Grid -->
+            <div class="avatar-content-grid">
+                <!-- Preview Sections -->
+                <div class="preview-sections">
+                    <!-- Banner Preview Section -->
+                    <div class="banner-preview-section">
+                        <div class="preview-header">
+                            <h3 class="preview-title"><i class="fas fa-image"></i> Banner Preview</h3>
+                        </div>
+                        <div class="banner-preview-container">
+                            <div class="banner-display" id="banner-display">
+                                <div class="banner-placeholder">
+                                    <i class="fas fa-image"></i>
+                                    <span>Select a banner</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar & Decoration Preview Section -->
+                    <div class="avatar-preview-section">
+                        <div class="preview-header">
+                            <h3 class="preview-title"><i class="fas fa-user"></i> Avatar & Decoration</h3>
+                        </div>
+                        <div class="avatar-preview-container">
+                            <div class="avatar-display" id="avatar-display">
+                                <div class="avatar-placeholder">
+                                    <i class="fas fa-user"></i>
+                                    <span>Select an avatar</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Avatar Actions -->
+                    <div class="avatar-actions">
+                        <button class="btn-save-avatar" id="save-avatar">
+                            <i class="fas fa-save"></i> Save Avatar
+                        </button>
+                        <button class="btn-reset-avatar" id="reset-avatar">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Customization Section -->
+                <div class="customization-section">
+                    <div class="customization-header">
+                        <h2 class="customization-title">Customize</h2>
+                        <div class="user-stats-display">
+                            <div class="pearl-balance-display">
+                                <i class="fas fa-gem pearl-icon"></i>
+                                <span class="pearl-amount" id="user-pearls">2,500</span>
+                            </div>
+                            <div class="level-display">
+                                <i class="fas fa-star level-icon"></i>
+                                <span class="level-text">Level <span id="user-level">1</span></span>
+                            </div>
+                            <div class="exp-display">
+                                <i class="fas fa-chart-line exp-icon"></i>
+                                <span class="exp-text"><span id="user-exp">0</span> EXP to next level</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Category Tabs -->
+                    <div class="category-tabs">
+                        <button class="category-tab active" data-category="banner">
+                            <i class="fas fa-image category-tab-icon"></i>
+                            <span>Banner</span>
+                        </button>
+                        <button class="category-tab" data-category="avatar">
+                            <i class="fas fa-user category-tab-icon"></i>
+                            <span>Avatar</span>
+                        </button>
+                        <button class="category-tab" data-category="decoration">
+                            <i class="fas fa-sparkles category-tab-icon"></i>
+                            <span>Decoration</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Search and Filter Section -->
+                    <div class="search-filter-section">
+                        <div class="search-input-container">
+                            <i class="fas fa-search search-icon"></i>
+                            <input type="text" class="search-input" placeholder="Search items..." id="item-search">
+                        </div>
+                        <select class="filter-dropdown" id="owned-filter">
+                            <option value="all">All Items</option>
+                            <option value="owned">Owned Only</option>
+                            <option value="unowned">Not Owned</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Items Grid -->
+                    <div class="avatar-items-grid" id="items-grid">
+                        <!-- Items will be loaded dynamically -->
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading avatar items...</div>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="pagination" id="items-pagination">
+                        <button class="pagination-btn" id="prev-page" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <span class="page-info">
+                            Page <span id="current-page">1</span> of <span id="total-pages">1</span>
+                        </span>
+                        <button class="pagination-btn" id="next-page">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </main>
+    
+    <!-- Item Detail Modal -->
+    <div class="modal fade" id="itemDetailModal" tabindex="-1" aria-labelledby="itemDetailTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="itemDetailTitle">Item Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="itemDetailBody">
+                    <!-- Item details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="equipItem">Equip Item</button>
+                    <button type="button" class="btn btn-success" id="buyItem">Buy Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Enhanced Purchase Confirmation Modal -->
+    <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content purchase-modal-content">
+                <div class="purchase-modal-header">
+                    <div class="purchase-modal-title-section">
+                        <h3 class="purchase-modal-title" id="purchaseModalTitle">
+                            <i class="fas fa-shopping-cart"></i>
+                            Confirm Purchase
+                        </h3>
+                        <p class="purchase-modal-subtitle">Review your purchase details below</p>
+                    </div>
+                    <button type="button" class="purchase-modal-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="purchase-modal-body" id="purchaseModalBody">
+                    <!-- Enhanced purchase confirmation content will be populated here -->
+                </div>
+                
+                <div class="purchase-modal-footer">
+                    <button type="button" class="btn-cancel-purchase" data-bs-dismiss="modal">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                    <button type="button" class="btn-confirm-purchase" id="confirmPurchase">
+                        <i class="fas fa-gem"></i>
+                        <span class="purchase-btn-text">Complete Purchase</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Modular Bottom Navigation -->
+    {% include 'modular_botnav.html' %}
+    
+    <!-- Scripts -->
+    <!-- jQuery Library -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    
+    <!-- Bootstrap JS Bundle (includes Popper) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    
+    <!-- Application Scripts -->
+    <script src="{{ url_for('static', filename='js/modular_sidenav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modular_topnav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modular_botnav.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/pearl_avatar_shop.js') }}"></script>
+</body>
+</html>

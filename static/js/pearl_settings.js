@@ -6,12 +6,53 @@ class PearlSettings {
 
     init() {
         this.setupPasswordToggles();
+        this.setupBirthdayDropdowns();
         this.setupFormValidation();
         this.setupSocialToggles();
         this.setupFormSubmissions();
         this.setupPasswordStrength();
         this.setupBioEditing();
         this.loadUserData();
+    }
+
+    // Setup birthday dropdown options and validation
+    setupBirthdayDropdowns() {
+        const birthDaySelect = document.getElementById('birthDay');
+        const birthYearSelect = document.getElementById('birthYear');
+        const birthMonthSelect = document.getElementById('birthMonth');
+        
+        // Populate day options (1-31)
+        if (birthDaySelect) {
+            for (let day = 1; day <= 31; day++) {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day;
+                birthDaySelect.appendChild(option);
+            }
+        }
+        
+        // Populate year options (current year down to 120 years ago)
+        if (birthYearSelect) {
+            const currentYear = new Date().getFullYear();
+            const minYear = currentYear - 120;
+            
+            for (let year = currentYear; year >= minYear; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                birthYearSelect.appendChild(option);
+            }
+        }
+        
+        // Add change event listeners for age calculation
+        [birthMonthSelect, birthDaySelect, birthYearSelect].forEach(select => {
+            if (select) {
+                select.addEventListener('change', () => {
+                    this.validateBirthdayDropdowns();
+                    this.updateAgeDisplayFromDropdowns();
+                });
+            }
+        });
     }
 
     // Password visibility toggles
@@ -452,11 +493,36 @@ class PearlSettings {
         const firstNameValid = this.validateName(document.getElementById('firstName'), 'firstNameError');
         const lastNameValid = this.validateName(document.getElementById('lastName'), 'lastNameError');
         const emailValid = this.validateEmail(document.getElementById('email'));
-        const birthdayValid = this.validateBirthday(document.getElementById('dateOfBirth'));
-        const locationValid = this.validateLocation(document.getElementById('location'));
+        
+        // Check which birthday format is being used
+        const birthDaySelect = document.getElementById('birthDay');
+        const birthdayInput = document.getElementById('dateOfBirth');
+        let birthdayValid = false;
+        let birthdayValue = null;
+        
+        if (birthDaySelect) {
+            // Using dropdown format
+            birthdayValid = this.validateBirthdayDropdowns();
+            birthdayValue = this.getBirthdayFromDropdowns();
+        } else if (birthdayInput) {
+            // Using single date input format
+            birthdayValid = this.validateBirthday(birthdayInput);
+            birthdayValue = birthdayInput.value;
+        } else {
+            this.showNotification('Birthday field not found', 'error');
+            return;
+        }
+        
+        const locationInput = document.getElementById('location');
+        const locationValid = locationInput ? this.validateLocation(locationInput) : true;
         
         if (!firstNameValid || !lastNameValid || !emailValid || !birthdayValid || !locationValid) {
             this.showNotification('Please correct the errors before submitting', 'error');
+            return;
+        }
+        
+        if (!birthdayValue) {
+            this.showNotification('Please enter your complete date of birth', 'error');
             return;
         }
 
@@ -470,8 +536,8 @@ class PearlSettings {
                 first_name: formData.get('firstName'),
                 last_name: formData.get('lastName'),
                 email: formData.get('email'),
-                date_of_birth: formData.get('dateOfBirth'),
-                location: formData.get('location') || null
+                date_of_birth: birthdayValue,
+                location: locationInput ? (formData.get('location') || null) : null
             };
 
             console.log('Updating profile with data:', data);
@@ -1004,9 +1070,21 @@ class PearlSettings {
             emailInput.value = user.email;
         }
         
-        if (birthdayInput && user.date_of_birth) {
-            birthdayInput.value = user.date_of_birth;
-            this.updateAgeDisplay(user.date_of_birth);
+        // Handle birthday - check if using dropdowns or single input
+        if (user.date_of_birth) {
+            // Try to populate birthday dropdowns first
+            const birthDaySelect = document.getElementById('birthDay');
+            const birthMonthSelect = document.getElementById('birthMonth');
+            const birthYearSelect = document.getElementById('birthYear');
+            
+            if (birthDaySelect && birthMonthSelect && birthYearSelect) {
+                // Using dropdown format - populate all three dropdowns
+                this.populateBirthdayDropdowns(user.date_of_birth);
+            } else if (birthdayInput) {
+                // Fallback to single date input if dropdowns not found
+                birthdayInput.value = user.date_of_birth;
+                this.updateAgeDisplay(user.date_of_birth);
+            }
         }
         
         if (locationInput && user.location) {
@@ -1123,6 +1201,196 @@ class PearlSettings {
         return age;
     }
     
+    // Validate birthday from dropdown selections
+    validateBirthdayDropdowns() {
+        const birthDaySelect = document.getElementById('birthDay');
+        const birthMonthSelect = document.getElementById('birthMonth');
+        const birthYearSelect = document.getElementById('birthYear');
+        const errorElement = document.getElementById('dateOfBirthError');
+        
+        const day = birthDaySelect?.value;
+        const month = birthMonthSelect?.value;
+        const year = birthYearSelect?.value;
+        
+        // Clear previous error states
+        [birthDaySelect, birthMonthSelect, birthYearSelect].forEach(select => {
+            if (select) {
+                select.classList.remove('invalid');
+                select.closest('.form-group')?.classList.remove('error');
+            }
+        });
+        
+        // Check if all fields are selected
+        if (!day || !month || !year) {
+            if (errorElement) {
+                errorElement.textContent = 'Please select your complete date of birth';
+                errorElement.classList.add('show');
+            }
+            return false;
+        }
+        
+        // Create date and validate
+        const birthDate = new Date(year, month - 1, day); // month is 0-indexed
+        const today = new Date();
+        
+        // Check if date is valid (handles invalid dates like Feb 30)
+        if (birthDate.getDate() !== parseInt(day) || 
+            birthDate.getMonth() !== parseInt(month) - 1 || 
+            birthDate.getFullYear() !== parseInt(year)) {
+            if (errorElement) {
+                errorElement.textContent = 'Please enter a valid date';
+                errorElement.classList.add('show');
+            }
+            [birthDaySelect, birthMonthSelect, birthYearSelect].forEach(select => {
+                if (select) {
+                    select.classList.add('invalid');
+                    select.closest('.form-group')?.classList.add('error');
+                }
+            });
+            return false;
+        }
+        
+        // Check if birthday is not in the future
+        if (birthDate > today) {
+            if (errorElement) {
+                errorElement.textContent = 'Date of birth cannot be in the future';
+                errorElement.classList.add('show');
+            }
+            [birthDaySelect, birthMonthSelect, birthYearSelect].forEach(select => {
+                if (select) {
+                    select.classList.add('invalid');
+                    select.closest('.form-group')?.classList.add('error');
+                }
+            });
+            return false;
+        }
+        
+        // Calculate age and check minimum age (13 years)
+        const age = this.calculateAge(birthDate);
+        if (age < 13) {
+            if (errorElement) {
+                errorElement.textContent = 'You must be at least 13 years old';
+                errorElement.classList.add('show');
+            }
+            [birthDaySelect, birthMonthSelect, birthYearSelect].forEach(select => {
+                if (select) {
+                    select.classList.add('invalid');
+                    select.closest('.form-group')?.classList.add('error');
+                }
+            });
+            return false;
+        }
+        
+        // Check maximum reasonable age (120 years)
+        if (age > 120) {
+            if (errorElement) {
+                errorElement.textContent = 'Please enter a valid date of birth';
+                errorElement.classList.add('show');
+            }
+            [birthDaySelect, birthMonthSelect, birthYearSelect].forEach(select => {
+                if (select) {
+                    select.classList.add('invalid');
+                    select.closest('.form-group')?.classList.add('error');
+                }
+            });
+            return false;
+        }
+        
+        // All validations passed
+        if (errorElement) {
+            errorElement.classList.remove('show');
+        }
+        [birthDaySelect, birthMonthSelect, birthYearSelect].forEach(select => {
+            if (select) {
+                select.classList.add('valid');
+                select.closest('.form-group')?.classList.add('success');
+            }
+        });
+        
+        return true;
+    }
+    
+    // Update age display from dropdown selections
+    updateAgeDisplayFromDropdowns() {
+        const birthDaySelect = document.getElementById('birthDay');
+        const birthMonthSelect = document.getElementById('birthMonth');
+        const birthYearSelect = document.getElementById('birthYear');
+        const ageDisplay = document.getElementById('ageDisplay');
+        
+        const day = birthDaySelect?.value;
+        const month = birthMonthSelect?.value;
+        const year = birthYearSelect?.value;
+        
+        if (!ageDisplay) return;
+        
+        // Only show age if all fields are selected and valid
+        if (!day || !month || !year) {
+            ageDisplay.classList.remove('show', 'age-display');
+            return;
+        }
+        
+        const birthDate = new Date(year, month - 1, day);
+        
+        // Check if date is valid
+        if (birthDate.getDate() !== parseInt(day) || 
+            birthDate.getMonth() !== parseInt(month) - 1 || 
+            birthDate.getFullYear() !== parseInt(year)) {
+            ageDisplay.classList.remove('show', 'age-display');
+            return;
+        }
+        
+        const age = this.calculateAge(birthDate);
+        ageDisplay.innerHTML = `<i class="fas fa-birthday-cake"></i>You are ${age} years old`;
+        ageDisplay.classList.add('show', 'age-display');
+    }
+    
+    // Parse birthday string and populate dropdowns
+    populateBirthdayDropdowns(dateString) {
+        const birthDaySelect = document.getElementById('birthDay');
+        const birthMonthSelect = document.getElementById('birthMonth');
+        const birthYearSelect = document.getElementById('birthYear');
+        
+        if (!dateString || !birthDaySelect || !birthMonthSelect || !birthYearSelect) {
+            return;
+        }
+        
+        try {
+            const birthDate = new Date(dateString);
+            
+            if (!isNaN(birthDate.getTime())) {
+                birthDaySelect.value = birthDate.getDate();
+                birthMonthSelect.value = birthDate.getMonth() + 1; // month is 0-indexed
+                birthYearSelect.value = birthDate.getFullYear();
+                
+                // Update age display
+                this.updateAgeDisplayFromDropdowns();
+            }
+        } catch (error) {
+            console.error('Error parsing birthday:', error);
+        }
+    }
+    
+    // Combine dropdown values into date string for submission
+    getBirthdayFromDropdowns() {
+        const birthDaySelect = document.getElementById('birthDay');
+        const birthMonthSelect = document.getElementById('birthMonth');
+        const birthYearSelect = document.getElementById('birthYear');
+        
+        const day = birthDaySelect?.value;
+        const month = birthMonthSelect?.value;
+        const year = birthYearSelect?.value;
+        
+        if (!day || !month || !year) {
+            return null;
+        }
+        
+        // Format as YYYY-MM-DD
+        const paddedMonth = month.toString().padStart(2, '0');
+        const paddedDay = day.toString().padStart(2, '0');
+        
+        return `${year}-${paddedMonth}-${paddedDay}`;
+    }
+
     // Update age display
     updateAgeDisplay(dateString) {
         const ageDisplay = document.getElementById('ageDisplay');

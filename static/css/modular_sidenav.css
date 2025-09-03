@@ -257,7 +257,7 @@ body.sidenav-open {
 }
 
 /* Responsive Design - Hide sidenav on mobile (botnav handles navigation) */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .sidenav {
         display: none;
     }

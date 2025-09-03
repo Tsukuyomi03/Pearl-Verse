@@ -1,12 +1,115 @@
 /* Profile Header Updates - Specific to dashboard profile header only */
 
+/* Dashboard Avatar Display Structure */
+.profile-header .profile-avatar-preview {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: visible; /* Allow decorations to extend beyond boundary */
+    border: 6px solid white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    background: #e2e8f0;
+}
+
+/* Avatar Display Container */
+.profile-header .avatar-display {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+/* Default avatar display */
+.profile-header .default-avatar-display {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Avatar Layer Structure - Dashboard Specific */
+.profile-header .avatar-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+/* Avatar layer z-index ordering */
+.profile-header .avatar-layer[data-layer="banner"] { 
+    z-index: 1;
+}
+
+.profile-header .avatar-layer[data-layer="head"] { 
+    z-index: 2;
+}
+
+.profile-header .avatar-layer[data-layer="eyes"] { 
+    z-index: 3;
+}
+
+.profile-header .avatar-layer[data-layer="mouth"] { 
+    z-index: 4;
+}
+
+.profile-header .avatar-layer[data-layer="hat"] { 
+    z-index: 5;
+}
+
+.profile-header .avatar-layer[data-layer="effect"] { 
+    z-index: 6;
+}
+
+.profile-header .avatar-layer[data-layer="decoration"] { 
+    z-index: 7;
+    overflow: visible; /* Allow decorations to extend beyond circular boundary */
+}
+
+/* Avatar layer images */
+.profile-header .avatar-layer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+}
+
+/* Decoration layer special handling */
+.profile-header .avatar-layer[data-layer="decoration"] img {
+    width: 120%; /* Larger for proper decoration overlay */
+    height: 120%;
+    object-fit: contain;
+    border-radius: 0; /* Decorations don't need circular clipping */
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    transform: translate(-10%, -10%); /* Center the larger decoration */
+}
+
 /* Updated avatar container positioning - centered in banner */
 .profile-header .avatar-container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Center both horizontally and vertically */
-    z-index: 10; /* Increased z-index to ensure avatar is above everything */
+    z-index: 5; /* High enough to be above banner, but not interfere with UI */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible; /* Ensure decorations can extend beyond container */
 }
 
 /* Make the avatar larger - only for dashboard profile header */
@@ -14,6 +117,7 @@
     position: relative;
     width: 200px; /* Increased from 168px */
     height: 200px; /* Increased from 168px */
+    overflow: visible; /* Ensure decorations can extend beyond wrapper */
 }
 
 .profile-header .profile-avatar {
@@ -26,10 +130,105 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Avatar Status Indicator - Dashboard Specific */
+.profile-header .avatar-status {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 4px solid white;
+    background: #23a559;
+    z-index: 8; /* Above all avatar layers */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Status variations */
+.profile-header .avatar-status.online { background: #23a559; }
+.profile-header .avatar-status.idle { background: #f0b232; }
+.profile-header .avatar-status.dnd { background: #f23f43; }
+.profile-header .avatar-status.offline { background: #80848e; }
+
+/* Avatar Layer Container - Dashboard Specific */
+.profile-header .avatar-layer-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+/* Ensure profile header and banner allow overflow for decorations */
+.profile-header {
+    overflow: visible !important;
+}
+
+.profile-header .profile-banner {
+    overflow: visible !important;
+}
+
+/* Avatar Decoration Overlay - Positioned above entire avatar container */
+.profile-header .avatar-decoration-overlay {
+    position: absolute;
+    top: 50%; /* Center vertically in banner */
+    left: 50%; /* Center horizontally in banner */
+    transform: translate(-50%, -50%);
+    width: 350px; /* Much larger than avatar container to ensure no clipping */
+    height: 350px;
+    z-index: 20; /* Very high z-index to appear above everything */
+    pointer-events: none;
+    overflow: visible !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Remove any potential clipping */
+    clip: none !important;
+    clip-path: none !important;
+}
+
+/* Decoration Layer - Dashboard Specific */
+.profile-header .avatar-decoration-overlay .avatar-layer[data-layer="decoration"] {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%; /* Full size of the decoration overlay container */
+    height: 100%;
+    z-index: 15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    overflow: visible;
+    border-radius: 0; /* No circular clipping for decorations */
+}
+
+.profile-header .avatar-decoration-overlay .avatar-layer[data-layer="decoration"] img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+    transition: all 0.3s ease;
+    border-radius: 0; /* Decorations don't need circular clipping */
+}
+
+/* Legacy decoration layer support - hide if still exists inside avatar preview */
+.profile-header .profile-avatar-preview .avatar-layer[data-layer="decoration"] {
+    display: none !important;
+}
+
 /* Updated profile info section with centered layout - only for dashboard */
 .profile-header .profile-info {
     position: relative;
-    padding: 12px 16px; /* Minimized padding */
+    padding: 120px 16px 16px; /* Top padding to account for centered avatar */
     text-align: center;
     z-index: 1; /* Lower z-index so avatar appears above */
 }
@@ -118,8 +317,28 @@
         height: 160px;
     }
     
+    .profile-header .profile-avatar-preview {
+        width: 160px;
+        height: 160px;
+        border: 4px solid white;
+    }
+    
+    /* Scale decoration overlay for mobile */
+    .profile-header .avatar-decoration-overlay {
+        width: 280px; /* Scaled down from 350px */
+        height: 280px;
+    }
+    
+    .profile-header .avatar-status {
+        width: 24px;
+        height: 24px;
+        border: 3px solid white;
+        bottom: 10px;
+        right: 10px;
+    }
+    
     .profile-header .profile-info {
-        padding: 10px 12px; /* Minimized padding for mobile */
+        padding: 90px 12px 16px; /* Adjusted for mobile avatar size */
     }
     
     .profile-header .profile-name {
@@ -149,8 +368,28 @@
         height: 140px;
     }
     
+    .profile-header .profile-avatar-preview {
+        width: 140px;
+        height: 140px;
+        border: 3px solid white;
+    }
+    
+    /* Scale decoration overlay for smallest mobile */
+    .profile-header .avatar-decoration-overlay {
+        width: 210px; /* Scaled down from 280px */
+        height: 210px;
+    }
+    
+    .profile-header .avatar-status {
+        width: 20px;
+        height: 20px;
+        border: 2px solid white;
+        bottom: 8px;
+        right: 8px;
+    }
+    
     .profile-header .profile-info {
-        padding: 8px 10px; /* Minimized padding for small mobile */
+        padding: 80px 10px 12px; /* Adjusted for smallest mobile avatar */
     }
     
     .profile-header .profile-name {

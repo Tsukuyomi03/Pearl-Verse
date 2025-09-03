@@ -17,6 +17,9 @@ class PearlDashboard {
     // Load user data first and wait for it to complete
     await this.loadUserData();
 
+    // Load user's avatar configuration
+    await this.loadUserAvatarConfiguration();
+
     // Initialize event listeners
     this.initEventListeners();
 
@@ -1125,7 +1128,19 @@ class PearlDashboard {
     const isNegative = numValue < 0;
     const prefix = isNegative ? "-" : "";
 
-    // Format with proper suffixes: K, M, B, T
+    // Format with proper suffixes: K (100K+), M (1M+), B (1B+), T (1T+), Q (1Q+), Qi (1Qi+), Sx (1Sx+)
+    if (absValue >= 1000000000000000000000) {
+      // Sextillions (1,000,000,000,000,000,000,000+)
+      return prefix + (absValue / 1000000000000000000000).toFixed(1) + "Sx";
+    }
+    if (absValue >= 1000000000000000000) {
+      // Quintillions (1,000,000,000,000,000,000+)
+      return prefix + (absValue / 1000000000000000000).toFixed(1) + "Qi";
+    }
+    if (absValue >= 1000000000000000) {
+      // Quadrillions (1,000,000,000,000,000+)
+      return prefix + (absValue / 1000000000000000).toFixed(1) + "Q";
+    }
     if (absValue >= 1000000000000) {
       // Trillions (1,000,000,000,000+)
       return prefix + (absValue / 1000000000000).toFixed(1) + "T";
@@ -1138,13 +1153,13 @@ class PearlDashboard {
       // Millions (1,000,000+)
       return prefix + (absValue / 1000000).toFixed(1) + "M";
     }
-    if (absValue >= 1000) {
-      // Thousands (1,000+)
+    if (absValue >= 100000) {
+      // Hundreds of thousands (100,000+) - use K suffix
       return prefix + (absValue / 1000).toFixed(1) + "K";
     }
 
-    // Less than 1000 - show as is
-    return numValue.toString();
+    // Less than 100,000 - show as is with comma separators
+    return numValue.toLocaleString();
   }
 
   // Extract pearl amount from transaction description if pearl_amount is missing
@@ -1896,8 +1911,34 @@ class PearlDashboard {
         if (this.userData) {
           const oldBalance = this.userData.pearl;
           const oldExp = this.userData.exp;
+          const oldLevel = this.userData.level;
+          
           this.userData.pearl = data.new_pearl_balance;
           this.userData.exp = data.new_exp_balance;
+          
+          // Check for level up and update level display
+          if (data.level_up_info && data.level_up_info.leveled_up) {
+            this.userData.level = data.level_up_info.new_level;
+            
+            // Update all level display elements
+            const levelElements = document.querySelectorAll('#level, #user-level, #current-level, #bp-current-level');
+            levelElements.forEach(element => {
+              if (element) {
+                element.textContent = data.level_up_info.new_level;
+              }
+            });
+            
+            // Show special level up notification if there was a level change
+            if (data.level_up_info.level_ups > 0) {
+              setTimeout(() => {
+                this.showNotification(
+                  `🎉 Level Up! You reached level ${data.level_up_info.new_level}! 🎉`, 
+                  "success"
+                );
+              }, 500);
+            }
+          }
+          
           this.updateBalanceElements(data.new_pearl_balance, true);
           
           // Update EXP display if it exists
@@ -2269,10 +2310,10 @@ class PearlDashboard {
     const currentExp = this.userData.exp || 0;
     
     // Calculate experience needed for current level and next level
-    const currentLevelExp = this.getExpForLevel(currentLevel);
-    const nextLevelExp = this.getExpForLevel(currentLevel + 1);
-    const expNeededForNext = nextLevelExp - currentLevelExp;
-    const currentProgress = currentExp - currentLevelExp;
+    const currentLevelStartExp = this.getExpForLevel(currentLevel);
+    const nextLevelStartExp = this.getExpForLevel(currentLevel + 1);
+    const expNeededForNext = nextLevelStartExp - currentLevelStartExp;
+    const currentProgress = Math.max(0, currentExp - currentLevelStartExp);
     
     // Update progress bar
     const progressBar = document.getElementById("level-progress-bar");
@@ -2284,14 +2325,23 @@ class PearlDashboard {
     // Update progress text
     const progressText = document.getElementById("level-progress-text");
     if (progressText) {
-      progressText.textContent = `${this.formatNumber(Math.max(0, currentProgress))} / ${this.formatNumber(expNeededForNext)} EXP to Level ${currentLevel + 1}`;
+      progressText.textContent = `${this.formatNumber(currentProgress)} / ${this.formatNumber(expNeededForNext)} EXP to Level ${currentLevel + 1}`;
     }
   }
 
   getExpForLevel(level) {
-    // Use formula: 1000 + (user_level - 1) * 500 to reach next level
+    // Returns cumulative EXP needed to reach this level
+    // Level 1: 0 EXP (starting point)
+    // Level 2: 1000 EXP total needed
+    // Level 3: 2500 EXP total needed (1000 + 1500)
+    // Level 4: 4500 EXP total needed (1000 + 1500 + 2000)
     if (level <= 1) return 0;
-    return 1000 + (level - 2) * 500; // Level 2 needs 1000, Level 3 needs 1500, Level 4 needs 2000, etc.
+    
+    let totalExp = 0;
+    for (let i = 1; i < level; i++) {
+      totalExp += 1000 + (i - 1) * 500; // Level 1->2 needs 1000, 2->3 needs 1500, etc.
+    }
+    return totalExp;
   }
 
   async loadBattlePassData() {
@@ -2385,10 +2435,10 @@ class PearlDashboard {
     
     const currentLevel = this.userData.level || 1;
     const currentExp = this.userData.exp || 0;
-    const currentLevelExp = this.getExpForLevel(currentLevel);
-    const nextLevelExp = this.getExpForLevel(currentLevel + 1);
-    const expNeededForNext = nextLevelExp - currentLevelExp;
-    const currentProgress = currentExp - currentLevelExp;
+    const currentLevelStartExp = this.getExpForLevel(currentLevel);
+    const nextLevelStartExp = this.getExpForLevel(currentLevel + 1);
+    const expNeededForNext = nextLevelStartExp - currentLevelStartExp;
+    const currentProgress = Math.max(0, currentExp - currentLevelStartExp);
     
     return Math.max(0, Math.min(100, (currentProgress / expNeededForNext) * 100));
   }
@@ -2398,12 +2448,12 @@ class PearlDashboard {
     
     const currentLevel = this.userData.level || 1;
     const currentExp = this.userData.exp || 0;
-    const currentLevelExp = this.getExpForLevel(currentLevel);
-    const nextLevelExp = this.getExpForLevel(currentLevel + 1);
-    const expNeededForNext = nextLevelExp - currentLevelExp;
-    const currentProgress = currentExp - currentLevelExp;
+    const currentLevelStartExp = this.getExpForLevel(currentLevel);
+    const nextLevelStartExp = this.getExpForLevel(currentLevel + 1);
+    const expNeededForNext = nextLevelStartExp - currentLevelStartExp;
+    const currentProgress = Math.max(0, currentExp - currentLevelStartExp);
     
-    return `${this.formatNumber(Math.max(0, currentProgress))} / ${this.formatNumber(expNeededForNext)} EXP to Level ${currentLevel + 1}`;
+    return `${this.formatNumber(currentProgress)} / ${this.formatNumber(expNeededForNext)} EXP to Level ${currentLevel + 1}`;
   }
 
   generateExpGauge() {
@@ -2411,10 +2461,10 @@ class PearlDashboard {
     
     const currentLevel = this.userData.level || 1;
     const currentExp = this.userData.exp || 0;
-    const currentLevelExp = this.getExpForLevel(currentLevel);
-    const nextLevelExp = this.getExpForLevel(currentLevel + 1);
-    const expNeededForNext = nextLevelExp - currentLevelExp;
-    const currentProgress = currentExp - currentLevelExp;
+    const currentLevelStartExp = this.getExpForLevel(currentLevel);
+    const nextLevelStartExp = this.getExpForLevel(currentLevel + 1);
+    const expNeededForNext = nextLevelStartExp - currentLevelStartExp;
+    const currentProgress = Math.max(0, currentExp - currentLevelStartExp);
     const progressPercentage = Math.max(0, Math.min(100, (currentProgress / expNeededForNext) * 100));
     
     return `
@@ -2432,7 +2482,7 @@ class PearlDashboard {
         <div class="exp-progress-container">
           <div class="exp-progress-fill" style="width: ${progressPercentage}%"></div>
           <div class="exp-progress-text">
-            ${this.formatNumber(Math.max(0, currentProgress))} / ${this.formatNumber(expNeededForNext)} EXP
+            ${this.formatNumber(currentProgress)} / ${this.formatNumber(expNeededForNext)} EXP
           </div>
         </div>
         <div class="exp-details">
@@ -2442,11 +2492,11 @@ class PearlDashboard {
           </div>
           <div class="exp-stat">
             <span class="exp-label">EXP to Level ${currentLevel + 1}</span>
-            <span class="exp-value">${this.formatNumber(expNeededForNext - Math.max(0, currentProgress))}</span>
+            <span class="exp-value">${this.formatNumber(expNeededForNext - currentProgress)}</span>
           </div>
           <div class="exp-stat">
             <span class="exp-label">Next Level EXP</span>
-            <span class="exp-value">${this.formatNumber(nextLevelExp)}</span>
+            <span class="exp-value">${this.formatNumber(expNeededForNext)}</span>
           </div>
         </div>
       </div>
@@ -2530,7 +2580,7 @@ class PearlDashboard {
       const currentLevelExp = this.getExpForLevel(currentLevel);
       const nextLevelExp = this.getExpForLevel(level);
       const expNeededForNext = nextLevelExp - currentLevelExp;
-      const currentProgress = currentExp - currentLevelExp;
+      const currentProgress = Math.max(0, currentExp - currentLevelExp);
       
       return Math.max(0, Math.min(100, (currentProgress / expNeededForNext) * 100));
     }
@@ -2735,6 +2785,185 @@ class PearlDashboard {
         </div>
       `;
     }
+  }
+
+  // Avatar Configuration Functions
+  async loadUserAvatarConfiguration() {
+    try {
+      const response = await fetch("/api/avatar-shop/user-configuration");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          this.userAvatarConfig = data.configuration;
+          this.displayUserAvatar();
+        } else {
+          console.warn("Failed to load avatar configuration:", data.message);
+          this.userAvatarConfig = null;
+          this.displayDefaultAvatar();
+        }
+      } else {
+        console.warn("Avatar configuration API not available");
+        this.userAvatarConfig = null;
+        this.displayDefaultAvatar();
+      }
+    } catch (error) {
+      console.warn("Error loading avatar configuration:", error);
+      this.userAvatarConfig = null;
+      this.displayDefaultAvatar();
+    }
+  }
+
+  displayUserAvatar() {
+    const avatarContainer = document.getElementById("dashboard-avatar-preview");
+    if (!avatarContainer) {
+      console.warn("Avatar container not found in dashboard");
+      return;
+    }
+
+    // Clear existing avatar
+    avatarContainer.innerHTML = "";
+
+    if (!this.userAvatarConfig || !this.userAvatarConfig.equipped_items) {
+      this.displayDefaultAvatar();
+      return;
+    }
+
+    // Display equipped banner on the profile banner background
+    this.displayEquippedBanner(this.userAvatarConfig.equipped_items.banner);
+
+    // Create avatar preview with equipped items (excluding banner since it's handled above)
+    const avatarPreview = this.createAvatarPreview(this.userAvatarConfig.equipped_items);
+    avatarContainer.appendChild(avatarPreview);
+  }
+
+  displayDefaultAvatar() {
+    const avatarContainer = document.getElementById("dashboard-avatar-preview");
+    if (!avatarContainer) return;
+
+    // Clear any banner background
+    this.displayEquippedBanner(null);
+
+    avatarContainer.innerHTML = `
+      <div class="avatar-display">
+        <div class="avatar-layer" data-layer="banner"></div>
+        <div class="avatar-layer-container">
+          <div class="avatar-layer" data-layer="avatar">
+            <img src="/static/img/avatar/default-avatar.png" alt="Default Avatar" />
+          </div>
+        </div>
+        <div class="decoration-layer" data-layer="decoration"></div>
+        <div class="avatar-placeholder">
+          <i class="fas fa-user"></i>
+          <span>Default Avatar</span>
+        </div>
+      </div>
+    `;
+  }
+
+  displayEquippedBanner(bannerItem) {
+    const profileBannerElement = document.querySelector('.profile-banner');
+    if (!profileBannerElement) {
+      console.warn('Profile banner element not found');
+      return;
+    }
+
+    console.log('Setting banner:', bannerItem);
+    
+    if (bannerItem && bannerItem.image_url) {
+      console.log('Applying custom banner:', bannerItem.image_url);
+      profileBannerElement.style.backgroundImage = `url('${bannerItem.image_url}')`;
+      profileBannerElement.style.backgroundSize = 'cover';
+      profileBannerElement.style.backgroundPosition = 'center';
+      profileBannerElement.style.backgroundRepeat = 'no-repeat';
+      profileBannerElement.classList.add('has-custom-banner');
+      console.log('Banner applied, classes:', profileBannerElement.className);
+      console.log('Banner style:', profileBannerElement.style.backgroundImage);
+    } else {
+      console.log('Removing custom banner, using default');
+      profileBannerElement.style.backgroundImage = '';
+      profileBannerElement.classList.remove('has-custom-banner');
+    }
+  }
+
+  createAvatarPreview(equippedItems) {
+    const avatarPreview = document.createElement("div");
+    avatarPreview.className = "avatar-display";
+    avatarPreview.classList.add("has-content");
+
+    // Create banner layer (not displayed in preview since it's handled by profile banner background)
+    const bannerLayer = document.createElement("div");
+    bannerLayer.className = "avatar-layer";
+    bannerLayer.setAttribute("data-layer", "banner");
+    
+    // Create avatar layer container
+    const avatarLayerContainer = document.createElement("div");
+    avatarLayerContainer.className = "avatar-layer-container";
+    
+    const avatarLayer = document.createElement("div");
+    avatarLayer.className = "avatar-layer";
+    avatarLayer.setAttribute("data-layer", "avatar");
+    
+    // Create decoration layer with proper positioning
+    const decorationLayer = document.createElement("div");
+    decorationLayer.className = "decoration-layer";
+    decorationLayer.setAttribute("data-layer", "decoration");
+    // Set proper positioning styles directly
+    decorationLayer.style.position = "absolute";
+    decorationLayer.style.top = "50%";
+    decorationLayer.style.left = "50%";
+    decorationLayer.style.transform = "translate(-50%, -50%)";
+    decorationLayer.style.width = "120%";
+    decorationLayer.style.height = "120%";
+    decorationLayer.style.zIndex = "7";
+    decorationLayer.style.display = "flex";
+    decorationLayer.style.alignItems = "center";
+    decorationLayer.style.justifyContent = "center";
+    decorationLayer.style.pointerEvents = "none";
+    decorationLayer.style.overflow = "visible";
+
+    // Add equipped avatar items
+    if (equippedItems.avatar && equippedItems.avatar.image_url) {
+      const avatarImg = document.createElement("img");
+      avatarImg.src = equippedItems.avatar.image_url;
+      avatarImg.alt = equippedItems.avatar.name || "Avatar";
+      avatarImg.onerror = () => {
+        console.warn("Failed to load avatar image:", equippedItems.avatar.image_url);
+        // Fallback to default avatar icon
+        avatarLayer.innerHTML = '<i class="fas fa-user"></i>';
+      };
+      avatarLayer.appendChild(avatarImg);
+    } else {
+      // Default avatar icon if no avatar is equipped
+      avatarLayer.innerHTML = '<i class="fas fa-user"></i>';
+    }
+
+    // Add decoration if equipped
+    if (equippedItems.decoration && equippedItems.decoration.image_url) {
+      const decorationImg = document.createElement("img");
+      decorationImg.src = equippedItems.decoration.image_url;
+      decorationImg.alt = equippedItems.decoration.name || "Decoration";
+      decorationImg.style.width = "100%";
+      decorationImg.style.height = "100%";
+      decorationImg.style.objectFit = "contain";
+      decorationImg.style.objectPosition = "center";
+      decorationImg.style.filter = "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3))";
+      decorationImg.onerror = () => {
+        console.warn("Failed to load decoration image:", equippedItems.decoration.image_url);
+      };
+      decorationLayer.appendChild(decorationImg);
+    }
+
+    // Append layers to the preview in correct order
+    avatarLayerContainer.appendChild(avatarLayer);
+    avatarPreview.appendChild(avatarLayerContainer);
+    avatarPreview.appendChild(decorationLayer);
+
+    return avatarPreview;
+  }
+
+  // Refresh avatar display (useful when items are equipped/unequipped)
+  async refreshAvatarDisplay() {
+    await this.loadUserAvatarConfiguration();
   }
 }
 

@@ -97,10 +97,6 @@
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.qr-container {
-    position: relative;
-    margin-bottom: 15px;
-}
 
 .qr-help {
     text-align: center;
@@ -182,23 +178,45 @@
     }
 }
 
-/* Add more sparkles */
-.pearl-qr-display {
-    animation: shimmer 4s ease-in-out infinite;
+/* QR Container positioning - ensure it stays centered and doesn't slide */
+.qr-container {
+    position: relative;
+    margin-bottom: 15px;
+    /* Ensure QR container is properly centered */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-@keyframes shimmer {
+.pearl-qr-display canvas,
+.pearl-qr-display img,
+#receive-qr-code {
+    /* Prevent any sliding animations or transforms on QR elements */
+    position: static !important;
+    transform: none !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+}
+
+/* Optional: Add a subtle pulse animation only on hover if animation is desired */
+.pearl-qr-display:hover {
+    animation: subtlePulse 2s ease-in-out infinite;
+}
+
+@keyframes subtlePulse {
     0%, 100% {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    25% {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        transform: scale(1);
+        box-shadow: 
+            0 20px 40px rgba(102, 126, 234, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
     50% {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-    75% {
-        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        transform: scale(1.005);
+        box-shadow: 
+            0 25px 45px rgba(102, 126, 234, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 }
 

@@ -13,7 +13,7 @@ class Config:
     DB_HOST = os.environ.get('DB_HOST', 'localhost')
     DB_PORT = os.environ.get('DB_PORT', 3306)
     DB_USER = os.environ.get('DB_USER', 'root')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', '')  # Default empty for XAMPP
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'Faith@030419')
     DB_NAME = os.environ.get('DB_NAME', 'pearl_verse')
     
     # SQLAlchemy Configuration
@@ -50,7 +50,9 @@ class DevelopmentConfig(Config):
     DB_HOST = 'localhost'
     DB_PORT = 3306
     DB_USER = 'root'
-    DB_PASSWORD = ''  # XAMPP default (empty password)
+    # Inherit password from base Config (or env). Do NOT override with empty string.
+    # If you want to hardcode for local dev, uncomment the next line and set it.
+    # DB_PASSWORD = 'Faith@030419'
     DB_NAME = 'pearl_verse'
 
 class ProductionConfig(Config):

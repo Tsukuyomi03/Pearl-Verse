@@ -6,8 +6,8 @@
 /* Main Dashboard Content */
 .dashboard-main {
     position: fixed;
-    top: 60px;
-    left: 260px;
+    top: 72px;
+    left: 280px;
     right: 0;
     bottom: 0;
     padding: 20px;
@@ -16,7 +16,7 @@
     overflow-y: auto;
     overflow-x: hidden; /* Prevent horizontal overflow */
     box-sizing: border-box;
-    width: calc(100% - 260px); /* Explicit width calculation */
+    width: calc(100% - 280px); /* Explicit width calculation */
     
     /* Inter Font Settings */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -55,9 +55,20 @@
     overflow: hidden;
     border-radius: 12px 12px 0 0;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+/* When a custom banner is applied - ensure JavaScript-set background takes priority */
+.profile-banner.has-custom-banner {
+    /* The banner image is set via JavaScript style attribute which has higher specificity */
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
 
 .banner-image {
@@ -87,10 +98,19 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.15) 100%);
     z-index: 2;
     /* Future decoration overlay space */
     pointer-events: none;
+}
+
+/* Hide overlay completely when custom banner is active */
+.profile-banner.has-custom-banner .banner-overlay {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    background: none !important;
+    pointer-events: none !important;
 }
 
 /* Avatar Container - Centered on Banner */
@@ -2024,7 +2044,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
     .dashboard-main {
         left: 0;
         top: 60px;

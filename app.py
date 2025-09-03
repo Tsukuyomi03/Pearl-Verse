@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from config import get_config
-from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim
+from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim, AvatarShopItem, UserAvatarItem, UserAvatarConfiguration
 import os
 import re
 import string
@@ -161,6 +161,66 @@ def validate_referral_code(referral_code):
     """Validate and return user with given referral code"""
     return User.query.filter_by(referral_code=referral_code.upper()).first()
 
+# Level calculation functions
+def calculate_exp_for_level(level):
+    """Calculate cumulative EXP needed to reach a specific level"""
+    if level <= 1:
+        return 0
+    
+    # Calculate cumulative EXP thresholds
+    # Level 1: 0 EXP (starting point)
+    # Level 2: 1000 EXP total needed
+    # Level 3: 2500 EXP total needed (1000 + 1500)
+    # Level 4: 4500 EXP total needed (1000 + 1500 + 2000)
+    total_exp = 0
+    for i in range(1, level):
+        total_exp += 1000 + (i - 1) * 500  # Level 1->2 needs 1000, 2->3 needs 1500, etc.
+    return total_exp
+
+def calculate_level_from_exp(total_exp):
+    """Calculate what level a user should be based on their total EXP"""
+    if total_exp < 1000:
+        return 1
+    
+    # Start from level 2 and work up
+    level = 2
+    while True:
+        exp_needed = calculate_exp_for_level(level + 1)
+        if total_exp < exp_needed:
+            return level
+        level += 1
+        # Safety check to prevent infinite loop
+        if level > 1000:
+            return 1000
+
+def check_level_up_and_reset_exp(user):
+    """Check if user should level up - FIXED to maintain total cumulative EXP"""
+    original_level = user.level
+    total_exp = user.exp  # This is now always total cumulative EXP
+    
+    # Calculate what level the user should be based on cumulative EXP
+    new_level = calculate_level_from_exp(total_exp)
+    level_ups = 0
+    
+    if new_level > original_level:
+        # User leveled up (possibly multiple times)!
+        level_ups = new_level - original_level
+        user.level = new_level
+        
+        # IMPORTANT: Keep total cumulative EXP intact - don't reset it
+        # user.exp remains the same (total cumulative EXP)
+        
+        if level_ups == 1:
+            print(f"User {user.id} leveled up from {original_level} to {new_level}! Total EXP: {total_exp}")
+        else:
+            print(f"User {user.id} jumped {level_ups} levels from {original_level} to {new_level}! Total EXP: {total_exp}")
+    elif new_level < original_level:
+        # Handle case where level needs to be corrected downward (data inconsistency)
+        print(f"User {user.id} level corrected from {original_level} to {new_level} based on EXP: {total_exp}")
+        user.level = new_level
+    
+    return level_ups, original_level, new_level
+
 
 
 
@@ -275,6 +335,20 @@ def settings():
     """Settings page - redirect to Pearl Settings"""
     return redirect(url_for('pearl_settings'))
 
+@app.route('/pearl_avatar_shop')
+def pearl_avatar_shop():
+    """Pearl Verse Avatar Shop - avatar customization page"""
+    # Check if user is logged in
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+    return render_template('pearl_avatar_shop.html')
+
+@app.route('/avatar_shop')
+def avatar_shop():
+    """Avatar shop page - redirect to Pearl Avatar Shop"""
+    return redirect(url_for('pearl_avatar_shop'))
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     """Serve uploaded files"""
@@ -352,6 +426,29 @@ def api_login():
         return jsonify({
             'success': False,
             'message': 'An error occurred during login. Please try again.'
+        }), 500
+
+@app.route('/api/session-debug', methods=['GET'])
+def api_session_debug():
+    """Debug endpoint to check session status"""
+    try:
+        session_data = {
+            'logged_in': session.get('logged_in', False),
+            'user_id': session.get('user_id'),
+            'username': session.get('username'),
+            'session_keys': list(session.keys()),
+            'session_id': request.cookies.get('session', 'No session cookie')
+        }
+        
+        return jsonify({
+            'success': True,
+            'session': session_data
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
         }), 500
 
 @app.route('/api/current-user', methods=['GET'])
@@ -612,10 +709,16 @@ def api_register():
         # Award referral bonuses if referral code was used
         if referrer:
             try:
-                # Award 1000 pearls to both referrer and new user
+                # Award 1000 pearls to both users, but 500 EXP only to referrer
                 referrer.pearl += 1000
+                referrer.exp += 500  # Only referrer gets EXP bonus
                 new_user.pearl += 1000
+                # new_user does NOT get EXP bonus
                 referral_bonus_awarded = True
+                
+                # Check for level ups after EXP bonus (only referrer might level up)
+                referrer_level_ups, referrer_old_level, referrer_new_level = check_level_up_and_reset_exp(referrer)
+                # No need to check level up for new user since they don't get EXP
                 
                 # Create referral record
                 referral_record = Referral(
@@ -631,7 +734,7 @@ def api_register():
                     user_id=referrer.id,
                     transaction_type='referral_bonus',
                     amount=1000,
-                    description=f'Referral bonus for referring {new_user.username}',
+                    description=f'Referral bonus for referring {new_user.username} (+1000 pearls, +500 EXP)',
                     related_user_id=new_user.id,
                     reference_id=f'REF-{int(datetime.now().timestamp())}-{referrer.id}'
                 )
@@ -640,7 +743,7 @@ def api_register():
                     user_id=new_user.id,
                     transaction_type='referral_bonus',
                     amount=1000,
-                    description=f'Referral bonus for using {referrer.username} referral code',
+                    description=f'Referral bonus for using {referrer.username} referral code (+1000 pearls)',
                     related_user_id=referrer.id,
                     reference_id=f'REF-{int(datetime.now().timestamp())}-{new_user.id}'
                 )
@@ -657,7 +760,7 @@ def api_register():
         # Prepare success message
         success_message = 'Account created successfully! Welcome to Pearl Verse!'
         if referral_bonus_awarded:
-            success_message += f' You and your referrer each earned 1000 bonus pearls!'
+            success_message += f' You earned 1000 bonus pearls and your referrer earned 1000 pearls + 500 EXP!'
         
         # Return success response (don't include sensitive data)
         return jsonify({
@@ -1042,6 +1145,9 @@ def claim_daily_reward():
                 'message': 'EXP synchronization error. Please try again.'
             }), 500
         
+        # Check for level ups after adding EXP
+        level_ups, original_level, new_level = check_level_up_and_reset_exp(user)
+        
         # Create transaction record for the daily claim
         claim_transaction = Transaction(
             user_id=user_id,
@@ -1071,9 +1177,17 @@ def claim_daily_reward():
         if cycle_completed:
             bonus_message = " Congratulations! You've completed a 7-day cycle and earned bonus EXP!"
         
+        # Add level up message if applicable
+        level_up_message = ""
+        if level_ups > 0:
+            if level_ups == 1:
+                level_up_message = f" Level up! You reached level {new_level}!"
+            else:
+                level_up_message = f" Multiple level ups! You reached level {new_level}!"
+        
         return jsonify({
             'success': True,
-            'message': f'Daily reward claimed! You earned {pearl_reward} pearls and {exp_reward} EXP.{bonus_message}',
+            'message': f'Daily reward claimed! You earned {pearl_reward} pearls and {exp_reward} EXP.{bonus_message}{level_up_message}',
             'claimed_amount': pearl_reward,
             'exp_claimed_amount': exp_reward,
             'original_balance': original_balance,
@@ -1084,6 +1198,12 @@ def claim_daily_reward():
             'cycle_completed': cycle_completed,
             'next_reward': reward_amounts[1] if cycle_completed else reward_amounts[current_streak + 1] if current_streak < 7 else reward_amounts[1],
             'next_exp_reward': exp_amounts[1] if cycle_completed else exp_amounts[current_streak + 1] if current_streak < 7 else exp_amounts[1],
+            'level_up_info': {
+                'level_ups': level_ups,
+                'original_level': original_level,
+                'new_level': new_level,
+                'leveled_up': level_ups > 0
+            },
             'claim_details': new_claim.to_dict()
         }), 200
         
@@ -2489,6 +2609,493 @@ def delete_social_link(link_id):
             'message': 'An error occurred while deleting the social media link'
         }), 500
 
+# Avatar Shop API Routes
+@app.route('/api/avatar-shop/items', methods=['GET'])
+def get_avatar_shop_items():
+    """Get avatar shop items with filtering and pagination"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view avatar shop items'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Get query parameters
+        category = request.args.get('category', 'all').lower()
+        rarity = request.args.get('rarity', 'all').lower()
+        owned_filter = request.args.get('owned', 'all').lower()
+        search_term = request.args.get('search', '').strip().lower()
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 12, type=int)
+        
+        # Limit per_page to reasonable values
+        per_page = min(max(per_page, 1), 50)
+        
+        # Build base query
+        query = AvatarShopItem.query.filter(AvatarShopItem.is_active == True)
+        
+        # Apply category filter
+        if category != 'all':
+            category_map = {'banner': 1, 'avatar': 2, 'decoration': 3}
+            category_id = category_map.get(category)
+            if category_id:
+                query = query.filter(AvatarShopItem.category_id == category_id)
+        
+        # Apply rarity filter
+        if rarity != 'all':
+            rarity_map = {'common': 1, 'rare': 2, 'epic': 3, 'legendary': 4, 'mythic': 5}
+            rarity_id = rarity_map.get(rarity)
+            if rarity_id:
+                query = query.filter(AvatarShopItem.rarity_id == rarity_id)
+        
+        # Apply search filter
+        if search_term:
+            query = query.filter(
+                db.or_(
+                    AvatarShopItem.name.ilike(f'%{search_term}%'),
+                    AvatarShopItem.description.ilike(f'%{search_term}%')
+                )
+            )
+        
+        # Get user's owned items for filtering
+        user_items = UserAvatarItem.query.filter_by(user_id=user_id).all()
+        owned_items = {item.avatar_item_id for item in user_items}
+        
+        # Get user's current avatar configuration for selection status
+        from models.avatar_shop_item import UserAvatarConfiguration
+        user_config = UserAvatarConfiguration.query.filter_by(user_id=user_id).first()
+        selected_items = set()
+        if user_config:
+            if user_config.banner_item_id:
+                selected_items.add(user_config.banner_item_id)
+            if user_config.avatar_item_id:
+                selected_items.add(user_config.avatar_item_id)
+            if user_config.decoration_item_id:
+                selected_items.add(user_config.decoration_item_id)
+        
+        # Apply owned filter if specified
+        if owned_filter == 'owned':
+            if owned_items:
+                query = query.filter(AvatarShopItem.id.in_(owned_items))
+            else:
+                # User doesn't own any items, return empty result
+                query = query.filter(AvatarShopItem.id.in_([]))
+        elif owned_filter == 'unowned':
+            if owned_items:
+                query = query.filter(~AvatarShopItem.id.in_(owned_items))
+        
+        # Get all items first to sort by ownership status
+        all_items = query.all()
+        
+        # Split items into owned and unowned, then sort each group
+        owned_shop_items = [item for item in all_items if item.id in owned_items]
+        unowned_shop_items = [item for item in all_items if item.id not in owned_items]
+        
+        # Sort each group by category, then by name
+        owned_shop_items.sort(key=lambda x: (x.category_id, x.name))
+        unowned_shop_items.sort(key=lambda x: (x.category_id, x.name))
+        
+        # Combine: owned items first, then unowned items
+        sorted_items = owned_shop_items + unowned_shop_items
+        
+        # Calculate pagination manually since we're sorting in Python
+        total_items = len(sorted_items)
+        start_idx = (page - 1) * per_page
+        end_idx = start_idx + per_page
+        paginated_items = sorted_items[start_idx:end_idx]
+        
+        # Create pagination info
+        total_pages = (total_items + per_page - 1) // per_page
+        has_prev = page > 1
+        has_next = page < total_pages
+        
+        # Format items for frontend
+        formatted_items = []
+        for item in paginated_items:
+            item_dict = item.to_dict()
+            # Add ownership status
+            item_dict['owned'] = item.id in owned_items
+            # Add selection status based on user's current avatar configuration
+            item_dict['selected'] = item.id in selected_items
+            formatted_items.append(item_dict)
+        
+        return jsonify({
+            'success': True,
+            'items': formatted_items,
+            'pagination': {
+                'page': page,
+                'per_page': per_page,
+                'total': total_items,
+                'pages': total_pages,
+                'has_prev': has_prev,
+                'has_next': has_next
+            },
+            'filters': {
+                'category': category,
+                'rarity': rarity,
+                'owned': owned_filter,
+                'search': search_term
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"Avatar shop items error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching avatar shop items'
+        }), 500
+
+@app.route('/api/avatar-shop/purchase', methods=['POST'])
+def purchase_avatar_item():
+    """Purchase an avatar shop item"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to purchase items'
+            }), 401
+        
+        user_id = session['user_id']
+        # Lock the user record to prevent race conditions
+        user = User.query.filter_by(id=user_id).with_for_update().first()
+        
+        if not user:
+            db.session.rollback()
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Get JSON data from request
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'message': 'No data provided'
+            }), 400
+        
+        item_id = data.get('item_id')
+        if not item_id:
+            return jsonify({
+                'success': False,
+                'message': 'Item ID is required'
+            }), 400
+        
+        # Get the item
+        item = AvatarShopItem.query.filter_by(id=item_id, is_active=True).first()
+        if not item:
+            return jsonify({
+                'success': False,
+                'message': 'Item not found or not available'
+            }), 404
+        
+        # Check if user already owns this item
+        existing_ownership = UserAvatarItem.query.filter_by(
+            user_id=user_id,
+            avatar_item_id=item_id
+        ).first()
+        
+        if existing_ownership:
+            return jsonify({
+                'success': False,
+                'message': 'You already own this item'
+            }), 400
+        
+        # Check if user has enough pearls
+        if user.pearl < item.price:
+            return jsonify({
+                'success': False,
+                'message': f'Insufficient pearls. You need {item.price} pearls but only have {user.pearl}.'
+            }), 400
+        
+        # Perform the purchase
+        original_balance = user.pearl
+        original_exp = user.exp
+        user.pearl -= item.price
+        
+        # Add 30% bonus XP (30% of item price)
+        bonus_exp = int(item.price * 0.3)
+        user.exp += bonus_exp
+        
+        # Check for level ups after adding bonus XP
+        level_ups, original_level, new_level = check_level_up_and_reset_exp(user)
+        
+        # Create ownership record
+        ownership = UserAvatarItem(
+            user_id=user_id,
+            avatar_item_id=item_id,
+            is_equipped=False,  # Default to not equipped
+            purchased_price=item.price
+        )
+        
+        # Create transaction record
+        transaction = Transaction(
+            user_id=user_id,
+            transaction_type='avatar_purchase',
+            amount=-item.price,  # Negative because it's a purchase
+            description=f'Purchased {item.name} ({item.get_category_name()}) - Bonus: +{bonus_exp} XP',
+            reference_id=f'AVATAR-{item_id}-{user_id}-{int(datetime.now().timestamp())}'
+        )
+        
+        # Add records to session
+        db.session.add(ownership)
+        db.session.add(transaction)
+        
+        # Commit all changes
+        db.session.commit()
+        
+        print(f"Avatar item purchased: User {user_id} bought {item.name} for {item.price} pearls, earned {bonus_exp} bonus XP")
+        
+        # Create success message with level up info if applicable
+        success_message = f'Successfully purchased {item.name}! You earned {bonus_exp} bonus XP.'
+        if level_ups > 0:
+            if level_ups == 1:
+                success_message += f' Level up! You reached level {new_level}!'
+            else:
+                success_message += f' Multiple level ups! You reached level {new_level}!'
+        
+        return jsonify({
+            'success': True,
+            'message': success_message,
+            'item': item.to_dict(),
+            'transaction_id': transaction.id,
+            'original_balance': original_balance,
+            'original_exp': original_exp,
+            'new_balance': user.pearl,
+            'new_exp': user.exp,
+            'bonus_exp': bonus_exp,
+            'cost': item.price,
+            'level_up_info': {
+                'level_ups': level_ups,
+                'original_level': original_level,
+                'new_level': new_level,
+                'leveled_up': level_ups > 0
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Avatar purchase error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while purchasing the item. Please try again.'
+        }), 500
+
+@app.route('/api/avatar-shop/user-items', methods=['GET'])
+def get_user_avatar_items():
+    """Get user's owned avatar items"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view your items'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Get user's owned items with item details
+        user_items = db.session.query(UserAvatarItem, AvatarShopItem).join(
+            AvatarShopItem, UserAvatarItem.avatar_item_id == AvatarShopItem.id
+        ).filter(
+            UserAvatarItem.user_id == user_id,
+            AvatarShopItem.is_active == True
+        ).all()
+        
+        # Format items
+        owned_items = []
+        for user_item, shop_item in user_items:
+            item_dict = shop_item.to_dict()
+            item_dict.update({
+                'owned': True,
+                'is_equipped': user_item.is_equipped,
+                'purchased_at': user_item.purchased_at.isoformat() if user_item.purchased_at else None,
+                'purchased_price': user_item.purchased_price
+            })
+            owned_items.append(item_dict)
+        
+        return jsonify({
+            'success': True,
+            'items': owned_items,
+            'total_owned': len(owned_items)
+        }), 200
+        
+    except Exception as e:
+        print(f"User avatar items error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching your items'
+        }), 500
+
+@app.route('/api/avatar-shop/user-configuration', methods=['GET'])
+def get_user_avatar_configuration():
+    """Get user's current avatar configuration"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view your avatar configuration'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Get user's current avatar configuration
+        user_config = UserAvatarConfiguration.query.filter_by(user_id=user_id).first()
+        
+        if not user_config:
+            # Return empty configuration if none exists
+            return jsonify({
+                'success': True,
+                'configuration': {
+                    'equipped_items': {
+                        'banner': None,
+                        'avatar': None,
+                        'decoration': None
+                    }
+                }
+            }), 200
+        
+        # Get the actual item details for each configured item
+        equipped_items = {
+            'banner': None,
+            'avatar': None,
+            'decoration': None
+        }
+        
+        # Fetch banner item details if configured
+        if user_config.banner_item_id:
+            banner_item = AvatarShopItem.query.filter_by(
+                id=user_config.banner_item_id,
+                is_active=True
+            ).first()
+            if banner_item:
+                equipped_items['banner'] = {
+                    'id': banner_item.id,
+                    'name': banner_item.name,
+                    'image_url': banner_item.get_full_url(),
+                    'category': banner_item.get_category_name()
+                }
+        
+        # Fetch avatar item details if configured
+        if user_config.avatar_item_id:
+            avatar_item = AvatarShopItem.query.filter_by(
+                id=user_config.avatar_item_id,
+                is_active=True
+            ).first()
+            if avatar_item:
+                equipped_items['avatar'] = {
+                    'id': avatar_item.id,
+                    'name': avatar_item.name,
+                    'image_url': avatar_item.get_full_url(),
+                    'category': avatar_item.get_category_name()
+                }
+        
+        # Fetch decoration item details if configured
+        if user_config.decoration_item_id:
+            decoration_item = AvatarShopItem.query.filter_by(
+                id=user_config.decoration_item_id,
+                is_active=True
+            ).first()
+            if decoration_item:
+                equipped_items['decoration'] = {
+                    'id': decoration_item.id,
+                    'name': decoration_item.name,
+                    'image_url': decoration_item.get_full_url(),
+                    'category': decoration_item.get_category_name()
+                }
+        
+        return jsonify({
+            'success': True,
+            'configuration': {
+                'equipped_items': equipped_items
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"User avatar configuration error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching your avatar configuration'
+        }), 500
+
+@app.route('/api/avatar-shop/equip', methods=['POST'])
+def equip_avatar_item():
+    """Equip or unequip an avatar item"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({'success': False, 'message': 'Not logged in'}), 401
+        
+        user_id = session['user_id']
+        data = request.get_json()
+        
+        if not data or 'item_id' not in data:
+            return jsonify({'success': False, 'message': 'Item ID is required'}), 400
+        
+        item_id = data['item_id']
+        action = data.get('action', 'equip')  # 'equip' or 'unequip'
+        
+        # Get item and check ownership
+        item = db.session.get(AvatarShopItem, item_id)
+        if not item:
+            return jsonify({'success': False, 'message': 'Item not found'}), 404
+        
+        user_item = UserAvatarItem.query.filter_by(user_id=user_id, avatar_item_id=item_id).first()
+        if not user_item:
+            return jsonify({'success': False, 'message': 'You do not own this item'}), 400
+        
+        # Get or create user avatar configuration
+        user_config = UserAvatarConfiguration.query.filter_by(user_id=user_id).first()
+        if not user_config:
+            user_config = UserAvatarConfiguration(user_id=user_id)
+            db.session.add(user_config)
+        
+        # Equip or unequip based on action and category
+        if action == 'equip':
+            if item.get_category_name() == 'banner':
+                user_config.banner_item_id = item_id
+            elif item.get_category_name() == 'avatar':
+                user_config.avatar_item_id = item_id
+            elif item.get_category_name() == 'decoration':
+                user_config.decoration_item_id = item_id
+            
+            message = f'Successfully equipped {item.name}!'
+        else:  # unequip
+            if item.get_category_name() == 'banner' and user_config.banner_item_id == item_id:
+                user_config.banner_item_id = None
+            elif item.get_category_name() == 'avatar' and user_config.avatar_item_id == item_id:
+                user_config.avatar_item_id = None
+            elif item.get_category_name() == 'decoration' and user_config.decoration_item_id == item_id:
+                user_config.decoration_item_id = None
+            
+            message = f'Successfully unequipped {item.name}!'
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': message,
+            'action': action,
+            'item': {
+                'id': item.id,
+                'name': item.name,
+                'category': item.get_category_name()
+            }
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error equipping avatar item: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while updating item'
+        }), 500
+
 # Battle Pass API Routes
 @app.route('/api/battle-pass/claimed-rewards', methods=['GET'])
 def get_battle_pass_claimed_rewards():
@@ -2749,6 +3356,7 @@ def get_battle_pass_data():
             'success': False,
             'message': 'An error occurred while fetching battle pass data'
         }), 500
+
 
 def create_tables():
     db.create_all()

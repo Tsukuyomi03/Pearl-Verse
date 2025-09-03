@@ -445,6 +445,7 @@ body {
     border-radius: 8px;
     min-height: 100px;
     margin-bottom: 1rem;
+    display: block;
 }
 
 .bio-display p {
@@ -456,15 +457,31 @@ body {
 
 .bio-edit {
     display: none;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
 }
 
 .bio-textarea {
     width: 100%;
-    min-height: 100px;
+    min-height: 120px;
     resize: vertical;
     font-family: inherit;
     line-height: 1.6;
     margin-bottom: 0.5rem;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 1rem;
+    color: #f1f5f9;
+    font-size: 0.875rem;
+}
+
+.bio-textarea:focus {
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+    outline: none;
 }
 
 .character-count {
@@ -480,9 +497,27 @@ body {
 }
 
 .bio-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
     margin-top: 0.5rem;
-    padding-top: 0;
-    border-top: none;
+    padding-top: 1rem;
+    border-top: 1px solid #334155;
+}
+
+/* Ensure proper modal behavior */
+.bio-edit[style*="block"] {
+    display: block !important;
+}
+
+.bio-display[style*="none"] {
+    display: none !important;
+}
+
+/* Bio button styling */
+.btn-sm {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
 }
 
 /* Buttons */

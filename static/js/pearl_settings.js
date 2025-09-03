@@ -1417,6 +1417,7 @@ class PearlSettings {
         const bioEdit = document.getElementById("bio-edit");
         const bioTextarea = document.getElementById("bio-textarea");
         const charCount = document.getElementById("bio-char-count");
+        const bioActionsDisplay = document.querySelector(".bio-actions-display");
 
         console.log('Bio editing elements found:', {
             editBtn: !!editBtn,
@@ -1425,52 +1426,54 @@ class PearlSettings {
             bioDisplay: !!bioDisplay,
             bioEdit: !!bioEdit,
             bioTextarea: !!bioTextarea,
-            charCount: !!charCount
+            charCount: !!charCount,
+            bioActionsDisplay: !!bioActionsDisplay
         });
 
-        if (!editBtn) {
-            console.log('Edit bio button not found - bio editing not available');
+        if (!editBtn || !bioDisplay || !bioEdit || !bioTextarea) {
+            console.log('Bio editing elements not found - bio editing not available');
             return;
         }
 
-        editBtn.addEventListener("click", () => {
-            // Enter edit mode
-            bioDisplay.style.display = "none";
-            bioEdit.style.display = "block";
-            
-            // Set current bio text
-            const currentBio = document.getElementById("user-bio").textContent;
-            bioTextarea.value = currentBio === "Tell others about yourself..." ? "" : currentBio;
-            
-            // Update character count
-            this.updateBioCharCount();
-            
-            // Focus textarea
-            bioTextarea.focus();
+        // Ensure bio display is visible initially and edit mode is hidden
+        this.resetBioToDisplayMode();
+
+        editBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.enterBioEditMode();
         });
 
-        cancelBtn?.addEventListener("click", () => {
-            this.cancelBioEdit();
-        });
+        if (cancelBtn) {
+            cancelBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.cancelBioEdit();
+            });
+        }
 
-        saveBtn?.addEventListener("click", () => {
-            this.saveBio();
-        });
-
-        bioTextarea?.addEventListener("input", () => {
-            this.updateBioCharCount();
-        });
-
-        // Save on Enter+Ctrl
-        bioTextarea?.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && e.ctrlKey) {
+        if (saveBtn) {
+            saveBtn.addEventListener("click", (e) => {
                 e.preventDefault();
                 this.saveBio();
-            }
-            if (e.key === "Escape") {
-                this.cancelBioEdit();
-            }
-        });
+            });
+        }
+
+        if (bioTextarea) {
+            bioTextarea.addEventListener("input", () => {
+                this.updateBioCharCount();
+            });
+
+            // Save on Enter+Ctrl, cancel on Escape
+            bioTextarea.addEventListener("keydown", (e) => {
+                if (e.key === "Enter" && e.ctrlKey) {
+                    e.preventDefault();
+                    this.saveBio();
+                }
+                if (e.key === "Escape") {
+                    e.preventDefault();
+                    this.cancelBioEdit();
+                }
+            });
+        }
     }
 
     updateBioCharCount() {
@@ -1495,9 +1498,19 @@ class PearlSettings {
     cancelBioEdit() {
         const bioDisplay = document.getElementById("bio-display");
         const bioEdit = document.getElementById("bio-edit");
+        const bioActionsDisplay = document.querySelector(".bio-actions-display");
         
-        bioDisplay.style.display = "block";
-        bioEdit.style.display = "none";
+        if (bioDisplay) {
+            bioDisplay.style.display = "block";
+        }
+        if (bioEdit) {
+            bioEdit.style.display = "none";
+        }
+        if (bioActionsDisplay) {
+            bioActionsDisplay.style.display = "flex";
+        }
+        
+        console.log('Bio edit cancelled, returned to display mode');
     }
 
     async saveBio() {
@@ -1537,6 +1550,62 @@ class PearlSettings {
             // Reset button state
             saveBtn.innerHTML = originalHtml;
             saveBtn.disabled = false;
+        }
+    }
+
+    // Reset bio display to initial mode
+    resetBioToDisplayMode() {
+        const bioDisplay = document.getElementById("bio-display");
+        const bioEdit = document.getElementById("bio-edit");
+        const bioActionsDisplay = document.querySelector(".bio-actions-display");
+        
+        if (bioDisplay) {
+            bioDisplay.style.display = "block";
+        }
+        if (bioEdit) {
+            bioEdit.style.display = "none";
+        }
+        if (bioActionsDisplay) {
+            bioActionsDisplay.style.display = "flex";
+        }
+        
+        console.log('Bio reset to display mode');
+    }
+    
+    // Enter bio edit mode
+    enterBioEditMode() {
+        const bioDisplay = document.getElementById("bio-display");
+        const bioEdit = document.getElementById("bio-edit");
+        const bioTextarea = document.getElementById("bio-textarea");
+        const bioActionsDisplay = document.querySelector(".bio-actions-display");
+        
+        console.log('Entering bio edit mode');
+        
+        // Hide display mode and show edit mode
+        if (bioDisplay) {
+            bioDisplay.style.display = "none";
+        }
+        if (bioEdit) {
+            bioEdit.style.display = "block";
+        }
+        if (bioActionsDisplay) {
+            bioActionsDisplay.style.display = "none";
+        }
+        
+        // Set current bio text in textarea
+        if (bioTextarea) {
+            const currentBioElement = document.getElementById("user-bio");
+            const currentBio = currentBioElement ? currentBioElement.textContent : "";
+            bioTextarea.value = currentBio === "Tell others about yourself..." ? "" : currentBio;
+            
+            // Update character count
+            this.updateBioCharCount();
+            
+            // Focus textarea and set cursor at end
+            setTimeout(() => {
+                bioTextarea.focus();
+                bioTextarea.setSelectionRange(bioTextarea.value.length, bioTextarea.value.length);
+            }, 50);
         }
     }
 

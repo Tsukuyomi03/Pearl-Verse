@@ -349,6 +349,17 @@ def avatar_shop():
     """Avatar shop page - redirect to Pearl Avatar Shop"""
     return redirect(url_for('pearl_avatar_shop'))
 
+@app.route('/market')
+def market():
+    """Pearl Verse Market - trading and marketplace"""
+    # Check if user is logged in
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+    # For now, redirect to dashboard until market template is created
+    # TODO: Create pearl_market.html template
+    return redirect('/pearl_dashboard')
+
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     """Serve uploaded files"""

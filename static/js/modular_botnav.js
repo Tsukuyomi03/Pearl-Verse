@@ -98,8 +98,9 @@ class ModularBotnav {
             '/dashboard': 'dashboard',
             '/pearl_dashboard': 'dashboard',
             '/': 'dashboard',
+            '/pearl_avatar_shop': 'avatar-shop',
             '/avatar-shop': 'avatar-shop',
-            '/shop': 'shop',
+            '/market': 'market',
             '/inventory': 'inventory',
             '/community': 'community',
             '/leaderboard': 'leaderboard'

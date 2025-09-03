@@ -61,8 +61,10 @@ class ModularSidenav {
             '/dashboard': 'dashboard',
             '/pearl_dashboard': 'dashboard',
             '/': 'dashboard',
+            '/pearl_avatar_shop': 'avatar-shop',
             '/avatar-shop': 'avatar-shop',
-            '/shop': 'shop',
+            '/market': 'market',
+            '/shop': 'market', // Redirect old shop URLs to market
             '/inventory': 'inventory',
             '/community': 'community',
             '/leaderboard': 'leaderboard'
@@ -74,14 +76,32 @@ class ModularSidenav {
             activeLink = document.querySelector(`[data-nav="${navKey}"]`);
         }
         
-        // Fallback: try to match partial paths
+        // Fallback: try to match partial paths with exact matching
         if (!activeLink) {
+            // First, try exact path matching (excluding leading slash)
             this.navLinks.forEach(link => {
                 const href = link.getAttribute('href');
-                if (href && currentPath.includes(href.replace('/', ''))) {
+                if (href && currentPath === href) {
                     activeLink = link;
                 }
             });
+            
+            // If still no match, try more specific substring matching
+            if (!activeLink) {
+                // Sort links by href length (longest first) to match most specific paths first
+                const sortedLinks = [...this.navLinks].sort((a, b) => {
+                    const hrefA = a.getAttribute('href') || '';
+                    const hrefB = b.getAttribute('href') || '';
+                    return hrefB.length - hrefA.length;
+                });
+                
+                sortedLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href !== '/' && currentPath.startsWith(href)) {
+                        activeLink = link;
+                    }
+                });
+            }
         }
         
         // Don't set default to dashboard if on settings page

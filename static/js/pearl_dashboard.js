@@ -149,6 +149,14 @@ class PearlDashboard {
       `${this.userData.first_name} ${this.userData.last_name}`
     );
 
+    // Update bio from database or show default message
+    const bioElement = $("#profile-bio");
+    if (this.userData.bio && this.userData.bio.trim()) {
+      bioElement.text(this.userData.bio);
+    } else {
+      bioElement.text("Welcome to my Pearl Verse profile!");
+    }
+
     // Update stats using jQuery with smooth animation
     this.updateBalanceElements(this.userData.pearl);
     $("#level").text(this.userData.level);

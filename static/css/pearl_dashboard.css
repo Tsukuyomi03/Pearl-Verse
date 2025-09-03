@@ -17,6 +17,7 @@
     overflow-x: hidden; /* Prevent horizontal overflow */
     box-sizing: border-box;
     width: calc(100% - 280px); /* Explicit width calculation */
+    z-index: 1; /* Ensure dashboard stays below topnav (z-index: 1000) and dropdowns (z-index: 10000) */
     
     /* Inter Font Settings */
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;

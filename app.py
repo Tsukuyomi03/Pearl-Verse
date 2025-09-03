@@ -1985,7 +1985,8 @@ def send_pearls():
                 'message': 'No data provided'
             }), 400
         
-        recipient_identifier = data.get('recipient', '').strip()
+        # Accept both 'recipient' and 'recipient_address' for compatibility
+        recipient_identifier = data.get('recipient_address', data.get('recipient', '')).strip()
         amount = data.get('amount', 0)
         message = data.get('message', '').strip()
         

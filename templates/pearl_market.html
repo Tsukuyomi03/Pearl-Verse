@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pearl Market - Pearl Verse</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+
+    <!-- Inter Font - Modern, clean, and highly readable -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body class="pearl-market-body">
+    <style>
+      /* Modern Flat Design with Dark Theme - Pearl Market */
+      .pearl-market-body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, sans-serif;
+        background: linear-gradient(
+          135deg,
+          #0d1117 0%,
+          #161b22 50%,
+          #0d1117 100%
+        );
+        color: #e6edf3;
+        min-height: 100vh;
+        font-variant-numeric: tabular-nums;
+        font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* Main Content Layout */
+      .main-content {
+        margin-left: 0;
+        padding: 80px 0 0; /* Increased top padding for the fixed topnav to prevent overlap */
+        min-height: 100vh;
+        transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        z-index: 1; /* Ensure main content stays below topnav */
+      }
+
+      /* Responsive navigation adjustments */
+      @media (min-width: 1024px) {
+        .main-content {
+          margin-left: 280px;
+        }
+      }
+
+      @media (max-width: 1023px) {
+        .main-content {
+          margin-left: 0;
+          padding-top: 80px; /* Increased for mobile to prevent overlap */
+          padding-bottom: 90px;
+        }
+      }
+
+      /* Market Header - Compact Counter-Focused Design */
+      .market-header {
+        background: linear-gradient(
+          135deg,
+          #0f172a 0%,
+          #1e293b 25%,
+          #334155 50%,
+          #1e293b 75%,
+          #0f172a 100%
+        );
+        padding: 2rem 0;
+        position: relative;
+        overflow: hidden;
+        min-height: auto;
+      }
+
+      .header-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* Floating Cards Animation */
+      .floating-cards {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .floating-card {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.1),
+          rgba(168, 85, 247, 0.1)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 1.5rem;
+        backdrop-filter: blur(10px);
+        animation: floatAround 20s infinite linear;
+      }
+
+      .floating-card.card-1 {
+        top: 10%;
+        left: 10%;
+        animation-delay: 0s;
+        animation-duration: 25s;
+      }
+
+      .floating-card.card-2 {
+        top: 20%;
+        right: 15%;
+        animation-delay: -5s;
+        animation-duration: 30s;
+      }
+
+      .floating-card.card-3 {
+        top: 50%;
+        left: 5%;
+        animation-delay: -10s;
+        animation-duration: 22s;
+      }
+
+      .floating-card.card-4 {
+        top: 70%;
+        right: 20%;
+        animation-delay: -15s;
+        animation-duration: 28s;
+      }
+
+      .floating-card.card-5 {
+        top: 30%;
+        left: 80%;
+        animation-delay: -20s;
+        animation-duration: 26s;
+      }
+
+      .floating-card.card-6 {
+        top: 80%;
+        left: 30%;
+        animation-delay: -25s;
+        animation-duration: 24s;
+      }
+
+      @keyframes floatAround {
+        0% {
+          transform: translate(0, 0) rotate(0deg);
+        }
+        25% {
+          transform: translate(20px, -30px) rotate(90deg);
+        }
+        50% {
+          transform: translate(-15px, -20px) rotate(180deg);
+        }
+        75% {
+          transform: translate(-25px, 15px) rotate(270deg);
+        }
+        100% {
+          transform: translate(0, 0) rotate(360deg);
+        }
+      }
+
+      /* Header Content */
+      .header-content {
+        z-index: 10;
+        position: relative;
+      }
+
+      .header-badge {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(6, 182, 212, 0.1);
+        border: 1px solid rgba(6, 182, 212, 0.3);
+        color: #06b6d4;
+        padding: 0.75rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+        animation: badgePulse 3s ease-in-out infinite;
+      }
+
+      .badge-glow {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(6, 182, 212, 0.1),
+          transparent
+        );
+        animation: badgeGlow 2s linear infinite;
+      }
+
+      @keyframes badgePulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 10px rgba(6, 182, 212, 0);
+        }
+      }
+
+      @keyframes badgeGlow {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* New Market Title Design */
+      .market-title {
+        font-size: 4.5rem;
+        font-weight: 900;
+        margin-bottom: 2rem;
+        letter-spacing: -0.04em;
+        position: relative;
+        line-height: 1.1;
+      }
+
+      .title-highlight {
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientShift 4s ease-in-out infinite;
+      }
+
+      .title-main {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: gradientShift 4s ease-in-out infinite reverse;
+      }
+
+      .title-underline {
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #06b6d4, #8b5cf6, #ec4899);
+        border-radius: 2px;
+        animation: underlineGlow 3s ease-in-out infinite;
+      }
+
+      @keyframes underlineGlow {
+        0%,
+        100% {
+          opacity: 0.6;
+          transform: scaleX(0.8);
+        }
+        50% {
+          opacity: 1;
+          transform: scaleX(1);
+        }
+      }
+
+      /* Updated Market Subtitle */
+      .market-subtitle {
+        font-size: 1.125rem;
+        color: #94a3b8;
+        font-weight: 400;
+        margin-bottom: 2.5rem;
+        letter-spacing: -0.01em;
+        line-height: 1.7;
+      }
+
+      /* Header Actions */
+      .header-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+        flex-wrap: wrap;
+      }
+
+      .btn-primary-market {
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        color: white;
+        border: none;
+        padding: 1rem 2rem;
+        font-weight: 700;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+      }
+
+      .btn-primary-market:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
+      }
+
+      .btn-glow {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: btnGlow 3s linear infinite;
+      }
+
+      @keyframes btnGlow {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+      }
+
+      .btn-secondary-market {
+        background: transparent;
+        color: #94a3b8;
+        border: 2px solid rgba(148, 163, 184, 0.3);
+        padding: 1rem 2rem;
+        font-weight: 600;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .btn-secondary-market:hover {
+        color: #e2e8f0;
+        border-color: #94a3b8;
+        background: rgba(148, 163, 184, 0.1);
+        transform: translateY(-2px);
+      }
+
+      /* Market Features */
+      .market-features {
+        display: flex;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .feature-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #94a3b8;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .feature-item i {
+        color: #06b6d4;
+        font-size: 1rem;
+      }
+
+      /* Compact Header Content */
+      .compact-header-content {
+        z-index: 10;
+        position: relative;
+      }
+
+      .market-title-compact {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        letter-spacing: -0.04em;
+        position: relative;
+        line-height: 1.1;
+      }
+
+      /* Counters Container */
+      .counters-container {
+        position: relative;
+        z-index: 10;
+      }
+
+      /* Compact Counters Grid */
+      .counters-grid-compact {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+
+      .counters-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .counter-card {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+      }
+
+      .counter-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        border-color: rgba(6, 182, 212, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .counter-icon-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-bottom: 1rem;
+      }
+
+      .counter-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        position: relative;
+        z-index: 2;
+      }
+
+      .counter-pulse {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 15px;
+        animation: counterPulse 3s ease-in-out infinite;
+      }
+
+      @keyframes counterPulse {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 15px rgba(6, 182, 212, 0);
+        }
+      }
+
+      .counter-primary .counter-icon {
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        color: white;
+      }
+
+      .counter-primary .counter-pulse {
+        animation-delay: 0s;
+      }
+
+      .counter-secondary .counter-icon {
+        background: linear-gradient(135deg, #8b5cf6, #ec4899);
+        color: white;
+      }
+
+      .counter-secondary .counter-pulse {
+        animation-delay: 0.5s;
+        animation-name: counterPulseSecondary;
+      }
+
+      @keyframes counterPulseSecondary {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 15px rgba(139, 92, 246, 0);
+        }
+      }
+
+      .counter-accent .counter-icon {
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        color: white;
+      }
+
+      .counter-accent .counter-pulse {
+        animation-delay: 1s;
+        animation-name: counterPulseAccent;
+      }
+
+      @keyframes counterPulseAccent {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 15px rgba(245, 158, 11, 0);
+        }
+      }
+
+      .counter-special .counter-icon {
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: white;
+      }
+
+      .counter-special .counter-pulse {
+        animation-delay: 1.5s;
+        animation-name: counterPulseSpecial;
+      }
+
+      @keyframes counterPulseSpecial {
+        0%,
+        100% {
+          box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 0 15px rgba(34, 197, 94, 0);
+        }
+      }
+
+      .counter-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .counter-number {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #e2e8f0;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .counter-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #06b6d4;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.25rem;
+      }
+
+      .counter-description {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 400;
+      }
+
+      .counter-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.05),
+          rgba(168, 85, 247, 0.05)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .counter-card:hover .counter-glow {
+        opacity: 1;
+      }
+
+      /* Live Activity Banner */
+      .activity-banner {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        backdrop-filter: blur(10px);
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .activity-banner:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2);
+      }
+
+      .activity-indicator {
+        position: relative;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+      }
+
+      .activity-dot {
+        width: 8px;
+        height: 8px;
+        background: #22c55e;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .activity-pulse {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #22c55e;
+        border-radius: 50%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        animation: activityPulse 2s infinite;
+      }
+
+      @keyframes activityPulse {
+        0% {
+          opacity: 1;
+          transform: scale(0.5);
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1.2);
+        }
+      }
+
+      .activity-content {
+        flex: 1;
+      }
+
+      .activity-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #22c55e;
+        margin-bottom: 0.25rem;
+      }
+
+      .activity-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .activity-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+
+      .activity-stat i {
+        color: #22c55e;
+        font-size: 0.675rem;
+      }
+
+      .live-counter {
+        color: #e2e8f0;
+        font-weight: 600;
+      }
+
+      /* Achievement Badge */
+      .achievement-badge {
+        background: linear-gradient(135deg, #f59e0b, #eab308);
+        border-radius: 12px;
+        padding: 1rem;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .achievement-badge:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4);
+      }
+
+      .achievement-icon {
+        font-size: 2rem;
+        color: white;
+        margin-bottom: 0.5rem;
+        animation: achievementBounce 2s ease-in-out infinite;
+      }
+
+      @keyframes achievementBounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+
+      .achievement-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .achievement-title {
+        font-size: 1rem;
+        font-weight: 800;
+        color: white;
+        margin-bottom: 0.25rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .achievement-subtitle {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+      }
+
+      .achievement-glow {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(
+          45deg,
+          transparent,
+          rgba(255, 255, 255, 0.1),
+          transparent
+        );
+        transform: rotate(45deg);
+        animation: achievementGlow 3s linear infinite;
+      }
+
+      @keyframes achievementGlow {
+        0% {
+          transform: translateX(-100%) translateY(-100%) rotate(45deg);
+        }
+        100% {
+          transform: translateX(100%) translateY(100%) rotate(45deg);
+        }
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        backdrop-filter: blur(20px);
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(6, 182, 212, 0.3);
+      }
+
+      .stat-glow {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.05),
+          rgba(168, 85, 247, 0.05)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .stat-card:hover .stat-glow {
+        opacity: 1;
+      }
+
+      .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .stat-primary .stat-icon {
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.2),
+          rgba(59, 130, 246, 0.2)
+        );
+        color: #06b6d4;
+      }
+
+      .stat-secondary .stat-icon {
+        background: linear-gradient(
+          135deg,
+          rgba(139, 92, 246, 0.2),
+          rgba(236, 72, 153, 0.2)
+        );
+        color: #8b5cf6;
+      }
+
+      .stat-accent .stat-icon {
+        background: linear-gradient(
+          135deg,
+          rgba(245, 158, 11, 0.2),
+          rgba(239, 68, 68, 0.2)
+        );
+        color: #f59e0b;
+      }
+
+      .stat-special .stat-icon {
+        background: linear-gradient(
+          135deg,
+          rgba(34, 197, 94, 0.2),
+          rgba(6, 182, 212, 0.2)
+        );
+        color: #22c55e;
+      }
+
+      .stat-content {
+        position: relative;
+        z-index: 2;
+      }
+
+      .stat-number {
+        display: block;
+        font-size: 1.875rem;
+        font-weight: 800;
+        color: #e2e8f0;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-label {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Trending Notice */
+      .trending-notice {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid rgba(34, 197, 94, 0.3);
+        border-radius: 12px;
+        padding: 1rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .trend-indicator {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.125rem;
+        animation: pulse 2s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+
+      .trend-content {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .trend-title {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #22c55e;
+        margin-bottom: 0.25rem;
+      }
+
+      .trend-subtitle {
+        font-size: 0.75rem;
+        color: #94a3b8;
+      }
+
+      @keyframes gradientShift {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+
+      .market-subtitle {
+        font-size: 1.25rem;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-bottom: 0;
+        letter-spacing: -0.01em;
+      }
+
+      .market-stats {
+        display: flex;
+        gap: 2rem;
+        justify-content: flex-end;
+      }
+
+      .stat-item {
+        text-align: center;
+      }
+
+      .stat-number {
+        display: block;
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #06b6d4;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+      }
+
+      .stat-label {
+        font-size: 0.875rem;
+        color: #94a3b8;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* Search and Filter Section */
+      .search-filter-section {
+        padding: 2rem 0;
+        background: rgba(21, 32, 43, 0.5);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .search-filter-card {
+        background: rgba(30, 41, 59, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        overflow: hidden;
+      }
+
+      .market-search-container {
+        position: relative;
+        min-width: 0; /* Allow flex items to shrink */
+      }
+
+      .market-search-input {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+        padding: 0.75rem 3rem 0.75rem 1rem;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+      }
+
+      .market-search-input:focus {
+        outline: none;
+        border-color: #06b6d4;
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .market-search-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #64748b;
+        font-size: 1.125rem;
+      }
+
+      .filter-select {
+        background: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        color: #e2e8f0;
+        border-radius: 12px;
+        padding: 0.75rem 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .filter-select:focus {
+        outline: none;
+        border-color: #06b6d4;
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        background: rgba(15, 23, 42, 1);
+      }
+
+      .filter-select option {
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      /* Featured Banner */
+      .featured-banner {
+        padding: 2rem 0;
+        background: linear-gradient(
+          135deg,
+          rgba(168, 85, 247, 0.1) 0%,
+          rgba(236, 72, 153, 0.1) 100%
+        );
+      }
+
+      .banner-card {
+        background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+      }
+
+      .banner-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="sparkle" patternUnits="userSpaceOnUse" width="20" height="20"><circle cx="10" cy="10" r="1" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23sparkle)"/></svg>')
+          repeat;
+        animation: sparkle 20s linear infinite;
+      }
+
+      @keyframes sparkle {
+        0% {
+          transform: translateX(0) translateY(0);
+        }
+        100% {
+          transform: translateX(-20px) translateY(-20px);
+        }
+      }
+
+      .banner-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .banner-tag {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .banner-card h2 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .banner-card p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.125rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .banner-btn {
+        background: white;
+        color: #7c3aed;
+        border: none;
+        padding: 0.875rem 2rem;
+        font-weight: 700;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .banner-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        background: #f8fafc;
+        color: #7c3aed;
+      }
+
+      .banner-image {
+        position: relative;
+        z-index: 1;
+      }
+
+      .banner-icon {
+        font-size: 8rem;
+        color: rgba(255, 255, 255, 0.2);
+        animation: float 6s ease-in-out infinite;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      /* Products Section */
+      .products-section {
+        padding: 4rem 0;
+        background: rgba(15, 23, 42, 0.3);
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 3rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .section-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #e2e8f0;
+        margin: 0;
+        letter-spacing: -0.025em;
+      }
+
+      .view-toggle {
+        display: flex;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(30, 41, 59, 0.5);
+      }
+
+      .view-btn {
+        background: transparent;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        color: #94a3b8;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 1.125rem;
+      }
+
+      .view-btn.active,
+      .view-btn:hover {
+        background: #06b6d4;
+        color: white;
+      }
+
+        /* Products Grid - Flexible 6-item layout */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        /* Responsive grid adjustments */
+        @media (max-width: 1599px) {
+            .products-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+        
+        @media (max-width: 1399px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 1199px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.25rem;
+            }
+        }
+        
+        @media (max-width: 991px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 575px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+
+        .product-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(20px);
+            position: relative;
+            min-width: 0; /* Prevent grid overflow */
+            width: 100%; /* Ensure full width usage */
+        }
+
+      .product-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border-color: rgba(6, 182, 212, 0.3);
+      }
+
+        .product-image {
+            position: relative;
+            height: 180px;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        /* Responsive image height adjustments */
+        @media (max-width: 1199px) {
+            .product-image {
+                height: 160px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .product-image {
+                height: 200px;
+            }
+        }
+
+      .product-image::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(6, 182, 212, 0.1),
+          rgba(168, 85, 247, 0.1)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .product-card:hover .product-image::before {
+        opacity: 1;
+      }
+
+      .product-placeholder {
+        font-size: 4rem;
+        color: rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+      }
+
+      .product-card:hover .product-placeholder {
+        transform: scale(1.1);
+        color: rgba(6, 182, 212, 0.6);
+      }
+
+        .product-info {
+            padding: 1.25rem;
+        }
+        
+        /* Responsive padding adjustments */
+        @media (max-width: 991px) {
+            .product-info {
+                padding: 1.5rem;
+            }
+        }
+
+        .product-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Responsive title size adjustments */
+        @media (max-width: 991px) {
+            .product-title {
+                font-size: 1.125rem;
+                -webkit-line-clamp: 1;
+            }
+        }
+
+        .product-description {
+            font-size: 0.8125rem;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Responsive description adjustments */
+        @media (max-width: 991px) {
+            .product-description {
+                font-size: 0.875rem;
+            }
+        }
+
+      .product-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+        .current-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #06b6d4;
+        }
+        
+        /* Responsive price size adjustments */
+        @media (max-width: 991px) {
+            .current-price {
+                font-size: 1.5rem;
+            }
+        }
+
+      .original-price {
+        font-size: 1rem;
+        color: #64748b;
+        text-decoration: line-through;
+      }
+
+      .product-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+        .btn-cart {
+            flex: 1;
+            background: rgba(6, 182, 212, 0.1);
+            color: #06b6d4;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            padding: 0.625rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+      .btn-cart:hover {
+        background: #06b6d4;
+        color: white;
+        transform: translateY(-1px);
+      }
+
+        .btn-buy {
+            flex: 1;
+            background: linear-gradient(135deg, #7c3aed, #ec4899);
+            color: white;
+            border: none;
+            padding: 0.625rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.8125rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Responsive button adjustments */
+        @media (max-width: 991px) {
+            .btn-cart,
+            .btn-buy {
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+        }
+
+      .btn-buy:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+      }
+
+      /* Load More Button */
+      .load-more-btn {
+        background: transparent;
+        color: #06b6d4;
+        border: 2px solid rgba(6, 182, 212, 0.3);
+        padding: 1rem 3rem;
+        font-weight: 600;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .load-more-btn:hover {
+        background: #06b6d4;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(6, 182, 212, 0.2);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .market-title {
+          font-size: 2.25rem;
+        }
+
+        .banner-card {
+          padding: 2rem;
+          text-align: center;
+        }
+
+        .banner-card h2 {
+          font-size: 2rem;
+        }
+
+        .banner-icon {
+          font-size: 4rem;
+        }
+
+        .market-stats {
+          justify-content: center;
+          margin-top: 2rem;
+        }
+
+        .products-grid {
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+          gap: 1rem;
+        }
+
+        .section-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .section-title {
+          font-size: 1.875rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .search-filter-card {
+          padding: 1rem;
+        }
+
+        .market-header {
+          padding: 2rem 0;
+        }
+
+        .market-title {
+          font-size: 1.875rem;
+        }
+
+        .products-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Loading Animation */
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(6, 182, 212, 0.3);
+        border-radius: 50%;
+        border-top-color: #06b6d4;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Scroll Animations */
+      .fade-in-up {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #0f172a;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #334155;
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #475569;
+      }
+    </style>
+
+    <!-- Include Modular Top Navigation -->
+    {% include 'modular_topnav.html' %}
+
+    <!-- Include Modular Side Navigation -->
+    {% include 'modular_sidenav.html' %}
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Market Header with Focused Counters -->
+      <div class="market-header">
+        <div class="header-background">
+          <div class="floating-cards">
+            <div class="floating-card card-1">
+              <i class="fas fa-diamond"></i>
+            </div>
+            <div class="floating-card card-2"><i class="fas fa-star"></i></div>
+            <div class="floating-card card-3"><i class="fas fa-crown"></i></div>
+            <div class="floating-card card-4"><i class="fas fa-gem"></i></div>
+            <div class="floating-card card-5"><i class="fas fa-magic"></i></div>
+            <div class="floating-card card-6"><i class="fas fa-fire"></i></div>
+          </div>
+        </div>
+
+        <div class="container position-relative">
+          <div class="row py-4">
+            <div class="col-lg-4 col-md-5 mb-4 mb-md-0">
+              <div class="compact-header-content">
+                <div class="header-badge">
+                  <i class="fas fa-sparkles me-2"></i>
+                  <span>Premium Marketplace</span>
+                  <div class="badge-glow"></div>
+                </div>
+
+                <h1 class="market-title-compact">
+                  <span class="title-highlight">Pearl</span>
+                  <span class="title-main">Market</span>
+                </h1>
+
+                <div class="activity-banner mt-3">
+                  <div class="activity-indicator">
+                    <div class="activity-dot"></div>
+                    <div class="activity-pulse"></div>
+                  </div>
+                  <div class="activity-content">
+                    <div class="activity-stats">
+                      <span class="activity-stat">
+                        <i class="fas fa-eye"></i>
+                        <span
+                          class="live-counter"
+                          data-target="89"
+                          data-speed="3000"
+                          >0</span
+                        >
+                        viewing now
+                      </span>
+                      <span class="activity-stat">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span
+                          class="live-counter"
+                          data-target="23"
+                          data-speed="5000"
+                          >0</span
+                        >
+                        recent purchases
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-8 col-md-7">
+              <div class="counters-container">
+                <div class="counters-grid-compact">
+                  <div class="counter-card counter-primary">
+                    <div class="counter-icon-wrapper">
+                      <div class="counter-icon">
+                        <i class="fas fa-layer-group"></i>
+                      </div>
+                      <div class="counter-pulse"></div>
+                    </div>
+                    <div class="counter-content">
+                      <div
+                        class="counter-number"
+                        data-target="256"
+                        data-suffix="+"
+                      >
+                        0+
+                      </div>
+                      <div class="counter-label">Card Collections</div>
+                    </div>
+                    <div class="counter-glow"></div>
+                  </div>
+
+                  <div class="counter-card counter-secondary">
+                    <div class="counter-icon-wrapper">
+                      <div class="counter-icon">
+                        <i class="fas fa-users"></i>
+                      </div>
+                      <div class="counter-pulse"></div>
+                    </div>
+                    <div class="counter-content">
+                      <div
+                        class="counter-number"
+                        data-target="52847"
+                        data-suffix=""
+                        data-format="compact"
+                      >
+                        0
+                      </div>
+                      <div class="counter-label">Active Collectors</div>
+                    </div>
+                    <div class="counter-glow"></div>
+                  </div>
+
+                  <div class="counter-card counter-accent">
+                    <div class="counter-icon-wrapper">
+                      <div class="counter-icon">
+                        <i class="fas fa-exchange-alt"></i>
+                      </div>
+                      <div class="counter-pulse"></div>
+                    </div>
+                    <div class="counter-content">
+                      <div
+                        class="counter-number"
+                        data-target="1247893"
+                        data-suffix=""
+                        data-format="compact"
+                      >
+                        0
+                      </div>
+                      <div class="counter-label">Cards Traded</div>
+                    </div>
+                    <div class="counter-glow"></div>
+                  </div>
+
+                  <div class="counter-card counter-special">
+                    <div class="counter-icon-wrapper">
+                      <div class="counter-icon">
+                        <i class="fas fa-star"></i>
+                      </div>
+                      <div class="counter-pulse"></div>
+                    </div>
+                    <div class="counter-content">
+                      <div
+                        class="counter-number"
+                        data-target="99.9"
+                        data-suffix="%"
+                        data-decimals="1"
+                      >
+                        0.0%
+                      </div>
+                      <div class="counter-label">Satisfaction Rate</div>
+                    </div>
+                    <div class="counter-glow"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search and Filter Section -->
+      <div class="search-filter-section">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="search-filter-card">
+                <div class="row g-2 g-md-3 align-items-end">
+                  <!-- Search Bar -->
+                  <div class="col-lg-4 col-md-12 col-sm-12 mb-2 mb-lg-0">
+                    <div class="market-search-container">
+                      <input
+                        type="text"
+                        id="searchInput"
+                        class="market-search-input"
+                        placeholder="Search card sets, themes, or rarity..."
+                      />
+                      <i class="fas fa-search market-search-icon"></i>
+                    </div>
+                  </div>
+
+                  <!-- Category Filter -->
+                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
+                    <select class="filter-select" id="categoryFilter">
+                      <option value="">All Categories</option>
+                      <option value="premium">💎 Premium</option>
+                      <option value="limited">⭐ Limited</option>
+                      <option value="classic">🏛️ Classic</option>
+                      <option value="fantasy">🧙 Fantasy</option>
+                      <option value="sci-fi">🚀 Sci-Fi</option>
+                      <option value="nature">🌿 Nature</option>
+                    </select>
+                  </div>
+
+                  <!-- Rarity Filter -->
+                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
+                    <select class="filter-select" id="rarityFilter">
+                      <option value="">All Rarities</option>
+                      <option value="common">⚪ Common</option>
+                      <option value="rare">🔵 Rare</option>
+                      <option value="epic">🟣 Epic</option>
+                      <option value="legendary">🟡 Legendary</option>
+                      <option value="mythic">🔴 Mythic</option>
+                    </select>
+                  </div>
+
+                  <!-- Price Filter -->
+                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
+                    <select class="filter-select" id="priceFilter">
+                      <option value="">All Prices</option>
+                      <option value="0-500">💰 0-500</option>
+                      <option value="500-1000">💎 500-1K</option>
+                      <option value="1000-2500">⭐ 1K-2.5K</option>
+                      <option value="2500+">👑 2.5K+</option>
+                    </select>
+                  </div>
+
+                  <!-- Sort Options -->
+                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
+                    <select class="filter-select" id="sortFilter">
+                      <option value="popular">🔥 Popular</option>
+                      <option value="newest">🆕 Newest</option>
+                      <option value="price-low">💸 Low→High</option>
+                      <option value="price-high">💰 High→Low</option>
+                      <option value="rating">⭐ Rating</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Sets Grid -->
+      <div class="products-section">
+        <div class="container-fluid">
+          <!-- Products Grid -->
+          <div id="productsGrid" class="products-grid">
+            <div class="text-center w-100 py-5">
+              <div class="loading-spinner mx-auto mb-3"></div>
+              <p class="text-muted">Loading exclusive card sets...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Include Modular Bottom Navigation -->
+    {% include 'modular_botnav.html' %}
+
+    <!-- jQuery -->
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Pearl Market JavaScript - Simple Version -->
+    <script src="{{ url_for('static', filename='js/pearl_market_simple.js') }}?v={{ cache_buster }}"></script>
+    
+    <!-- SweetAlert2 for modern alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </body>
+</html>

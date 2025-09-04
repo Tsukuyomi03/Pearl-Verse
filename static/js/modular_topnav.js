@@ -12,7 +12,10 @@ class TopNavigation {
             profileBtn: document.querySelector('.profile-btn'),
             profileDropdown: document.querySelector('.dropdown-menu'),
             userName: document.getElementById('userName'),
-            userEmail: document.getElementById('userEmail')
+            userEmail: document.getElementById('userEmail'),
+            hamburgerMenu: document.querySelector('.hamburger-menu, [data-toggle="sidebar"]'),
+            sidebar: document.getElementById('sidenav'),
+            sidebarOverlay: document.getElementById('sidenavOverlay')
         };
         
         this.state = {

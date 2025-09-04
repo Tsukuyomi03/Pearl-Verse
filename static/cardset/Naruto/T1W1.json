@@ -1,0 +1,904 @@
+{
+  "gacha": {
+    "card_set": "Naruto",
+    "card_series": "T1W1",
+    "rarity_tiers": [
+      { "tier": "R", "chance": 50 },
+      { "tier": "SR", "chance": 30 },
+      { "tier": "SSR", "chance": 15 },
+      { "tier": "UR", "chance": 4 },
+      { "tier": "SP", "chance": 1 }
+    ],
+    "pool": [
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-1",
+        "file_name": "R-1.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-2",
+        "file_name": "R-2.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-3",
+        "file_name": "R-3.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-4",
+        "file_name": "R-4.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-5",
+        "file_name": "R-5.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-6",
+        "file_name": "R-6.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-7",
+        "file_name": "R-7.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-8",
+        "file_name": "R-8.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-9",
+        "file_name": "R-9.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-10",
+        "file_name": "R-10.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-11",
+        "file_name": "R-11.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-12",
+        "file_name": "R-12.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-13",
+        "file_name": "R-13.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-14",
+        "file_name": "R-14.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-15",
+        "file_name": "R-15.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-16",
+        "file_name": "R-16.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-17",
+        "file_name": "R-17.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-18",
+        "file_name": "R-18.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-19",
+        "file_name": "R-19.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-20",
+        "file_name": "R-20.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-21",
+        "file_name": "R-21.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-22",
+        "file_name": "R-22.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-23",
+        "file_name": "R-23.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-24",
+        "file_name": "R-24.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-25",
+        "file_name": "R-25.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-26",
+        "file_name": "R-26.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-27",
+        "file_name": "R-27.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-28",
+        "file_name": "R-28.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-29",
+        "file_name": "R-29.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-30",
+        "file_name": "R-30.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-31",
+        "file_name": "R-31.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-32",
+        "file_name": "R-32.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-33",
+        "file_name": "R-33.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-34",
+        "file_name": "R-34.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-35",
+        "file_name": "R-35.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-36",
+        "file_name": "R-36.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-37",
+        "file_name": "R-37.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-38",
+        "file_name": "R-38.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-39",
+        "file_name": "R-39.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-40",
+        "file_name": "R-40.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-41",
+        "file_name": "R-41.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-42",
+        "file_name": "R-42.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-43",
+        "file_name": "R-43.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-44",
+        "file_name": "R-44.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-45",
+        "file_name": "R-45.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-46",
+        "file_name": "R-46.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-47",
+        "file_name": "R-47.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-48",
+        "file_name": "R-48.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-49",
+        "file_name": "R-49.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "R-50",
+        "file_name": "R-50.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-1",
+        "file_name": "SR-1.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-2",
+        "file_name": "SR-2.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-3",
+        "file_name": "SR-3.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-4",
+        "file_name": "SR-4.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-5",
+        "file_name": "SR-5.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-6",
+        "file_name": "SR-6.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-7",
+        "file_name": "SR-7.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-8",
+        "file_name": "SR-8.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-9",
+        "file_name": "SR-9.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-10",
+        "file_name": "SR-10.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-11",
+        "file_name": "SR-11.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-12",
+        "file_name": "SR-12.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-13",
+        "file_name": "SR-13.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-14",
+        "file_name": "SR-14.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-15",
+        "file_name": "SR-15.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-16",
+        "file_name": "SR-16.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-17",
+        "file_name": "SR-17.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-18",
+        "file_name": "SR-18.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-19",
+        "file_name": "SR-19.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-20",
+        "file_name": "SR-20.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-21",
+        "file_name": "SR-21.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-22",
+        "file_name": "SR-22.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-23",
+        "file_name": "SR-23.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-24",
+        "file_name": "SR-24.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-25",
+        "file_name": "SR-25.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-26",
+        "file_name": "SR-26.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-27",
+        "file_name": "SR-27.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-28",
+        "file_name": "SR-28.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-29",
+        "file_name": "SR-29.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-30",
+        "file_name": "SR-30.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-31",
+        "file_name": "SR-31.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-32",
+        "file_name": "SR-32.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-33",
+        "file_name": "SR-33.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-34",
+        "file_name": "SR-34.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-35",
+        "file_name": "SR-35.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SR-36",
+        "file_name": "SR-36.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-1",
+        "file_name": "SSR-1.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-2",
+        "file_name": "SSR-2.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-3",
+        "file_name": "SSR-3.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-4",
+        "file_name": "SSR-4.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-5",
+        "file_name": "SSR-5.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-6",
+        "file_name": "SSR-6.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-7",
+        "file_name": "SSR-7.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-8",
+        "file_name": "SSR-8.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-9",
+        "file_name": "SSR-9.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-10",
+        "file_name": "SSR-10.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-11",
+        "file_name": "SSR-11.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-12",
+        "file_name": "SSR-12.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-13",
+        "file_name": "SSR-13.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-14",
+        "file_name": "SSR-14.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-15",
+        "file_name": "SSR-15.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-16",
+        "file_name": "SSR-16.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-17",
+        "file_name": "SSR-17.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-18",
+        "file_name": "SSR-18.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-19",
+        "file_name": "SSR-19.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-20",
+        "file_name": "SSR-20.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-21",
+        "file_name": "SSR-21.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-22",
+        "file_name": "SSR-22.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-23",
+        "file_name": "SSR-23.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-24",
+        "file_name": "SSR-24.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-25",
+        "file_name": "SSR-25.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-26",
+        "file_name": "SSR-26.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-27",
+        "file_name": "SSR-27.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-28",
+        "file_name": "SSR-28.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-29",
+        "file_name": "SSR-29.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-30",
+        "file_name": "SSR-30.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-31",
+        "file_name": "SSR-31.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SSR-32",
+        "file_name": "SSR-32.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-5",
+        "file_name": "UR-5.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-12",
+        "file_name": "UR-12.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-13",
+        "file_name": "UR-13.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-14",
+        "file_name": "UR-14.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-15",
+        "file_name": "UR-15.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-16",
+        "file_name": "UR-16.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-17",
+        "file_name": "UR-17.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "UR-18",
+        "file_name": "UR-18.webp",
+        "rarity": "UR"
+      },
+      {
+        "card_set": "Naruto",
+        "card_series": "T1W1",
+        "card_code": "SP-2",
+        "file_name": "SP-2.webp",
+        "rarity": "SP"
+      }
+    ]
+  }
+}

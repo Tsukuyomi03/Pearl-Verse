@@ -414,7 +414,7 @@ function loadCategoryItems(category, page = 1) {
             itemCard.innerHTML = `
                 ${ownedIndicator}
                 <div class="avatar-item-image">
-                    <img src="${imageUrl}" alt="${item.name}" onerror="this.src='/static/images/avatar-placeholder.png'">
+                    <img src="${imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='/static/images/avatar-placeholder.png'">
                 </div>
                 <div class="avatar-item-info">
                     <h4 class="avatar-item-name">${item.name}</h4>
@@ -612,7 +612,7 @@ function loadCategoryItemsGrid(category, page) {
                          style="animation-delay: ${index * 0.05}s">
                         ${ownedIndicator}
                         <div class="avatar-item-image">
-                            <img src="${imageUrl}" alt="${item.name}" onerror="this.src='/static/images/avatar-placeholder.png'">
+                            <img src="${imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='/static/images/avatar-placeholder.png'">
                         </div>
                         <div class="avatar-item-info">
                             <h4 class="avatar-item-name">${item.name}</h4>
@@ -1417,7 +1417,7 @@ function addToRecentPurchases(itemId) {
     const purchaseElement = document.createElement('div');
     purchaseElement.className = 'recent-purchase-item';
     purchaseElement.innerHTML = `
-        <img src="${mockItem.image}" alt="${mockItem.name}" class="recent-purchase-icon">
+        <img src="${mockItem.image}" alt="${mockItem.name}" class="recent-purchase-icon" loading="lazy">
         <div class="recent-purchase-info">
             <div class="recent-purchase-name">${mockItem.name}</div>
             <div class="recent-purchase-date">Just now</div>
@@ -1482,7 +1482,7 @@ function loadFeaturedItems() {
             
             itemElement.innerHTML = `
                 <div class="featured-item-image">
-                    <img src="${imageUrl}" alt="${item.name}" onerror="this.src='/static/images/avatar-placeholder.png'">
+                    <img src="${imageUrl}" alt="${item.name}" loading="lazy" onerror="this.src='/static/images/avatar-placeholder.png'">
                 </div>
                 <div class="featured-item-info">
                     <h4 class="featured-item-name">${item.name}</h4>
@@ -1580,7 +1580,7 @@ function loadRecentPurchases() {
             const purchaseElement = document.createElement('div');
             purchaseElement.className = 'recent-purchase-item';
             purchaseElement.innerHTML = `
-                <img src="${purchase.image}" alt="${purchase.name}" class="recent-purchase-icon">
+                <img src="${purchase.image}" alt="${purchase.name}" class="recent-purchase-icon" loading="lazy">
                 <div class="recent-purchase-info">
                     <div class="recent-purchase-name">${purchase.name}</div>
                     <div class="recent-purchase-date">${purchase.timestamp}</div>
@@ -1681,7 +1681,7 @@ function showItemDetails(item) {
     modalBody.innerHTML = `
         <div class="item-detail-content">
             <div class="item-image-container">
-                <img src="${imageUrl}" alt="${item.name}" class="item-detail-image">
+                <img src="${imageUrl}" alt="${item.name}" class="item-detail-image" loading="lazy">
                 <div class="item-rarity rarity-${rarityName.toLowerCase()}">${rarityName}</div>
             </div>
             <div class="item-info-container">
@@ -1926,7 +1926,7 @@ function previewItemInAvatar(item) {
         // Clear placeholder and add banner image
         targetDisplay.innerHTML = `
             <div class="${layerClass}">
-                <img src="${imageUrl}" alt="${item.name}" style="opacity: 0; transition: opacity 0.3s ease-in-out;">
+                <img src="${imageUrl}" alt="${item.name}" loading="lazy" style="opacity: 0; transition: opacity 0.3s ease-in-out;">
             </div>
         `;
         
@@ -2139,7 +2139,7 @@ function updateAvatarPreview(itemOrConfiguration) {
             // Display banner in the preview container (traditional method)
             bannerDisplay.innerHTML = `
                 <div class="banner-layer">
-                    <img src="${imageUrl}" alt="${bannerItem.name}" 
+                    <img src="${imageUrl}" alt="${bannerItem.name}" loading="lazy"
                          onerror="this.src='/static/images/avatar-placeholder.png'">
                 </div>
             `;
@@ -2178,7 +2178,7 @@ function updateAvatarPreview(itemOrConfiguration) {
             avatarDisplay.innerHTML = `
                 <div class="avatar-layer-container">
                     <div class="avatar-layer">
-                        <img src="${imageUrl}" alt="${avatarItem.name}" 
+                        <img src="${imageUrl}" alt="${avatarItem.name}" loading="lazy"
                              onerror="this.src='/static/images/avatar-placeholder.png'">
                     </div>
                 </div>
@@ -2215,7 +2215,7 @@ function updateAvatarPreview(itemOrConfiguration) {
             }
             
             decorationLayer.innerHTML = `
-                <img src="${imageUrl}" alt="${decorationItem.name}" 
+                <img src="${imageUrl}" alt="${decorationItem.name}" loading="lazy"
                      style="border-radius: 50%;" 
                      onerror="this.src='/static/images/avatar-placeholder.png'">
             `;
@@ -2241,7 +2241,7 @@ function updateAvatarPreview(itemOrConfiguration) {
             
             bannerDisplay.innerHTML = `
                 <div class="banner-layer">
-                    <img src="${imageUrl}" alt="${configuration.banner_item.name}" 
+                    <img src="${imageUrl}" alt="${configuration.banner_item.name}" loading="lazy"
                          onerror="this.src='/static/images/avatar-placeholder.png'">
                 </div>
             `;
@@ -2376,7 +2376,7 @@ function updateAvatarPreview(itemOrConfiguration) {
                     const isDecoration = category === 'decoration' || category === 'accessory' || category === 'effect';
                     
                     targetLayer.innerHTML = `
-                        <img src="${imageUrl}" alt="${item.name}" 
+                        <img src="${imageUrl}" alt="${item.name}" loading="lazy"
                              ${isDecoration ? 'style="border-radius: 50%;"' : ''}
                              onerror="this.src='/static/images/avatar-placeholder.png'">
                     `;
@@ -2432,7 +2432,7 @@ function showPurchaseConfirmation(item) {
         <div class="purchase-confirmation">
             <!-- Item Preview Section -->
             <div class="purchase-item-preview">
-                <img src="${imageUrl}" alt="${item.name}" class="purchase-image" 
+                <img src="${imageUrl}" alt="${item.name}" class="purchase-image" loading="lazy"
                      onerror="this.src='/static/images/avatar-placeholder.png'">
                 <div class="purchase-item-rarity rarity-${rarityName.toLowerCase()}">${rarityName}</div>
             </div>
@@ -2641,22 +2641,22 @@ function resetAvatar() {
         avatarDisplay.innerHTML = `
             <div class="avatar-character">
                 <div class="avatar-layer avatar-base">
-                    <img src="/static/images/avatars/base-avatar.png" alt="Avatar Base">
+                    <img src="/static/images/avatars/base-avatar.png" alt="Avatar Base" loading="lazy">
                 </div>
                 <div class="avatar-layer avatar-face">
-                    <img src="/static/images/avatars/face-1.png" alt="Avatar Face">
+                    <img src="/static/images/avatars/face-1.png" alt="Avatar Face" loading="lazy">
                 </div>
                 <div class="avatar-layer avatar-hair">
-                    <img src="/static/images/avatars/hair-1.png" alt="Avatar Hair">
+                    <img src="/static/images/avatars/hair-1.png" alt="Avatar Hair" loading="lazy">
                 </div>
                 <div class="avatar-layer avatar-clothing">
-                    <img src="/static/images/avatars/clothing-1.png" alt="Avatar Clothing">
+                    <img src="/static/images/avatars/clothing-1.png" alt="Avatar Clothing" loading="lazy">
                 </div>
                 <div class="avatar-layer avatar-accessory">
-                    <img src="/static/images/avatars/accessory-1.png" alt="Avatar Accessory">
+                    <img src="/static/images/avatars/accessory-1.png" alt="Avatar Accessory" loading="lazy">
                 </div>
                 <div class="avatar-layer avatar-effect">
-                    <img src="/static/images/avatars/effect-1.png" alt="Avatar Effect">
+                    <img src="/static/images/avatars/effect-1.png" alt="Avatar Effect" loading="lazy">
                 </div>
             </div>
         `;

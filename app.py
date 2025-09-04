@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from config import get_config
-from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim, AvatarShopItem, UserAvatarItem, UserAvatarConfiguration
+from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim, AvatarShopItem, UserAvatarItem, UserAvatarConfiguration, MarketplaceItem
 import os
 import re
 import string
@@ -351,14 +351,19 @@ def avatar_shop():
 
 @app.route('/market')
 def market():
-    """Pearl Verse Market - trading and marketplace"""
+    """Pearl Verse Market - redirect to Pearl Market"""
+    return redirect(url_for('pearl_market'))
+
+@app.route('/pearl_market')
+def pearl_market():
+    """Pearl Verse Market - trading and marketplace for card sets"""
     # Check if user is logged in
     if not session.get('logged_in'):
         return redirect('/login')
     
-    # For now, redirect to dashboard until market template is created
-    # TODO: Create pearl_market.html template
-    return redirect('/pearl_dashboard')
+    import time
+    cache_buster = str(int(time.time()))
+    return render_template('pearl_market.html', cache_buster=cache_buster)
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
@@ -3106,6 +3111,160 @@ def equip_avatar_item():
         return jsonify({
             'success': False,
             'message': 'An error occurred while updating item'
+        }), 500
+
+# Simple Marketplace API Route
+@app.route('/api/marketplace', methods=['GET'])
+def get_marketplace_items():
+    """Get all marketplace items from database"""
+    try:
+        # Get all active marketplace items
+        items = MarketplaceItem.query.filter(
+            MarketplaceItem.is_active == True
+        ).order_by(MarketplaceItem.created_at.desc()).all()
+        
+        # Format items for frontend
+        formatted_items = []
+        for item in items:
+            # Use url_for to create proper image URLs
+            # Handle different image path formats from database
+            if item.image_path:
+                # Handle paths that start with /static/
+                if item.image_path.startswith('/static/'):
+                    image_filename = item.image_path.replace('/static/', '')
+                    image_url = url_for('static', filename=image_filename)
+                # Handle paths that start with images/ (direct static paths)
+                elif item.image_path.startswith('images/'):
+                    image_url = url_for('static', filename=item.image_path)
+                # Handle any other format - assume it's a static path
+                else:
+                    image_url = url_for('static', filename=item.image_path)
+            else:
+                # Default placeholder image when no image_path
+                image_url = url_for('static', filename='images/Goddess Story/Goddess Story.png')
+            
+            formatted_item = {
+                'id': item.id,
+                'name': item.card_name,
+                'series': item.card_series,
+                'description': item.card_description,
+                'price': item.card_price,
+                'category': item.category or 'card',
+                'rarity': item.rarity or 'common',
+                'image_path': item.image_path,
+                'image_url': image_url,
+                'is_active': item.is_active,
+                'created_at': item.created_at.isoformat() if item.created_at else None
+            }
+            formatted_items.append(formatted_item)
+        
+        return jsonify({
+            'success': True,
+            'items': formatted_items,
+            'total': len(formatted_items)
+        }), 200
+        
+    except Exception as e:
+        print(f"Marketplace API error: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            'success': False,
+            'message': 'Failed to load marketplace items',
+            'error': str(e)
+        }), 500
+
+@app.route('/api/marketplace/item/<int:item_id>', methods=['GET'])
+def get_marketplace_item_details(item_id):
+    """Get detailed information about a specific marketplace item"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view item details'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Get the item
+        item = MarketplaceItem.query.filter_by(
+            id=item_id,
+            is_active=True
+        ).first()
+        
+        if not item:
+            return jsonify({
+                'success': False,
+                'message': 'Item not found or no longer available'
+            }), 404
+        
+        # Get seller information
+        seller_info = {
+            'id': item.seller.id if item.seller else None,
+            'username': item.seller.username if item.seller else 'Unknown',
+            'first_name': item.seller.first_name if item.seller else 'Unknown',
+            'last_name': item.seller.last_name if item.seller else '',
+            'level': item.seller.level if item.seller else 1,
+            'pearl_balance': item.seller.pearl if item.seller else 0
+        }
+        
+        # Calculate time since listing
+        time_since_listing = datetime.now() - item.created_at if item.created_at else timedelta(0)
+        if time_since_listing.days > 0:
+            time_ago = f"{time_since_listing.days} days ago"
+        elif time_since_listing.seconds > 3600:
+            hours = time_since_listing.seconds // 3600
+            time_ago = f"{hours} hours ago"
+        elif time_since_listing.seconds > 60:
+            minutes = time_since_listing.seconds // 60
+            time_ago = f"{minutes} minutes ago"
+        else:
+            time_ago = "Just now"
+        
+        # Check ownership and purchase eligibility
+        is_own_item = item.seller_id == user_id
+        can_purchase = not is_own_item and item.is_active
+        
+        # Get current user's pearl balance for purchase validation
+        current_user = db.session.get(User, user_id)
+        has_enough_pearls = current_user.pearl >= item.card_price if current_user else False
+        
+        item_details = {
+            'id': item.id,
+            'title': item.card_name,
+            'description': item.card_description,
+            'price': item.card_price,
+            'category': item.category,
+            'rarity': item.rarity,
+            'image_url': item.image_path,
+            'seller': seller_info,
+            'time_ago': time_ago,
+            'created_at': item.created_at.isoformat() if item.created_at else None,
+            'updated_at': item.updated_at.isoformat() if item.updated_at else None,
+            'is_own_item': is_own_item,
+            'can_purchase': can_purchase,
+            'has_enough_pearls': has_enough_pearls,
+            'user_pearl_balance': current_user.pearl if current_user else 0,
+            'rarity_color': {
+                'common': '#9ca3af',
+                'rare': '#3b82f6', 
+                'epic': '#8b5cf6',
+                'legendary': '#f59e0b',
+                'mythic': '#ef4444'
+            }.get(item.rarity, '#9ca3af')
+        }
+        
+        return jsonify({
+            'success': True,
+            'item': item_details
+        }), 200
+        
+    except Exception as e:
+        print(f"Marketplace item details error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching item details'
         }), 500
 
 # Battle Pass API Routes

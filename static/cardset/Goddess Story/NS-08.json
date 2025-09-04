@@ -1,0 +1,517 @@
+{
+  "gacha": {
+    "card_set": "Goddess Story",
+    "card_series": "NS-08",
+    "rarity_tiers": [
+      { "tier": "R", "chance": 70 },
+      { "tier": "SR", "chance": 20 },
+      { "tier": "SSR", "chance": 10 }
+    ],
+    "pool": [
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-001",
+        "file_name": "R-001.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-002",
+        "file_name": "R-002.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-003",
+        "file_name": "R-003.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-004",
+        "file_name": "R-004.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-005",
+        "file_name": "R-005.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-006",
+        "file_name": "R-006.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-007",
+        "file_name": "R-007.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-008",
+        "file_name": "R-008.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-009",
+        "file_name": "R-009.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-010",
+        "file_name": "R-010.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-011",
+        "file_name": "R-011.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-012",
+        "file_name": "R-012.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-013",
+        "file_name": "R-013.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-014",
+        "file_name": "R-014.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-015",
+        "file_name": "R-015.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-016",
+        "file_name": "R-016.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-017",
+        "file_name": "R-017.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "R-018",
+        "file_name": "R-018.webp",
+        "rarity": "R"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-001",
+        "file_name": "SR-001.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-002",
+        "file_name": "SR-002.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-003",
+        "file_name": "SR-003.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-004",
+        "file_name": "SR-004.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-005",
+        "file_name": "SR-005.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-006",
+        "file_name": "SR-006.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-007",
+        "file_name": "SR-007.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-008",
+        "file_name": "SR-008.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-009",
+        "file_name": "SR-009.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-010",
+        "file_name": "SR-010.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-011",
+        "file_name": "SR-011.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-012",
+        "file_name": "SR-012.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-013",
+        "file_name": "SR-013.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-014",
+        "file_name": "SR-014.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-015",
+        "file_name": "SR-015.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-016",
+        "file_name": "SR-016.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-017",
+        "file_name": "SR-017.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-018",
+        "file_name": "SR-018.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-019",
+        "file_name": "SR-019.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-020",
+        "file_name": "SR-020.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-021",
+        "file_name": "SR-021.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-022",
+        "file_name": "SR-022.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-023",
+        "file_name": "SR-023.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-024",
+        "file_name": "SR-024.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-025",
+        "file_name": "SR-025.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-026",
+        "file_name": "SR-026.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-027",
+        "file_name": "SR-027.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-028",
+        "file_name": "SR-028.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-029",
+        "file_name": "SR-029.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-030",
+        "file_name": "SR-030.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-031",
+        "file_name": "SR-031.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-032",
+        "file_name": "SR-032.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-033",
+        "file_name": "SR-033.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-034",
+        "file_name": "SR-034.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-035",
+        "file_name": "SR-035.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SR-036",
+        "file_name": "SR-036.webp",
+        "rarity": "SR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-001",
+        "file_name": "SSR-001.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-002",
+        "file_name": "SSR-002.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-003",
+        "file_name": "SSR-003.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-004",
+        "file_name": "SSR-004.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-005",
+        "file_name": "SSR-005.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-006",
+        "file_name": "SSR-006.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-007",
+        "file_name": "SSR-007.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-008",
+        "file_name": "SSR-008.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-009",
+        "file_name": "SSR-009.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-010",
+        "file_name": "SSR-010.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-011",
+        "file_name": "SSR-011.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-012",
+        "file_name": "SSR-012.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-013",
+        "file_name": "SSR-013.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-014",
+        "file_name": "SSR-014.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-015",
+        "file_name": "SSR-015.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-016",
+        "file_name": "SSR-016.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-017",
+        "file_name": "SSR-017.webp",
+        "rarity": "SSR"
+      },
+      {
+        "card_set": "Goddess Story",
+        "card_series": "NS-08",
+        "card_code": "SSR-018",
+        "file_name": "SSR-018.webp",
+        "rarity": "SSR"
+      }
+    ]
+  }
+}

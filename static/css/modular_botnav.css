@@ -43,8 +43,6 @@
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     box-shadow: 
-        0 -4px 24px rgba(0, 0, 0, 0.15),
-        0 -2px 8px rgba(0, 0, 0, 0.1),
         0 0 0 1px rgba(255, 255, 255, 0.05);
 }
 
@@ -261,12 +259,13 @@
 
 @media (max-width: 1024px) {
     .botnav {
-        display: block;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
     
     /* Adjust main content for bottom nav - fix overflow */
     body {
-        padding-bottom: 70px;
         overflow-x: hidden;
         width: 100%;
         max-width: 100%;
@@ -274,7 +273,6 @@
     }
     
     .dashboard-main {
-        margin-bottom: 70px !important;
         width: 100% !important;
         left: 0 !important;
         right: 0 !important;
@@ -319,12 +317,10 @@
     }
     
     body {
-        padding-bottom: 65px;
         background: #1a1d29 !important; /* Match dashboard background */
     }
     
     .dashboard-main {
-        margin-bottom: 65px !important;
         background: #1a1d29; /* Ensure consistent background */
     }
 }
@@ -363,12 +359,10 @@
     }
     
     body {
-        padding-bottom: 60px;
         background: #1a1d29 !important; /* Match dashboard background */
     }
     
     .dashboard-main {
-        margin-bottom: 60px !important;
         background: #1a1d29; /* Ensure consistent background */
     }
 }
@@ -454,7 +448,7 @@
         }
         
         body {
-            padding-bottom: calc(65px + env(safe-area-inset-bottom));
+            /* Removed padding-bottom to eliminate gray margin */
         }
     }
     
@@ -464,7 +458,7 @@
         }
         
         body {
-            padding-bottom: calc(60px + env(safe-area-inset-bottom));
+            /* Removed padding-bottom to eliminate gray margin */
         }
     }
 }

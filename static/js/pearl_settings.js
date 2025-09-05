@@ -12,6 +12,8 @@ class PearlSettings {
         this.setupFormSubmissions();
         this.setupPasswordStrength();
         this.setupBioEditing();
+        this.setupProfileEditing();
+        this.setupPasswordEditing();
         this.loadUserData();
     }
 
@@ -160,20 +162,29 @@ class PearlSettings {
 
         if (currentPassword) {
             currentPassword.addEventListener('blur', () => {
-                this.validateCurrentPassword(currentPassword);
+                // Only validate if field is not readonly
+                if (!currentPassword.readOnly) {
+                    this.validateCurrentPassword(currentPassword);
+                }
             });
         }
 
         if (newPassword) {
             newPassword.addEventListener('input', () => {
-                this.validateNewPassword(newPassword);
-                this.updatePasswordStrength(newPassword.value);
+                // Only validate if field is not readonly
+                if (!newPassword.readOnly) {
+                    this.validateNewPassword(newPassword);
+                    this.updatePasswordStrength(newPassword.value);
+                }
             });
         }
 
         if (confirmPassword) {
             confirmPassword.addEventListener('blur', () => {
-                this.validatePasswordConfirmation(newPassword, confirmPassword);
+                // Only validate if field is not readonly
+                if (!confirmPassword.readOnly) {
+                    this.validatePasswordConfirmation(newPassword, confirmPassword);
+                }
             });
         }
     }
@@ -487,7 +498,7 @@ class PearlSettings {
     // Form submission handlers
     async handleProfileUpdate() {
         const form = document.getElementById('profileForm');
-        const submitBtn = document.getElementById('saveProfile');
+        const submitBtn = document.getElementById('save-profile-btn');
         
         // Validate all fields
         const firstNameValid = this.validateName(document.getElementById('firstName'), 'firstNameError');
@@ -518,12 +529,12 @@ class PearlSettings {
         
         if (!firstNameValid || !lastNameValid || !emailValid || !birthdayValid || !locationValid) {
             this.showNotification('Please correct the errors before submitting', 'error');
-            return;
+            return false;
         }
         
         if (!birthdayValue) {
             this.showNotification('Please enter your complete date of birth', 'error');
-            return;
+            return false;
         }
 
         // Show loading state
@@ -558,6 +569,7 @@ class PearlSettings {
                 this.showSuccessMessage(form, result.message);
                 this.showNotification(result.message, 'success');
                 console.log('Profile updated successfully:', result.user);
+                return true; // Return success status
             } else {
                 throw new Error(result.message);
             }
@@ -565,6 +577,7 @@ class PearlSettings {
         } catch (error) {
             console.error('Profile update error:', error);
             this.showNotification(error.message || 'Failed to update profile. Please try again.', 'error');
+            return false; // Return failure status
         } finally {
             this.setFormLoading(form, submitBtn, false);
         }
@@ -572,7 +585,7 @@ class PearlSettings {
 
     async handlePasswordChange() {
         const form = document.getElementById('passwordForm');
-        const submitBtn = document.getElementById('changePassword');
+        const submitBtn = document.getElementById('save-password-btn'); // Fixed: use correct button ID
         
         const currentPassword = document.getElementById('currentPassword');
         const newPassword = document.getElementById('newPassword');
@@ -854,7 +867,8 @@ class PearlSettings {
     // Cancel button handlers
     setupCancelButtons() {
         const cancelProfile = document.getElementById('cancelProfile');
-        const cancelPassword = document.getElementById('cancelPassword');
+        // Note: Password cancel is handled in setupPasswordEditing()
+        // to avoid conflicts with the password editing functionality
 
         if (cancelProfile) {
             cancelProfile.addEventListener('click', () => {
@@ -862,11 +876,8 @@ class PearlSettings {
             });
         }
 
-        if (cancelPassword) {
-            cancelPassword.addEventListener('click', () => {
-                this.resetForm(document.getElementById('passwordForm'));
-            });
-        }
+        // Password cancel button is handled in setupPasswordEditing() method
+        // to properly integrate with the password editing workflow
     }
 
     // Reset form to original state
@@ -924,6 +935,11 @@ class PearlSettings {
 
     // Loading state management
     setFormLoading(form, button, isLoading) {
+        if (!form || !button) {
+            console.warn('setFormLoading: form or button element is null');
+            return;
+        }
+        
         if (isLoading) {
             form.classList.add('loading');
             button.classList.add('loading');
@@ -941,7 +957,9 @@ class PearlSettings {
             const icon = button.querySelector('i');
             if (icon) {
                 // Restore original icon based on button ID
-                if (button.id === 'saveProfile') {
+                if (button.id === 'save-profile-btn') {
+                    icon.className = 'fas fa-save';
+                } else if (button.id === 'saveProfile') {
                     icon.className = 'fas fa-floppy-disk';
                 } else if (button.id === 'changePassword') {
                     icon.className = 'fas fa-shield-halved';
@@ -1024,6 +1042,7 @@ class PearlSettings {
                 const userData = await userResponse.json();
                 if (userData.success && userData.user) {
                     this.populateProfileForm(userData.user);
+                    this.populateProfileDisplay(userData.user);
                     console.log('User data loaded successfully:', userData.user);
                 }
             }
@@ -1105,6 +1124,47 @@ class PearlSettings {
                 avatar: user.avatar
             });
         }
+    }
+    
+    // Populate profile display with user data
+    populateProfileDisplay(user) {
+        const displayFirstName = document.getElementById('display-firstName');
+        const displayLastName = document.getElementById('display-lastName');
+        const displayEmail = document.getElementById('display-email');
+        const displayBirthday = document.getElementById('display-birthday');
+        
+        console.log('Populating profile display with user data:', user);
+        
+        // Update first name display
+        if (displayFirstName) {
+            displayFirstName.textContent = user.first_name || 'Not set';
+        }
+        
+        // Update last name display
+        if (displayLastName) {
+            displayLastName.textContent = user.last_name || 'Not set';
+        }
+        
+        // Update email display
+        if (displayEmail) {
+            displayEmail.textContent = user.email || 'Not set';
+        }
+        
+        // Update birthday display
+        if (displayBirthday && user.date_of_birth) {
+            try {
+                const birthDate = new Date(user.date_of_birth);
+                const options = { year: 'numeric', month: 'long', day: 'numeric' };
+                displayBirthday.textContent = birthDate.toLocaleDateString('en-US', options);
+            } catch (error) {
+                console.error('Error formatting birthday for display:', error);
+                displayBirthday.textContent = 'Not set';
+            }
+        } else if (displayBirthday) {
+            displayBirthday.textContent = 'Not set';
+        }
+        
+        console.log('Profile display updated successfully');
     }
     
     // Populate social form with existing links
@@ -1606,6 +1666,473 @@ class PearlSettings {
                 bioTextarea.focus();
                 bioTextarea.setSelectionRange(bioTextarea.value.length, bioTextarea.value.length);
             }, 50);
+        }
+    }
+
+    // Password editing functionality
+    setupPasswordEditing() {
+        const editBtn = document.getElementById("edit-password-btn");
+        const cancelBtn = document.getElementById("cancel-password-btn");
+        const saveBtn = document.getElementById("save-password-btn");
+        const passwordDisplay = document.getElementById("password-display");
+        const passwordEdit = document.getElementById("password-edit");
+        const passwordActionsDisplay = document.querySelector(".password-actions-display");
+        
+        // Password input fields
+        const currentPasswordInput = document.getElementById("currentPassword");
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+
+        console.log('Password editing elements found:', {
+            editBtn: !!editBtn,
+            cancelBtn: !!cancelBtn,
+            saveBtn: !!saveBtn,
+            passwordDisplay: !!passwordDisplay,
+            passwordEdit: !!passwordEdit,
+            passwordActionsDisplay: !!passwordActionsDisplay,
+            currentPasswordInput: !!currentPasswordInput,
+            newPasswordInput: !!newPasswordInput,
+            confirmPasswordInput: !!confirmPasswordInput
+        });
+
+        if (!editBtn || !passwordDisplay || !passwordEdit) {
+            console.log('Password editing elements not found - password editing not available');
+            return;
+        }
+
+        // Ensure password display is visible initially and edit mode is hidden
+        this.resetPasswordToDisplayMode();
+
+        // Edit button - switch to edit mode and make fields editable
+        editBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.enterPasswordEditMode();
+        });
+
+        // Cancel button - return to display mode and make fields readonly
+        if (cancelBtn) {
+            cancelBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                
+                // IMMEDIATELY set all fields to readonly to prevent any blur validation
+                if (currentPasswordInput) currentPasswordInput.readOnly = true;
+                if (newPasswordInput) newPasswordInput.readOnly = true;
+                if (confirmPasswordInput) confirmPasswordInput.readOnly = true;
+                
+                // Check if form is in loading state and handle accordingly
+                const passwordForm = document.getElementById('passwordForm');
+                if (passwordForm && passwordForm.classList.contains('loading')) {
+                    console.log('Cancelling during loading state');
+                    // Stop any ongoing operations and reset form state
+                    this.forceStopPasswordOperation();
+                } else {
+                    this.cancelPasswordEdit();
+                }
+            });
+        }
+
+        // Save button - handle password change
+        if (saveBtn) {
+            saveBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.savePassword();
+            });
+        }
+    }
+
+    // Profile editing functionality
+    setupProfileEditing() {
+        const editBtn = document.getElementById("edit-profile-btn");
+        const cancelBtn = document.getElementById("cancel-profile-btn");
+        const saveBtn = document.getElementById("save-profile-btn");
+        const profileDisplay = document.getElementById("profile-display");
+        const profileEdit = document.getElementById("profile-edit");
+        const profileActionsDisplay = document.querySelector(".profile-actions-display");
+
+        console.log('Profile editing elements found:', {
+            editBtn: !!editBtn,
+            cancelBtn: !!cancelBtn,
+            saveBtn: !!saveBtn,
+            profileDisplay: !!profileDisplay,
+            profileEdit: !!profileEdit,
+            profileActionsDisplay: !!profileActionsDisplay
+        });
+
+        if (!editBtn || !profileDisplay || !profileEdit) {
+            console.log('Profile editing elements not found - profile editing not available');
+            return;
+        }
+
+        // Ensure profile display is visible initially and edit mode is hidden
+        this.resetProfileToDisplayMode();
+
+        editBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.enterProfileEditMode();
+        });
+
+        if (cancelBtn) {
+            cancelBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.cancelProfileEdit();
+            });
+        }
+
+        if (saveBtn) {
+            saveBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                this.saveProfile();
+            });
+        }
+    }
+
+    // Reset profile display to initial mode
+    resetProfileToDisplayMode() {
+        const profileDisplay = document.getElementById("profile-display");
+        const profileEdit = document.getElementById("profile-edit");
+        const profileActionsDisplay = document.querySelector(".profile-actions-display");
+        
+        if (profileDisplay) {
+            profileDisplay.style.display = "block";
+        }
+        if (profileEdit) {
+            profileEdit.style.display = "none";
+        }
+        if (profileActionsDisplay) {
+            profileActionsDisplay.style.display = "flex";
+        }
+        
+        console.log('Profile reset to display mode');
+    }
+
+    // Enter profile edit mode
+    enterProfileEditMode() {
+        const profileDisplay = document.getElementById("profile-display");
+        const profileEdit = document.getElementById("profile-edit");
+        const profileActionsDisplay = document.querySelector(".profile-actions-display");
+        
+        console.log('Entering profile edit mode');
+        
+        // Hide display mode and show edit mode
+        if (profileDisplay) {
+            profileDisplay.style.display = "none";
+        }
+        if (profileEdit) {
+            profileEdit.style.display = "block";
+        }
+        if (profileActionsDisplay) {
+            profileActionsDisplay.style.display = "none";
+        }
+        
+        // Populate edit form with current display values
+        this.populateProfileEditForm();
+    }
+
+    // Cancel profile edit
+    cancelProfileEdit() {
+        const profileDisplay = document.getElementById("profile-display");
+        const profileEdit = document.getElementById("profile-edit");
+        const profileActionsDisplay = document.querySelector(".profile-actions-display");
+        
+        if (profileDisplay) {
+            profileDisplay.style.display = "block";
+        }
+        if (profileEdit) {
+            profileEdit.style.display = "none";
+        }
+        if (profileActionsDisplay) {
+            profileActionsDisplay.style.display = "flex";
+        }
+        
+        console.log('Profile edit cancelled, returned to display mode');
+    }
+
+    // Populate profile edit form with current display values
+    populateProfileEditForm() {
+        const firstName = document.getElementById('display-firstName')?.textContent || '';
+        const lastName = document.getElementById('display-lastName')?.textContent || '';
+        const email = document.getElementById('display-email')?.textContent || '';
+        const birthday = document.getElementById('display-birthday')?.textContent || '';
+        
+        // Populate form fields
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const emailInput = document.getElementById('email');
+        
+        if (firstNameInput) firstNameInput.value = firstName;
+        if (lastNameInput) lastNameInput.value = lastName;
+        if (emailInput) emailInput.value = email;
+        
+        // Handle birthday - try to parse and populate dropdowns
+        if (birthday && birthday !== 'Not set') {
+            // If birthday is already a date, try to populate dropdowns
+            const birthDaySelect = document.getElementById('birthDay');
+            const birthMonthSelect = document.getElementById('birthMonth');
+            const birthYearSelect = document.getElementById('birthYear');
+            
+            if (birthDaySelect && birthMonthSelect && birthYearSelect) {
+                // Try to parse the birthday if it's in a readable format
+                this.tryParseBirthdayFromDisplay(birthday);
+            }
+        }
+    }
+
+    // Try to parse birthday from display text
+    tryParseBirthdayFromDisplay(birthdayText) {
+        // This will depend on how the birthday is displayed
+        // For now, we'll just log it and let the user re-enter
+        console.log('Birthday display text:', birthdayText);
+        // The actual birthday data will be populated when loadUserData() runs
+    }
+
+    // Save profile changes
+    async saveProfile() {
+        try {
+            // This will trigger the existing handleProfileUpdate method
+            // which includes validation and API calls
+            const success = await this.handleProfileUpdate();
+            
+            // If successful, return to display mode
+            if (success) {
+                // Update display values with new form values
+                this.updateProfileDisplay();
+                // Return to display mode after successful update
+                setTimeout(() => {
+                    this.cancelProfileEdit();
+                }, 100); // Small delay to ensure UI updates complete
+            }
+        } catch (error) {
+            console.error('Error in saveProfile:', error);
+            // Stay in edit mode if there was an error
+        }
+    }
+
+    // Update profile display values from form inputs
+    updateProfileDisplay() {
+        const firstNameInput = document.getElementById('firstName');
+        const lastNameInput = document.getElementById('lastName');
+        const emailInput = document.getElementById('email');
+        
+        const displayFirstName = document.getElementById('display-firstName');
+        const displayLastName = document.getElementById('display-lastName');
+        const displayEmail = document.getElementById('display-email');
+        const displayBirthday = document.getElementById('display-birthday');
+        
+        if (firstNameInput && displayFirstName) {
+            displayFirstName.textContent = firstNameInput.value || 'Not set';
+        }
+        if (lastNameInput && displayLastName) {
+            displayLastName.textContent = lastNameInput.value || 'Not set';
+        }
+        if (emailInput && displayEmail) {
+            displayEmail.textContent = emailInput.value || 'Not set';
+        }
+        
+        // Update birthday display
+        const birthdayValue = this.getBirthdayFromDropdowns();
+        if (birthdayValue && displayBirthday) {
+            const birthDate = new Date(birthdayValue);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            displayBirthday.textContent = birthDate.toLocaleDateString('en-US', options);
+        }
+    }
+
+    // Reset password display to initial mode
+    resetPasswordToDisplayMode() {
+        const passwordDisplay = document.getElementById("password-display");
+        const passwordEdit = document.getElementById("password-edit");
+        const passwordActionsDisplay = document.querySelector(".password-actions-display");
+        
+        // Password input fields
+        const currentPasswordInput = document.getElementById("currentPassword");
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+        
+        // 1) Clear any lingering validation states/messages to avoid red inputs
+        [currentPasswordInput, newPasswordInput, confirmPasswordInput].forEach(input => {
+            if (input) {
+                input.classList.remove('valid', 'invalid');
+                input.closest('.form-group')?.classList.remove('success', 'error');
+            }
+        });
+        const errorElements = document.querySelectorAll('#currentPasswordError, #newPasswordError, #confirmPasswordError');
+        errorElements.forEach(error => {
+            if (error) {
+                error.classList.remove('show');
+                error.textContent = '';
+            }
+        });
+        // Hide strength meter as part of reset
+        const strengthElement = document.getElementById('passwordStrength');
+        if (strengthElement) {
+            strengthElement.style.display = 'none';
+        }
+        
+        // 2) Switch to display mode UI
+        if (passwordDisplay) {
+            passwordDisplay.style.display = "block";
+        }
+        if (passwordEdit) {
+            passwordEdit.style.display = "none";
+        }
+        if (passwordActionsDisplay) {
+            passwordActionsDisplay.style.display = "flex";
+        }
+        
+        // 3) Ensure password fields are readonly and cleared
+        if (currentPasswordInput) {
+            currentPasswordInput.readOnly = true;
+            currentPasswordInput.value = "";
+        }
+        if (newPasswordInput) {
+            newPasswordInput.readOnly = true;
+            newPasswordInput.value = "";
+        }
+        if (confirmPasswordInput) {
+            confirmPasswordInput.readOnly = true;
+            confirmPasswordInput.value = "";
+        }
+        
+        console.log('Password reset to display mode - fields are readonly and validation cleared');
+    }
+
+    // Enter password edit mode
+    enterPasswordEditMode() {
+        const passwordDisplay = document.getElementById("password-display");
+        const passwordEdit = document.getElementById("password-edit");
+        const passwordActionsDisplay = document.querySelector(".password-actions-display");
+        
+        // Password input fields
+        const currentPasswordInput = document.getElementById("currentPassword");
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+        
+        console.log('Entering password edit mode');
+        
+        // Hide display mode and show edit mode
+        if (passwordDisplay) {
+            passwordDisplay.style.display = "none";
+        }
+        if (passwordEdit) {
+            passwordEdit.style.display = "block";
+        }
+        if (passwordActionsDisplay) {
+            passwordActionsDisplay.style.display = "none";
+        }
+        
+        // Make password fields editable (remove readonly)
+        if (currentPasswordInput) {
+            currentPasswordInput.readOnly = false;
+            currentPasswordInput.focus();
+        }
+        if (newPasswordInput) {
+            newPasswordInput.readOnly = false;
+        }
+        if (confirmPasswordInput) {
+            confirmPasswordInput.readOnly = false;
+        }
+        
+        console.log('Password fields are now editable');
+    }
+
+    // Cancel password edit
+    cancelPasswordEdit() {
+        console.log('cancelPasswordEdit called');
+        
+        const passwordDisplay = document.getElementById("password-display");
+        const passwordEdit = document.getElementById("password-edit");
+        const passwordActionsDisplay = document.querySelector(".password-actions-display");
+        const passwordForm = document.getElementById('passwordForm');
+        
+        // Password input fields
+        const currentPasswordInput = document.getElementById("currentPassword");
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
+        
+        // Clear all validation states
+        [currentPasswordInput, newPasswordInput, confirmPasswordInput].forEach(input => {
+            if (input) {
+                input.classList.remove('valid', 'invalid');
+                input.closest('.form-group')?.classList.remove('success', 'error');
+            }
+        });
+        
+        // Clear error messages
+        const errorElements = document.querySelectorAll('#currentPasswordError, #newPasswordError, #confirmPasswordError');
+        errorElements.forEach(error => {
+            if (error) {
+                error.classList.remove('show');
+                error.textContent = '';
+            }
+        });
+        
+        // Hide password strength
+        const strengthElement = document.getElementById('passwordStrength');
+        if (strengthElement) {
+            strengthElement.style.display = 'none';
+        }
+        
+        // Set readonly and clear fields
+        if (currentPasswordInput) {
+            currentPasswordInput.readOnly = true;
+            currentPasswordInput.value = "";
+        }
+        if (newPasswordInput) {
+            newPasswordInput.readOnly = true;
+            newPasswordInput.value = "";
+        }
+        if (confirmPasswordInput) {
+            confirmPasswordInput.readOnly = true;
+            confirmPasswordInput.value = "";
+        }
+        
+        // Switch displays
+        if (passwordDisplay) {
+            passwordDisplay.style.display = "block";
+        }
+        if (passwordEdit) {
+            passwordEdit.style.display = "none";
+        }
+        if (passwordActionsDisplay) {
+            passwordActionsDisplay.style.display = "flex";
+        }
+        
+        console.log('Password edit cancelled, returned to display mode');
+    }
+
+    // Force stop password operation (for cancelling during loading)
+    forceStopPasswordOperation() {
+        console.log('Force stopping password operation');
+        
+        // Reset form loading state
+        const passwordForm = document.getElementById('passwordForm');
+        const saveBtn = document.getElementById('save-password-btn');
+        
+        if (passwordForm && saveBtn) {
+            this.setFormLoading(passwordForm, saveBtn, false);
+        }
+        
+        // Now proceed with normal cancel
+        this.cancelPasswordEdit();
+        
+        // Show notification
+        this.showNotification('Password change cancelled', 'info');
+    }
+
+    // Save password changes
+    async savePassword() {
+        try {
+            // This will trigger the existing handlePasswordChange method
+            // which includes validation and API calls
+            await this.handlePasswordChange();
+            
+            // Return to display mode after successful update
+            this.cancelPasswordEdit();
+            
+        } catch (error) {
+            console.error('Error in savePassword:', error);
+            // Stay in edit mode if there was an error
         }
     }
 

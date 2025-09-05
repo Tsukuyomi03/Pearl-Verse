@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast System Test - Pearl Verse</title>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Include the modular components for testing positioning -->
+    <link rel="stylesheet" href="/static/css/modular_topnav.css">
+    <link rel="stylesheet" href="/static/css/toast.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1a1d29;
+            color: #f7fafc;
+            margin: 0;
+            padding-top: 85px; /* Space for fixed topnav */
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .test-section {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .test-section h2 {
+            color: #06b6d4;
+            margin-bottom: 1rem;
+        }
+        
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .test-btn {
+            background: linear-gradient(135deg, #06b6d4, #3b82f6);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
+        }
+        
+        .test-btn.success { background: linear-gradient(135deg, #10b981, #059669); }
+        .test-btn.error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .test-btn.warning { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .test-btn.info { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9000; /* Below toast z-index of 10000 */
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: #2d3748;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .close-modal {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .topnav-test {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: #1a1f2e;
+            border-bottom: 1px solid #2d3748;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .topnav-test h1 {
+            color: #06b6d4;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Simulate topnav for z-index testing -->
+    <div class="topnav-test">
+        <h1><i class="fas fa-gem"></i> Pearl Verse - Toast Test</h1>
+    </div>
+
+    <div class="test-container">
+        <!-- Basic Toast Tests -->
+        <div class="test-section">
+            <h2><i class="fas fa-bell"></i> Basic Toast Tests</h2>
+            <p>Test the four basic toast types with default settings.</p>
+            
+            <div class="button-grid">
+                <button class="test-btn success" onclick="window.Toast.success('Success! Operation completed successfully.')">
+                    <i class="fas fa-check"></i> Success Toast
+                </button>
+                
+                <button class="test-btn error" onclick="window.Toast.error('Error! Something went wrong.')">
+                    <i class="fas fa-times"></i> Error Toast
+                </button>
+                
+                <button class="test-btn warning" onclick="window.Toast.warning('Warning! Please review your input.')">
+                    <i class="fas fa-exclamation-triangle"></i> Warning Toast
+                </button>
+                
+                <button class="test-btn info" onclick="window.Toast.info('Info: Here is some important information.')">
+                    <i class="fas fa-info-circle"></i> Info Toast
+                </button>
+            </div>
+        </div>
+
+        <!-- Advanced Toast Tests -->
+        <div class="test-section">
+            <h2><i class="fas fa-cogs"></i> Advanced Toast Tests</h2>
+            <p>Test advanced features like custom duration, persistence, and icons.</p>
+            
+            <div class="button-grid">
+                <button class="test-btn" onclick="window.Toast.success('Quick message!', { duration: 2000 })">
+                    <i class="fas fa-clock"></i> Short Duration (2s)
+                </button>
+                
+                <button class="test-btn" onclick="window.Toast.info('Long message that stays visible', { duration: 10000 })">
+                    <i class="fas fa-hourglass"></i> Long Duration (10s)
+                </button>
+                
+                <button class="test-btn" onclick="window.Toast.warning('This will stay until you close it', { persistent: true })">
+                    <i class="fas fa-lock"></i> Persistent Toast
+                </button>
+                
+                <button class="test-btn" onclick="window.Toast.success('Payment successful!', { icon: 'fas fa-credit-card' })">
+                    <i class="fas fa-credit-card"></i> Custom Icon
+                </button>
+            </div>
+        </div>
+
+        <!-- Queue Management Tests -->
+        <div class="test-section">
+            <h2><i class="fas fa-layer-group"></i> Queue Management Tests</h2>
+            <p>Test how the system handles multiple toasts and queue limits.</p>
+            
+            <div class="button-grid">
+                <button class="test-btn" onclick="showMultipleToasts()">
+                    <i class="fas fa-list"></i> Show 7 Toasts (Queue Test)
+                </button>
+                
+                <button class="test-btn" onclick="window.Toast.clearAll()">
+                    <i class="fas fa-trash"></i> Clear All Toasts
+                </button>
+            </div>
+        </div>
+
+        <!-- Z-Index and Modal Tests -->
+        <div class="test-section">
+            <h2><i class="fas fa-layers"></i> Z-Index & Modal Tests</h2>
+            <p>Test if toasts appear above modals and other elements.</p>
+            
+            <div class="button-grid">
+                <button class="test-btn" onclick="showModalWithToast()">
+                    <i class="fas fa-window-restore"></i> Show Modal + Toast
+                </button>
+                
+                <button class="test-btn" onclick="testPearlGameplay()">
+                    <i class="fas fa-gem"></i> Pearl Collected!
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Tests -->
+        <div class="test-section">
+            <h2><i class="fas fa-mobile-alt"></i> Mobile Responsiveness</h2>
+            <p>Test how toasts look on different screen sizes (resize your window).</p>
+            
+            <div class="button-grid">
+                <button class="test-btn" onclick="testMobileToasts()">
+                    <i class="fas fa-tablet-alt"></i> Test Mobile Toasts
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Modal -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <h3><i class="fas fa-window-restore"></i> Test Modal</h3>
+            <p>This modal should appear below the toast notifications. The toast z-index is 10000, while this modal is 9000.</p>
+            <button class="test-btn" onclick="window.Toast.info('Toast from inside modal!')">
+                <i class="fas fa-bell"></i> Show Toast from Modal
+            </button>
+            <br>
+            <button class="close-modal" onclick="closeModal()">
+                <i class="fas fa-times"></i> Close Modal
+            </button>
+        </div>
+    </div>
+
+    <!-- Include toast system -->
+    <script src="/static/js/toast.js"></script>
+
+    <script>
+        // Test functions
+        function showMultipleToasts() {
+            for (let i = 1; i <= 7; i++) {
+                setTimeout(() => {
+                    window.Toast.info(`Toast message ${i}`, { duration: 8000 });
+                }, i * 300);
+            }
+        }
+
+        function showModalWithToast() {
+            document.getElementById('testModal').style.display = 'flex';
+            setTimeout(() => {
+                window.Toast.success('Toast should appear above this modal!', { duration: 5000 });
+            }, 500);
+        }
+
+        function closeModal() {
+            document.getElementById('testModal').style.display = 'none';
+        }
+
+        function testPearlGameplay() {
+            const pearls = ['Azure Pearl', 'Crimson Pearl', 'Golden Pearl', 'Shadow Pearl'];
+            const rarities = ['common', 'rare', 'epic', 'legendary'];
+            
+            const pearl = pearls[Math.floor(Math.random() * pearls.length)];
+            const rarity = rarities[Math.floor(Math.random() * rarities.length)];
+            
+            const icons = {
+                common: 'fas fa-circle',
+                rare: 'fas fa-gem',
+                epic: 'fas fa-star',
+                legendary: 'fas fa-crown'
+            };
+            
+            window.Toast.success(`You found a ${rarity} ${pearl}!`, {
+                icon: icons[rarity],
+                duration: 6000
+            });
+        }
+
+        function testMobileToasts() {
+            window.Toast.info('Mobile toast test - resize your window to see responsive behavior');
+            setTimeout(() => window.Toast.success('Toasts should adapt to screen size'), 1000);
+            setTimeout(() => window.Toast.warning('Check positioning on mobile devices'), 2000);
+        }
+
+        // Auto-run basic test on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                window.Toast.info('Toast system loaded successfully! Try the buttons above.', { 
+                    duration: 4000,
+                    icon: 'fas fa-rocket'
+                });
+            }, 1000);
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('testModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Test keyboard accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

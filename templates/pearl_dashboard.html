@@ -24,6 +24,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_qr_styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/profile_header_update.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/battle_pass_styles.css') }}">
+    
+    <!-- Toast System -->
+    {% include 'toast_system.html' %}
 </head>
 <body>
     <!-- Include Modular Side Navigation -->
@@ -121,50 +124,53 @@
             <div class="tab-content">
                 <!-- Wallet Tab -->
                 <div class="tab-pane active" id="wallet-tab">
-                    <div class="wallet-container">
+                    <!-- Wallet Dashboard Grid - Unique Layout -->
+                    <div class="wallet-dashboard-container">
                         
-                        <!-- Row 1: Wallet Actions & Referral Cards -->
-                        <div class="wallet-row">
+                        <!-- Row 1: Wallet Actions and Referral Program -->
+                        <div class="wallet-grid-row-1">
                             <!-- Wallet Actions Card -->
-                            <div class="wallet-card wallet-actions-card">
+                            <div class="adaptive-card wallet-actions-card">
                                 <div class="card-header">
                                     <h3><i class="fas fa-wallet"></i> Wallet Actions</h3>
                                     <div class="balance-display">
-                                        <span class="balance-amount" id="wallet-balance">0</span>
+                                        <span class="balance-amount" id="wallet-balance">1.2Qi</span>
                                         <span class="balance-label">PEARLS</span>
                                     </div>
                                 </div>
-                                <div class="wallet-address-section">
-                                    <label>Your Wallet Address</label>
-                                    <div class="address-display">
-                                        <code id="wallet-address">pearl:0x...</code>
-                                        <button class="copy-btn" data-copy="wallet-address" title="Copy Address">
-                                            <i class="fas fa-copy"></i>
+                                <div class="card-content">
+                                    <div class="wallet-address-section">
+                                        <label>YOUR WALLET ADDRESS</label>
+                                        <div class="address-display">
+                                            <code id="wallet-address">pearl:0x38d4764e925d69ae6cf8...</code>
+                                            <button class="copy-btn" data-copy="wallet-address" title="Copy Address">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="wallet-action-grid">
+                                        <button class="action-btn send-btn" id="send-pearls-btn">
+                                            <i class="fas fa-paper-plane"></i>
+                                            <span>Send</span>
+                                        </button>
+                                        <button class="action-btn receive-btn" id="receive-pearls-btn">
+                                            <i class="fas fa-download"></i>
+                                            <span>Receive</span>
+                                        </button>
+                                        <button class="action-btn topup-btn" id="topup-pearls-btn">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Top Up</span>
+                                        </button>
+                                        <button class="action-btn ads-btn" id="watch-ads-btn">
+                                            <i class="fas fa-play"></i>
+                                            <span>Watch Ads</span>
                                         </button>
                                     </div>
                                 </div>
-                                <div class="action-buttons">
-                                    <button class="action-btn send-btn" id="send-pearls-btn">
-                                        <i class="fas fa-paper-plane"></i>
-                                        <span>Send</span>
-                                    </button>
-                                    <button class="action-btn receive-btn" id="receive-pearls-btn">
-                                        <i class="fas fa-download"></i>
-                                        <span>Receive</span>
-                                    </button>
-                                    <button class="action-btn topup-btn" id="topup-pearls-btn">
-                                        <i class="fas fa-plus"></i>
-                                        <span>Top Up</span>
-                                    </button>
-                                    <button class="action-btn ads-btn" id="watch-ads-btn">
-                                        <i class="fas fa-play"></i>
-                                        <span>Watch Ads</span>
-                                    </button>
-                                </div>
                             </div>
                             
-                            <!-- Referral Card -->
-                            <div class="wallet-card referral-card">
+                            <!-- Referral Program Card -->
+                            <div class="adaptive-card referral-program-card">
                                 <div class="card-header">
                                     <h3><i class="fas fa-users"></i> Referral Program</h3>
                                     <div class="referral-bonus">
@@ -172,55 +178,59 @@
                                         <span class="bonus-label">PEARLS PER REFERRAL</span>
                                     </div>
                                 </div>
-                                <div class="referral-stats">
-                                    <div class="referral-stat">
-                                        <span class="stat-number" id="referral-count-wallet">0</span>
-                                        <span class="stat-label">Friends Referred</span>
+                                <div class="card-content">
+                                    <div class="referral-stats-grid">
+                                        <div class="referral-stat-item">
+                                            <span class="stat-number" id="referral-count-wallet">1</span>
+                                            <span class="stat-label">FRIENDS REFERRED</span>
+                                        </div>
+                                        <div class="referral-stat-item">
+                                            <span class="stat-number" id="referral-earnings">1,000</span>
+                                            <span class="stat-label">PEARLS EARNED</span>
+                                        </div>
                                     </div>
-                                    <div class="referral-stat">
-                                        <span class="stat-number" id="referral-earnings">0</span>
-                                        <span class="stat-label">Pearls Earned</span>
+                                    <div class="referral-code-section">
+                                        <label>Your Referral Code</label>
+                                        <div class="referral-code-display">
+                                            <code id="referral-code-wallet">FJ141P91</code>
+                                            <button class="copy-btn" data-copy="referral-code-wallet" title="Copy Referral Code">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                        </div>
                                     </div>
+                                    <button class="share-referral-btn" id="share-referral-btn">
+                                        <i class="fas fa-share-alt"></i>
+                                        Share Referral Link
+                                    </button>
                                 </div>
-                                <div class="referral-code-section">
-                                    <label>Your Referral Code</label>
-                                    <div class="referral-code-display">
-                                        <code id="referral-code-wallet">LOADING...</code>
-                                        <button class="copy-btn" data-copy="referral-code-wallet" title="Copy Referral Code">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <button class="share-referral-btn" id="share-referral-btn">
-                                    <i class="fas fa-share-alt"></i>
-                                    Share Referral Link
-                                </button>
                             </div>
                         </div>
                         
-                        <!-- Row 2: 7-Day Claim Card -->
-                        <div class="wallet-row">
-                            <div class="wallet-card daily-claim-card full-width">
+                        <!-- Row 2: Daily Claim Rewards -->
+                        <div class="wallet-grid-row-2">
+                            <div class="adaptive-card daily-claim-rewards-card">
                                 <div class="card-header">
                                     <h3><i class="fas fa-calendar-check"></i> Daily Claim Rewards</h3>
                                     <div class="streak-info">
-                                        <span class="streak-number" id="current-streak">0</span>
+                                        <span class="streak-number" id="current-streak">2</span>
                                         <span class="streak-label">Day Streak</span>
                                     </div>
                                 </div>
-                                <div class="daily-claim-grid" id="daily-claim-grid">
-                                    <!-- 7-day claim buttons will be generated by JavaScript -->
-                                    <div class="loading-claims">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <p>Loading daily claim status...</p>
+                                <div class="card-content">
+                                    <div class="daily-claim-grid" id="daily-claim-grid">
+                                        <!-- 7-day claim buttons will be generated by JavaScript -->
+                                        <div class="loading-claims">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <p>Loading daily claim status...</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         
                         <!-- Row 3: Transaction History -->
-                        <div class="wallet-row">
-                            <div class="wallet-card transaction-history-card full-width">
+                        <div class="wallet-grid-row-3">
+                            <div class="adaptive-card transaction-history-card">
                                 <div class="card-header">
                                     <h3><i class="fas fa-history"></i> Transaction History</h3>
                                     <div class="transaction-filters">
@@ -233,16 +243,18 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="transaction-list" id="transaction-list">
-                                    <div class="loading-transactions">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <p>Loading transaction history...</p>
+                                <div class="card-content">
+                                    <div class="transaction-list" id="transaction-list">
+                                        <div class="loading-transactions">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <p>Loading transaction history...</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="load-more-section">
-                                    <button class="load-more-btn" id="load-more-transactions">
-                                        Load More Transactions
-                                    </button>
+                                    <div class="load-more-section">
+                                        <button class="load-more-btn" id="load-more-transactions">
+                                            Load More Transactions
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -263,16 +275,17 @@
                 
                 <!-- Info Tab -->
                 <div class="tab-pane" id="info-tab">
-                    <div class="info-container">
-                        <!-- Row 1: Personal Info and Active Socials (2-column layout) -->
-                        <div class="info-row">
+                    <div class="info-dashboard-container">
+                        
+                        <!-- Row 1: Personal Information and Active Socials -->
+                        <div class="info-grid-row-1">
                             <!-- Personal Information Card -->
-                            <div class="info-card personal-info-card half-width">
+                            <div class="adaptive-card personal-info-card">
                                 <div class="card-header">
                                     <h3><i class="fas fa-user"></i> Personal Information</h3>
                                 </div>
                                 <div class="card-content">
-                                    <div class="info-grid">
+                                    <div class="adaptive-info-list">
                                         <div class="info-item">
                                             <label>Username</label>
                                             <span id="info-username">@username</span>
@@ -294,28 +307,34 @@
                             </div>
                             
                             <!-- Active Socials Card -->
-                            <div class="active-socials-card info-card half-width">
+                            <div class="adaptive-card active-socials-card">
                                 <div class="card-header">
                                     <h3><i class="fas fa-users"></i> Active Socials</h3>
                                 </div>
-                                <div class="socials-list" id="active-socials">
-                                    <!-- Content will be loaded by JavaScript -->
+                                <div class="card-content">
+                                    <div class="adaptive-socials-grid" id="active-socials">
+                                        <!-- Content will be loaded by JavaScript -->
+                                        <div class="loading-socials">
+                                            <i class="fas fa-spinner fa-spin"></i>
+                                            <p>Loading social platforms...</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Row 3: Showcase Card -->
-                        <div class="info-row">
-                            <div class="info-card full-width">
+                        <!-- Row 2: Card Showcase -->
+                        <div class="info-grid-row-2">
+                            <div class="adaptive-card card-showcase-card">
                                 <div class="card-header">
-                                    <h3><i class="fas fa-star"></i> Showcase</h3>
-                                    <button class="edit-showcase-btn" id="edit-showcase-btn">
+                                    <h3><i class="fas fa-star"></i> Card Showcase</h3>
+                                    <button class="edit-showcase-btn" id="edit-card-showcase-btn">
                                         <i class="fas fa-cog"></i>
-                                        Manage
+                                        Manage Cards
                                     </button>
                                 </div>
                                 <div class="card-content">
-                                    <div class="showcase-grid" id="showcase-grid">
+                                    <div class="card-showcase-grid" id="card-showcase-grid">
                                         <div class="showcase-slot empty" data-slot="1">
                                             <i class="fas fa-plus"></i>
                                             <span>Add Card</span>
@@ -341,52 +360,57 @@
                                             <span>Add Card</span>
                                         </div>
                                     </div>
-                                    <p class="showcase-description">
+                                    <p class="card-showcase-description">
                                         Display your 6 favorite cards from the shop for others to see!
                                     </p>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Row 3: Achievements Card -->
-                        <div class="info-row">
-                            <div class="info-card full-width">
+                        <!-- Row 3: Badge Showcase -->
+                        <div class="info-grid-row-3">
+                            <div class="adaptive-card badge-showcase-card">
                                 <div class="card-header">
-                                    <h3><i class="fas fa-trophy"></i> Achievements</h3>
+                                    <h3><i class="fas fa-trophy"></i> Badge Showcase</h3>
+                                    <button class="edit-showcase-btn" id="edit-badge-showcase-btn">
+                                        <i class="fas fa-cog"></i>
+                                        Manage Badges
+                                    </button>
                                 </div>
                                 <div class="card-content">
-                                    <div class="achievements-grid" id="achievements-grid">
-                                        <div class="achievement-slot locked" data-achievement="1">
+                                    <div class="badge-showcase-grid" id="badge-showcase-grid">
+                                        <div class="badge-slot locked" data-badge="1">
                                             <i class="fas fa-lock"></i>
                                             <span>Locked</span>
                                         </div>
-                                        <div class="achievement-slot locked" data-achievement="2">
+                                        <div class="badge-slot locked" data-badge="2">
                                             <i class="fas fa-lock"></i>
                                             <span>Locked</span>
                                         </div>
-                                        <div class="achievement-slot locked" data-achievement="3">
+                                        <div class="badge-slot locked" data-badge="3">
                                             <i class="fas fa-lock"></i>
                                             <span>Locked</span>
                                         </div>
-                                        <div class="achievement-slot locked" data-achievement="4">
+                                        <div class="badge-slot locked" data-badge="4">
                                             <i class="fas fa-lock"></i>
                                             <span>Locked</span>
                                         </div>
-                                        <div class="achievement-slot locked" data-achievement="5">
+                                        <div class="badge-slot locked" data-badge="5">
                                             <i class="fas fa-lock"></i>
                                             <span>Locked</span>
                                         </div>
-                                        <div class="achievement-slot locked" data-achievement="6">
+                                        <div class="badge-slot locked" data-badge="6">
                                             <i class="fas fa-lock"></i>
                                             <span>Locked</span>
                                         </div>
                                     </div>
-                                    <p class="achievements-description">
-                                        Complete challenges to unlock achievements and show off your progress!
+                                    <p class="badge-showcase-description">
+                                        Complete challenges to unlock badges and show off your achievements!
                                     </p>
                                 </div>
                             </div>
                         </div>
+                        
                     </div>
                 </div>
             </div>
@@ -520,6 +544,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     
     <!-- Application Scripts -->
+    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modular_sidenav.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modular_topnav.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modular_botnav.js') }}"></script>

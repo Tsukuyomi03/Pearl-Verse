@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 from config import get_config
-from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim, AvatarShopItem, UserAvatarItem, UserAvatarConfiguration, MarketplaceItem
+from models import db, User, DailyClaim, Referral, Transaction, Transfer, Follow, SocialMediaLink, BattlePassClaim, AvatarShopItem, UserAvatarItem, UserAvatarConfiguration, MarketplaceItem, UserFavorite
 import os
 import re
 import string
@@ -3116,16 +3116,115 @@ def equip_avatar_item():
 # Simple Marketplace API Route
 @app.route('/api/marketplace', methods=['GET'])
 def get_marketplace_items():
-    """Get all marketplace items from database"""
+    """Get marketplace items from database with filtering and favorite status"""
     try:
-        # Get all active marketplace items
-        items = MarketplaceItem.query.filter(
+        user_id = None
+        if session.get('logged_in') and session.get('user_id'):
+            user_id = session['user_id']
+        
+        # Get query parameters for filtering
+        search_term = request.args.get('search', '').strip()
+        category = request.args.get('category', 'all').strip()
+        rarity = request.args.get('rarity', 'all').strip()
+        price_min = request.args.get('price_min', type=float)
+        price_max = request.args.get('price_max', type=float)
+        sort_by = request.args.get('sort', 'newest').strip()
+        favorites_only = request.args.get('favorites_only', '').strip().lower() == 'true'
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 12, type=int)
+        
+        # Build base query for active marketplace items
+        query = MarketplaceItem.query.filter(
             MarketplaceItem.is_active == True
-        ).order_by(MarketplaceItem.created_at.desc()).all()
+        )
+        
+        # Apply search filter (search in card_name, card_series, card_description)
+        if search_term:
+            query = query.filter(
+                db.or_(
+                    MarketplaceItem.card_name.ilike(f'%{search_term}%'),
+                    MarketplaceItem.card_series.ilike(f'%{search_term}%'),
+                    MarketplaceItem.card_description.ilike(f'%{search_term}%')
+                )
+            )
+        
+        # Apply category filter (filter by card_name)
+        if category and category.lower() != 'all':
+            query = query.filter(MarketplaceItem.card_name == category)
+        
+        # Apply rarity filter
+        if rarity and rarity.lower() != 'all':
+            query = query.filter(MarketplaceItem.rarity.ilike(rarity))
+        
+        # Apply price filters
+        if price_min is not None:
+            query = query.filter(MarketplaceItem.card_price >= price_min)
+        if price_max is not None:
+            query = query.filter(MarketplaceItem.card_price <= price_max)
+        
+        # Apply sorting
+        if sort_by == 'price_low':
+            query = query.order_by(MarketplaceItem.card_price.asc())
+        elif sort_by == 'price_high':
+            query = query.order_by(MarketplaceItem.card_price.desc())
+        elif sort_by == 'oldest':
+            query = query.order_by(MarketplaceItem.created_at.asc())
+        elif sort_by == 'name':
+            query = query.order_by(MarketplaceItem.card_name.asc())
+        else:  # 'newest' or any other value
+            query = query.order_by(MarketplaceItem.created_at.desc())
+        
+        # Get total count before pagination
+        total_items = query.count()
+        
+        # Apply pagination
+        per_page = min(max(per_page, 1), 50)  # Limit per_page to reasonable values
+        items = query.paginate(
+            page=page,
+            per_page=per_page,
+            error_out=False
+        )
+        
+        # Get user's favorites if logged in
+        user_favorites = set()
+        if user_id:
+            favorites = UserFavorite.query.filter_by(user_id=user_id).all()
+            user_favorites = {fav.marketplace_item_id for fav in favorites}
+        
+        # Apply favorites filter if requested and user is logged in
+        if favorites_only and user_id:
+            if user_favorites:
+                # Filter to only show user's favorite items
+                filtered_items = [item for item in items.items if item.id in user_favorites]
+                # Create a new mock pagination object for the filtered results
+                class MockPagination:
+                    def __init__(self, filtered_items):
+                        self.items = filtered_items
+                        self.total = len(filtered_items)
+                        self.page = page
+                        self.per_page = per_page
+                        self.pages = max(1, (len(filtered_items) + per_page - 1) // per_page)
+                        self.has_prev = False
+                        self.has_next = False
+                
+                items = MockPagination(filtered_items)
+            else:
+                # User has no favorites, return empty result
+                class MockPagination:
+                    def __init__(self, filtered_items):
+                        self.items = filtered_items
+                        self.total = len(filtered_items)
+                        self.page = page
+                        self.per_page = per_page
+                        self.pages = max(1, (len(filtered_items) + per_page - 1) // per_page)
+                        self.has_prev = False
+                        self.has_next = False
+                
+                items = MockPagination([])
         
         # Format items for frontend
         formatted_items = []
-        for item in items:
+        for item in items.items:
             # Use url_for to create proper image URLs
             # Handle different image path formats from database
             if item.image_path:
@@ -3154,6 +3253,7 @@ def get_marketplace_items():
                 'image_path': item.image_path,
                 'image_url': image_url,
                 'is_active': item.is_active,
+                'is_favorite': item.id in user_favorites,
                 'created_at': item.created_at.isoformat() if item.created_at else None
             }
             formatted_items.append(formatted_item)
@@ -3171,6 +3271,239 @@ def get_marketplace_items():
         return jsonify({
             'success': False,
             'message': 'Failed to load marketplace items',
+            'error': str(e)
+        }), 500
+
+# Marketplace Favorites API Routes
+@app.route('/api/marketplace/favorites', methods=['POST'])
+def add_favorite():
+    """Add an item to user's favorites"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to add favorites'
+            }), 401
+        
+        user_id = session['user_id']
+        data = request.get_json()
+        
+        if not data or 'item_id' not in data:
+            return jsonify({
+                'success': False,
+                'message': 'Item ID is required'
+            }), 400
+        
+        item_id = data['item_id']
+        
+        # Check if marketplace item exists
+        marketplace_item = MarketplaceItem.query.filter_by(
+            id=item_id,
+            is_active=True
+        ).first()
+        
+        if not marketplace_item:
+            return jsonify({
+                'success': False,
+                'message': 'Marketplace item not found'
+            }), 404
+        
+        # Check if already favorited
+        existing_favorite = UserFavorite.query.filter_by(
+            user_id=user_id,
+            marketplace_item_id=item_id
+        ).first()
+        
+        if existing_favorite:
+            return jsonify({
+                'success': False,
+                'message': 'Item is already in your favorites'
+            }), 400
+        
+        # Create new favorite
+        new_favorite = UserFavorite(
+            user_id=user_id,
+            marketplace_item_id=item_id
+        )
+        
+        db.session.add(new_favorite)
+        db.session.commit()
+        
+        print(f"Favorite added: User {user_id} favorited item {item_id} ({marketplace_item.card_name})")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Added {marketplace_item.card_name} to favorites!',
+            'item_id': item_id,
+            'item_name': marketplace_item.card_name
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Add favorite error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while adding to favorites'
+        }), 500
+
+@app.route('/api/marketplace/favorites', methods=['DELETE'])
+def remove_favorite():
+    """Remove an item from user's favorites"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to manage favorites'
+            }), 401
+        
+        user_id = session['user_id']
+        data = request.get_json()
+        
+        if not data or 'item_id' not in data:
+            return jsonify({
+                'success': False,
+                'message': 'Item ID is required'
+            }), 400
+        
+        item_id = data['item_id']
+        
+        # Find the favorite to remove
+        favorite = UserFavorite.query.filter_by(
+            user_id=user_id,
+            marketplace_item_id=item_id
+        ).first()
+        
+        if not favorite:
+            return jsonify({
+                'success': False,
+                'message': 'Item not found in your favorites'
+            }), 404
+        
+        # Get item name for response
+        item_name = favorite.marketplace_item.card_name if favorite.marketplace_item else 'Item'
+        
+        # Remove the favorite
+        db.session.delete(favorite)
+        db.session.commit()
+        
+        print(f"Favorite removed: User {user_id} unfavorited item {item_id} ({item_name})")
+        
+        return jsonify({
+            'success': True,
+            'message': f'Removed {item_name} from favorites!',
+            'item_id': item_id,
+            'item_name': item_name
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Remove favorite error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while removing from favorites'
+        }), 500
+
+@app.route('/api/marketplace/favorites', methods=['GET'])
+def get_user_favorites():
+    """Get user's favorite items"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view your favorites'
+            }), 401
+        
+        user_id = session['user_id']
+        
+        # Get user's favorites with marketplace item details
+        favorites = db.session.query(UserFavorite, MarketplaceItem).join(
+            MarketplaceItem, UserFavorite.marketplace_item_id == MarketplaceItem.id
+        ).filter(
+            UserFavorite.user_id == user_id,
+            MarketplaceItem.is_active == True
+        ).order_by(UserFavorite.created_at.desc()).all()
+        
+        # Format favorites for frontend
+        formatted_favorites = []
+        for favorite, item in favorites:
+            # Use url_for to create proper image URLs
+            if item.image_path:
+                # Handle paths that start with /static/
+                if item.image_path.startswith('/static/'):
+                    image_filename = item.image_path.replace('/static/', '')
+                    image_url = url_for('static', filename=image_filename)
+                # Handle paths that start with images/ (direct static paths)
+                elif item.image_path.startswith('images/'):
+                    image_url = url_for('static', filename=item.image_path)
+                # Handle any other format - assume it's a static path
+                else:
+                    image_url = url_for('static', filename=item.image_path)
+            else:
+                # Default placeholder image when no image_path
+                image_url = url_for('static', filename='images/Goddess Story/Goddess Story.png')
+            
+            formatted_favorite = {
+                'favorite_id': favorite.id,
+                'favorited_at': favorite.created_at.isoformat() if favorite.created_at else None,
+                'item': {
+                    'id': item.id,
+                    'name': item.card_name,
+                    'series': item.card_series,
+                    'description': item.card_description,
+                    'price': item.card_price,
+                    'category': item.category or 'card',
+                    'rarity': item.rarity or 'common',
+                    'image_path': item.image_path,
+                    'image_url': image_url,
+                    'is_favorite': True,  # Always true for this endpoint
+                    'created_at': item.created_at.isoformat() if item.created_at else None
+                }
+            }
+            formatted_favorites.append(formatted_favorite)
+        
+        return jsonify({
+            'success': True,
+            'favorites': formatted_favorites,
+            'total': len(formatted_favorites)
+        }), 200
+        
+    except Exception as e:
+        print(f"Get favorites error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching your favorites'
+        }), 500
+
+@app.route('/api/marketplace/unique-card-names', methods=['GET'])
+def get_unique_card_names():
+    """Get unique card names from marketplace items for category filter"""
+    try:
+        # Get distinct card names from active marketplace items
+        unique_names = db.session.query(
+            MarketplaceItem.card_name
+        ).filter(
+            MarketplaceItem.is_active == True
+        ).distinct().order_by(
+            MarketplaceItem.card_name
+        ).all()
+        
+        # Extract card names from query result tuples
+        card_names = [name[0] for name in unique_names]
+        
+        return jsonify({
+            'success': True,
+            'card_names': card_names,
+            'total': len(card_names)
+        }), 200
+        
+    except Exception as e:
+        print(f"Get unique card names error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'Failed to load card names',
             'error': str(e)
         }), 500
 
@@ -3369,8 +3702,8 @@ def claim_battle_pass_reward(level):
         reward_type = 'pearls'
         reward_data = {
             'icon': 'fa-gem',
-            'title': 'Pearl Bonus',
-            'value': f'{pearl_amount} Pearls',
+            'title': '',
+            'value': f'<i class="fas fa-gem" style="color: #f59e0b; margin-right: 4px;"></i>{pearl_amount}',
             'type': 'pearls'
         }
         pearls_awarded = pearl_amount
@@ -3500,8 +3833,8 @@ def get_battle_pass_data():
             pearl_amount = level * 100
             reward = {
                 'icon': 'fa-gem',
-                'title': 'Pearl Bonus',
-                'value': f'{pearl_amount} Pearls',
+                'title': '',
+                'value': f'<i class="fas fa-gem" style="color: #f59e0b; margin-right: 4px;"></i>{pearl_amount}',
                 'type': 'pearls',
                 'claimed': is_claimed
             }
@@ -3526,6 +3859,334 @@ def get_battle_pass_data():
         return jsonify({
             'success': False,
             'message': 'An error occurred while fetching battle pass data'
+        }), 500
+
+@app.route('/pearl_card_set')
+def pearl_card_set():
+    """Pearl Card Set - collection progress and card series view"""
+    # Check if user is logged in
+    if not session.get('logged_in'):
+        return redirect('/login')
+    
+    # Get card_name and card_series parameters
+    card_name = request.args.get('card_name', 'Unknown')
+    card_series = request.args.get('card_series', 'Unknown')
+    
+    # For backward compatibility, also check 'series' parameter
+    if card_series == 'Unknown' and request.args.get('series'):
+        card_series = request.args.get('series')
+    
+    # Use card_series for display, but card_name for file path generation
+    series = card_series
+    
+    # Load card data from JSON file
+    cards = []
+    cards_by_rarity = {}
+    total_count = 0
+    owned_count = 0
+    missing_count = 0
+    completion_percentage = 0
+    
+    json_file_path = f'cardset/{card_name}/{card_series}.json'
+    full_json_path = os.path.join(app.root_path, 'static', json_file_path)
+    
+    if os.path.exists(full_json_path):
+        try:
+            import json
+            with open(full_json_path, 'r', encoding='utf-8') as f:
+                card_data = json.load(f)
+            
+            # Extract cards from the nested gacha.pool structure
+            gacha_data = card_data.get('gacha', {})
+            pool_cards = gacha_data.get('pool', [])
+            rarity_tiers = gacha_data.get('rarity_tiers', [])
+            
+            # Build rarity mapping from JSON rarity_tiers - use actual rarity codes
+            rarity_map = {}
+            rarity_order = {}
+            for i, tier in enumerate(rarity_tiers):
+                tier_code = tier.get('tier', '')
+                tier_chance = tier.get('chance', 0)
+                # Use the actual tier code as the display name
+                display_name = tier_code
+                
+                rarity_map[tier_code] = display_name
+                rarity_order[display_name] = i  # For sorting purposes
+            
+            print(f"Rarity tiers found: {rarity_tiers}")
+            print(f"Rarity mapping: {rarity_map}")
+            
+            # Process each card from the JSON data
+            for card in pool_cards:
+                # Get filename from JSON and construct image URL
+                filename = card.get('file_name', '')
+                if filename:
+                    # Construct image path: images/<card_name>/<card_series>/{filename}
+                    image_path = f'images/{card_name}/{card_series}/{filename}'
+                    image_url = url_for('static', filename=image_path)
+                else:
+                    # Default placeholder if no filename
+                    image_url = url_for('static', filename='images/placeholder-card.webp')
+                
+                # Get rarity code and use it directly as display name
+                rarity_code = card.get('rarity', 'R')
+                rarity = rarity_map.get(rarity_code, rarity_code)  # Use rarity_code as fallback instead of 'Common'
+                
+                # Extract card number from card_code (e.g., "R-1" -> "1")
+                card_code = card.get('card_code', '')
+                card_number = card_code.split('-')[-1] if '-' in card_code else card_code
+                
+                # Generate card name from rarity and number
+                card_name_display = f"{card_series} {rarity_code}-{card_number}" if card_number else f"{card_series} Card"
+                
+                # Calculate price based on rarity - use dynamic pricing based on rarity order
+                # Base price increases with rarity tier level
+                rarity_tier_index = rarity_order.get(rarity, 0)
+                base_prices = [100, 250, 500, 1000, 2500, 5000]  # Prices for tiers 0-5
+                price = base_prices[min(rarity_tier_index, len(base_prices) - 1)]
+                
+                # Create card info object
+                card_info = {
+                    'id': card_code,  # Use card_code as ID
+                    'name': card_name_display,
+                    'series': card_series,
+                    'rarity': rarity,
+                    'price': price,  # Use the dynamically calculated price
+                    'description': f'A {rarity.lower()} card from the {card_series} collection.',
+                    'image_url': image_url,
+                    'filename': filename,
+                    'owned': False,  # TODO: Load actual ownership data from database
+                    'available_for_purchase': True
+                }
+                
+                # Add to main cards list
+                cards.append(card_info)
+                
+                # Group cards by rarity for category display
+                if rarity not in cards_by_rarity:
+                    cards_by_rarity[rarity] = []
+                cards_by_rarity[rarity].append(card_info)
+            
+            # Sort cards by rarity priority (from JSON) and then by name
+            # Use the rarity_order built from JSON rarity_tiers, fallback to default for unknown rarities
+            default_rarity_order = {
+                'Common': 1, 'Uncommon': 2, 'Rare': 3, 'Epic': 4, 
+                'Legendary': 5, 'Mythic': 6, 'Unknown': 99
+            }
+            # Merge JSON-based order with default fallback
+            final_rarity_order = {**default_rarity_order, **rarity_order}
+            cards.sort(key=lambda x: (final_rarity_order.get(x['rarity'], 99), x['name']))
+            
+            # Sort cards within each rarity group
+            for rarity in cards_by_rarity:
+                cards_by_rarity[rarity].sort(key=lambda x: x['name'])
+            
+            # Calculate collection statistics
+            total_count = len(cards)
+            owned_count = sum(1 for card in cards if card.get('owned', False))
+            missing_count = total_count - owned_count
+            completion_percentage = round((owned_count / total_count) * 100) if total_count > 0 else 0
+            
+            print(f"Loaded {len(cards)} cards from JSON: {json_file_path}")
+            print(f"Rarity categories: {list(cards_by_rarity.keys())}")
+            print(f"Collection stats - Total: {total_count}, Owned: {owned_count}, Missing: {missing_count}, Completion: {completion_percentage}%")
+            
+        except Exception as e:
+            print(f"Error reading JSON file {full_json_path}: {str(e)}")
+            cards = []
+            cards_by_rarity = {}
+            total_count = 0
+            owned_count = 0
+            missing_count = 0
+            completion_percentage = 0
+    else:
+        print(f"JSON file not found: {full_json_path}")
+        cards = []
+        cards_by_rarity = {}
+    
+    # If no JSON data was loaded, create sample cards for fallback
+    if not cards:
+        sample_cards = [
+            {
+                'id': 1,
+                'name': f'{series} Warrior',
+                'series': series,
+                'rarity': 'Common',
+                'price': 500,
+                'description': f'A brave warrior from the {series} collection.',
+                'image_url': '/static/images/placeholder-card.webp',
+                'owned': True,
+                'available_for_purchase': False
+            },
+            {
+                'id': 2,
+                'name': f'{series} Mage',
+                'series': series,
+                'rarity': 'Uncommon',
+                'price': 750,
+                'description': f'A powerful mage from the {series} collection.',
+                'image_url': '/static/images/placeholder-card.webp',
+                'owned': True,
+                'available_for_purchase': False
+            },
+            {
+                'id': 3,
+                'name': f'{series} Assassin',
+                'series': series,
+                'rarity': 'Rare',
+                'price': 1000,
+                'description': f'A deadly assassin from the {series} collection.',
+                'image_url': '/static/images/placeholder-card.webp',
+                'owned': False,
+                'available_for_purchase': True
+            },
+            {
+                'id': 4,
+                'name': f'{series} Dragon',
+                'series': series,
+                'rarity': 'Epic',
+                'price': 2500,
+                'description': f'A mighty dragon from the {series} collection.',
+                'image_url': '/static/images/placeholder-card.webp',
+                'owned': False,
+                'available_for_purchase': True
+            },
+            {
+                'id': 5,
+                'name': f'{series} Legend',
+                'series': series,
+                'rarity': 'Legendary',
+                'price': 5000,
+                'description': f'The legendary hero of the {series} collection.',
+                'image_url': '/static/images/placeholder-card.webp',
+                'owned': False,
+                'available_for_purchase': True
+            },
+            {
+                'id': 6,
+                'name': f'{series} Mystic',
+                'series': series,
+                'rarity': 'Mythic',
+                'price': 10000,
+                'description': f'The ultimate mystic being from the {series} collection.',
+                'image_url': '/static/images/placeholder-card.webp',
+                'owned': False,
+                'available_for_purchase': True
+            }
+        ]
+        
+        # Use sample cards and recalculate statistics
+        cards = sample_cards
+        total_count = len(sample_cards)
+        owned_count = sum(1 for card in sample_cards if card['owned'])
+        missing_count = total_count - owned_count
+        completion_percentage = round((owned_count / total_count) * 100) if total_count > 0 else 0
+        
+        # Group sample cards by rarity
+        cards_by_rarity = {}
+        for card in sample_cards:
+            rarity = card['rarity']
+            if rarity not in cards_by_rarity:
+                cards_by_rarity[rarity] = []
+            cards_by_rarity[rarity].append(card)
+    
+    return render_template('pearl_card_set.html',
+                         series=series,
+                         card_name=card_name,
+                         card_series=card_series,
+                         card_images=cards,  # Use the loaded cards from JSON
+                         card_images_by_rarity=cards_by_rarity,  # Use rarity-based categories
+                         cards=cards if cards else sample_cards,  # Fallback to sample_cards if no JSON
+                         total_count=total_count,
+                         owned_count=owned_count,
+                         missing_count=missing_count,
+                         completion_percentage=completion_percentage)
+
+@app.route('/api/purchase_card', methods=['POST'])
+def api_purchase_card():
+    """API endpoint to purchase a card from a collection"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to purchase cards'
+            }), 401
+        
+        user_id = session['user_id']
+        user = db.session.get(User, user_id)
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Get JSON data from request
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'success': False,
+                'message': 'No data provided'
+            }), 400
+        
+        card_id = data.get('card_id')
+        if not card_id:
+            return jsonify({
+                'success': False,
+                'message': 'Card ID is required'
+            }), 400
+        
+        # For demo purposes, simulate successful purchase
+        # In a real implementation, you would:
+        # 1. Check if card exists and is available for purchase
+        # 2. Check if user has sufficient pearls
+        # 3. Update user's card collection
+        # 4. Deduct pearls from user's account
+        # 5. Create transaction record
+        
+        # Mock card prices for demo
+        card_prices = {
+            '1': 500, '2': 750, '3': 1000, '4': 2500, '5': 5000, '6': 10000
+        }
+        
+        card_price = card_prices.get(str(card_id), 1000)
+        
+        # Check if user has enough pearls
+        if user.pearl < card_price:
+            return jsonify({
+                'success': False,
+                'message': f'Insufficient pearls. You need {card_price} pearls but only have {user.pearl}.'
+            }), 400
+        
+        # Simulate successful purchase
+        user.pearl -= card_price
+        
+        # Create transaction record
+        purchase_transaction = Transaction(
+            user_id=user_id,
+            transaction_type='card_purchase',
+            amount=-card_price,
+            description=f'Purchased card ID {card_id}',
+            reference_id=f'CARD-{card_id}-{int(datetime.now().timestamp())}'
+        )
+        
+        db.session.add(purchase_transaction)
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'Card purchased successfully! You spent {card_price} pearls.',
+            'new_balance': user.pearl,
+            'transaction_id': purchase_transaction.id
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Card purchase error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while purchasing the card. Please try again.'
         }), 500
 
 

@@ -122,19 +122,18 @@ function createItemCard(item) {
             <div class="product-image">
                 ${imageHtml}
                 ${fallbackHtml}
+                <button class="favorite-btn" onclick="toggleFavorite(${item.id}, '${item.name}')" title="Add to favorites">
+                    <i class="far fa-heart"></i>
+                </button>
             </div>
             <div class="product-info">
                 <h3 class="product-title">${item.name}</h3>
                 <p class="product-description">${item.description || 'No description available'}</p>
                 <div class="product-price">
-                    <span class="current-price">${item.price} pearls</span>
+                    <span class="current-price"><i class="fas fa-gem"></i> ${item.price}</span>
                 </div>
                 <div class="product-actions">
-                    <button class="btn-cart" onclick="addToCart(${item.id}, '${item.name}', ${item.price})">
-                        <i class="fas fa-shopping-cart me-1"></i>
-                        Add to Cart
-                    </button>
-                    <button class="btn-buy" onclick="buyNow(${item.id}, '${item.name}', ${item.price})">
+                    <button class="btn-buy form-control" onclick="buyNow(${item.id}, '${item.name}', ${item.price})">
                         <i class="fas fa-bolt me-1"></i>
                         Buy Now
                     </button>
@@ -172,4 +171,24 @@ function addToCart(itemId, itemName, price) {
  */
 function buyNow(itemId, itemName, price) {
     alert(`Buying "${itemName}" for ${price} pearls`);
+}
+
+/**
+ * Toggle favorite functionality
+ */
+function toggleFavorite(itemId, itemName) {
+    const btn = $(`.product-card[data-item-id="${itemId}"] .favorite-btn`);
+    const icon = btn.find('i');
+    
+    if (icon.hasClass('far')) {
+        // Add to favorites
+        icon.removeClass('far').addClass('fas');
+        btn.addClass('favorited');
+        alert(`Added "${itemName}" to favorites!`);
+    } else {
+        // Remove from favorites
+        icon.removeClass('fas').addClass('far');
+        btn.removeClass('favorited');
+        alert(`Removed "${itemName}" from favorites.`);
+    }
 }

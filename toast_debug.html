@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast Debug Test</title>
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Toast System -->
+    <script src="static/js/toast.js"></script>
+    
+    <style>
+        body {
+            background: #0d1117;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            padding: 2rem;
+        }
+        
+        .test-btn {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            margin: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        
+        .test-btn.error {
+            background: #ef4444;
+        }
+        
+        /* Force success toast to be green */
+        .swal2-popup.swal2-toast.swal2-icon-success,
+        .swal2-popup.swal2-toast[data-icon="success"],
+        .swal2-container .swal2-popup.swal2-toast.swal2-icon-success {
+            background: #22c55e !important;
+            color: white !important;
+            border: 2px solid #16a34a !important;
+        }
+        
+        .swal2-popup.swal2-toast.swal2-icon-success .swal2-title,
+        .swal2-popup.swal2-toast[data-icon="success"] .swal2-title {
+            color: white !important;
+        }
+        
+        .swal2-popup.swal2-toast.swal2-icon-success .swal2-icon,
+        .swal2-popup.swal2-toast[data-icon="success"] .swal2-icon {
+            color: white !important;
+            border-color: white !important;
+        }
+        
+        /* Force error toast to be red */
+        .swal2-popup.swal2-toast.swal2-icon-error,
+        .swal2-popup.swal2-toast[data-icon="error"],
+        .swal2-container .swal2-popup.swal2-toast.swal2-icon-error {
+            background: #ef4444 !important;
+            color: white !important;
+            border: 2px solid #dc2626 !important;
+        }
+        
+        .swal2-popup.swal2-toast.swal2-icon-error .swal2-title,
+        .swal2-popup.swal2-toast[data-icon="error"] .swal2-title {
+            color: white !important;
+        }
+        
+        .swal2-popup.swal2-toast.swal2-icon-error .swal2-icon,
+        .swal2-popup.swal2-toast[data-icon="error"] .swal2-icon {
+            color: white !important;
+            border-color: white !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Toast Debug Test</h1>
+    <p>Click the buttons to test toast colors:</p>
+    
+    <button class="test-btn" onclick="testSuccess()">Test Success Toast</button>
+    <button class="test-btn error" onclick="testError()">Test Error Toast</button>
+    <button class="test-btn" onclick="testInfo()">Test Info Toast</button>
+    <button class="test-btn error" onclick="testErrorDirect()">Test Error Direct (using window.Toast.error)</button>
+    
+    <div id="debug-info" style="margin-top: 2rem; font-family: monospace;"></div>
+
+    <script>
+        function testSuccess() {
+            console.log('Testing success toast...');
+            const result = Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Success! This should be green',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    console.log('Success toast opened:', toast);
+                    console.log('Toast classes:', toast.classList.toString());
+                    console.log('Toast computed style:', window.getComputedStyle(toast));
+                    
+                    // Force styles with setTimeout to ensure they apply after SweetAlert2
+                    setTimeout(() => {
+                        toast.style.setProperty('background', '#22c55e', 'important');
+                        toast.style.setProperty('background-color', '#22c55e', 'important');
+                        toast.style.setProperty('color', '#ffffff', 'important');
+                        toast.style.setProperty('border', '2px solid #16a34a', 'important');
+                        
+                        const title = toast.querySelector('.swal2-title');
+                        if (title) {
+                            title.style.setProperty('color', '#ffffff', 'important');
+                        }
+                        
+                        const icon = toast.querySelector('.swal2-icon');
+                        if (icon) {
+                            icon.style.setProperty('color', '#ffffff', 'important');
+                            icon.style.setProperty('border-color', '#ffffff', 'important');
+                        }
+                        
+                        console.log('Forced styles applied');
+                    }, 100);
+                    
+                    updateDebugInfo('Success toast created with classes: ' + toast.classList.toString());
+                }
+            });
+            console.log('Swal.fire result:', result);
+        }
+        
+        function testError() {
+            console.log('Testing error toast...');
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'error',
+                title: 'Error! This should be red',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    console.log('Error toast opened:', toast);
+                    console.log('Toast classes:', toast.classList.toString());
+                    
+                    // Force styles
+                    setTimeout(() => {
+                        toast.style.setProperty('background', '#ef4444', 'important');
+                        toast.style.setProperty('background-color', '#ef4444', 'important');
+                        toast.style.setProperty('color', '#ffffff', 'important');
+                        toast.style.setProperty('border', '2px solid #dc2626', 'important');
+                        
+                        const title = toast.querySelector('.swal2-title');
+                        if (title) {
+                            title.style.setProperty('color', '#ffffff', 'important');
+                        }
+                        
+                        const icon = toast.querySelector('.swal2-icon');
+                        if (icon) {
+                            icon.style.setProperty('color', '#ffffff', 'important');
+                            icon.style.setProperty('border-color', '#ffffff', 'important');
+                        }
+                    }, 100);
+                    
+                    updateDebugInfo('Error toast created with classes: ' + toast.classList.toString());
+                }
+            });
+        }
+        
+        function testInfo() {
+            console.log('Testing info toast...');
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'info',
+                title: 'Info! This should be default blue',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    updateDebugInfo('Info toast created with classes: ' + toast.classList.toString());
+                }
+            });
+        }
+        
+        function testErrorDirect() {
+            console.log('Testing error toast with window.Toast.error...');
+            if (window.Toast) {
+                window.Toast.error('Error using window.Toast.error! This should be RED');
+                updateDebugInfo('Called window.Toast.error directly');
+            } else {
+                console.error('window.Toast not available');
+                updateDebugInfo('ERROR: window.Toast not available');
+            }
+        }
+        
+        function updateDebugInfo(message) {
+            const debugDiv = document.getElementById('debug-info');
+            debugDiv.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + message + '</div>';
+        }
+        
+        // Log SweetAlert2 version
+        console.log('SweetAlert2 version:', Swal.version);
+        updateDebugInfo('SweetAlert2 version: ' + (Swal.version || 'unknown'));
+    </script>
+</body>
+</html>

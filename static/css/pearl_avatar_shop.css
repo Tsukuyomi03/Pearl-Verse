@@ -441,8 +441,30 @@ body {
 
 @media (max-width: 768px) {
     .user-stats-display {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
         gap: 8px;
+        width: 100%;
+    }
+    
+    /* Balance and Level on first row */
+    .pearl-balance-display {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    
+    .level-display {
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    /* EXP on second row spanning both columns */
+    .exp-display {
+        grid-column: 1 / 3;
+        grid-row: 2;
+        justify-self: center;
+        max-width: 280px;
     }
 }
 
@@ -477,6 +499,7 @@ body {
 .level-display {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: var(--spacing-sm);
     background: var(--bg-surface);
     padding: var(--spacing-sm) var(--spacing-lg);
@@ -581,6 +604,7 @@ body {
 .avatar-search-container {
     flex: 1;
     position: relative;
+    width: 100%;
 }
 
 /* Avatar shop specific search styling */
@@ -801,6 +825,11 @@ body {
     font-weight: 600;
     color: var(--text-primary);
     margin-bottom: var(--spacing-xs);
+    /* Fix text overflow - truncate with ellipsis instead of wrapping */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
 }
 
 .avatar-item-category {
@@ -972,16 +1001,18 @@ body.modal-open {
 .modal {
     overflow-x: hidden;
     overflow-y: auto;
+    z-index: 9999; /* Ensure modal appears above all navigation elements */
 }
 
 /* Fix modal content sizing to prevent main page scrollbar */
 .modal-dialog {
     margin: 1.75rem auto;
-    max-width: calc(100vw - 3.5rem);
+    max-width: 800px; /* Set fixed max width instead of viewport based */
+    width: 90%; /* Responsive width */
 }
 
 .modal-content {
-    max-height: calc(100vh - 3.5rem);
+    max-height: 85vh; /* Reduce height to prevent overlap */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1014,6 +1045,26 @@ body.modal-open {
     align-items: start;
 }
 
+/* Single column layout for purchase modal */
+.purchase-confirmation.single-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    align-items: center;
+    text-align: center;
+}
+
+.purchase-confirmation.single-column .purchase-item-preview {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: var(--spacing-lg);
+}
+
+.purchase-confirmation.single-column .purchase-details {
+    width: 100%;
+    max-width: 500px;
+}
+
 /* Item Preview Section */
 .purchase-item-preview {
     background: var(--bg-surface);
@@ -1036,6 +1087,14 @@ body.modal-open {
     border: 2px solid var(--border-primary);
     transition: var(--transition-base);
     background: var(--bg-primary);
+}
+
+/* Banner-specific purchase modal styling */
+.purchase-item-preview.banner-preview .purchase-image {
+    width: 240px;
+    height: 120px;
+    aspect-ratio: 2/1;
+    border-radius: var(--radius-xl);
 }
 
 .purchase-item-preview:hover .purchase-image {
@@ -1753,11 +1812,23 @@ body.modal-open {
     .search-filter-section {
         flex-direction: column;
         gap: var(--spacing-md);
+        width: 100%;
+    }
+    
+    .avatar-search-container {
+        width: 100%;
+        flex: none;
+    }
+    
+    .avatar-search-input {
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .filter-dropdown {
         width: 100%;
         min-width: unset;
+        box-sizing: border-box;
     }
     
     .avatar-items-grid {
@@ -1801,73 +1872,142 @@ body.modal-open {
     }
 }
 
-/* Mobile phones */
+/* Mobile phones - Compact Layout (Pearl Market Style) */
 @media (max-width: 480px) {
     .avatar-shop-container {
-        padding: var(--spacing-sm);
-        padding-top: 3.5rem;
-        padding-bottom: 4.5rem;
+        padding: 0.75rem; /* Compact padding */
+        padding-top: 5rem; /* Increased top padding for mobile nav */
+        padding-bottom: 4rem; /* Reduced bottom padding */
     }
     
     .avatar-shop-header {
-        margin-bottom: var(--spacing-xl);
-        padding: var(--spacing-md) 0;
+        margin-bottom: var(--spacing-lg);
+        padding: var(--spacing-sm) 0;
     }
     
     .avatar-preview-section,
     .customization-section,
     .avatar-sidebar {
-        padding: var(--spacing-lg);
-        border-radius: var(--radius-lg);
+        padding: var(--spacing-md); /* More compact */
+        border-radius: var(--radius-md); /* Smaller radius */
     }
     
     .avatar-items-grid {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: var(--spacing-sm);
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); /* Smaller items */
+        gap: 0.5rem; /* Tighter gap like pearl market */
     }
     
     .avatar-item-card {
-        padding: var(--spacing-md);
+        padding: 0.625rem; /* Compact padding */
+        border-radius: var(--radius-md); /* Smaller radius */
     }
     
     .avatar-shop-title {
-        font-size: var(--font-size-xl);
+        font-size: 1.75rem; /* Compact title - pearl market style */
+        margin-bottom: 0.75rem;
     }
     
     .avatar-shop-subtitle {
-        font-size: var(--font-size-sm);
-        padding: 0 var(--spacing-md);
+        font-size: 0.875rem; /* Compact subtitle */
+        padding: 0 var(--spacing-sm);
+        line-height: 1.4;
     }
     
     .category-tab {
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: var(--font-size-xs);
-        min-width: 70px;
+        padding: 0.5rem 0.75rem; /* Compact tabs */
+        font-size: 0.75rem; /* Smaller font */
+        min-width: 60px;
+        border-radius: var(--radius-sm);
     }
     
     .category-tab-icon {
-        font-size: var(--font-size-sm);
+        font-size: 0.875rem;
     }
     
     .avatar-actions {
-        gap: var(--spacing-sm);
+        gap: 0.5rem;
     }
     
     .btn-save-avatar,
     .btn-reset-avatar,
     .btn-random-avatar {
-        padding: var(--spacing-sm) var(--spacing-md);
-        font-size: var(--font-size-xs);
+        padding: 0.625rem var(--spacing-md);
+        font-size: 0.75rem; /* Compact button text */
+        border-radius: var(--radius-sm);
     }
     
     .pagination {
         flex-direction: column;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
     }
     
     .pagination-btn {
         width: 100%;
-        padding: var(--spacing-md);
+        padding: 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    /* Compact item info */
+    .avatar-item-name {
+        font-size: 0.8125rem; /* Smaller name */
+        margin-bottom: 0.25rem;
+        line-height: 1.3;
+    }
+    
+    .avatar-item-category {
+        font-size: 0.6875rem; /* Smaller category */
+        margin-bottom: 0.375rem;
+    }
+    
+    .avatar-item-price {
+        font-size: 0.8125rem; /* Compact price */
+        gap: 0.25rem;
+    }
+    
+    /* Compact action buttons */
+    .item-action-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.6875rem; /* Very compact button text */
+        margin-top: 0.5rem;
+    }
+    
+    /* Compact user stats */
+    .pearl-balance-display,
+    .level-display,
+    .exp-display {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .pearl-amount,
+    .level-text,
+    .exp-text {
+        font-size: var(--font-size-base); /* Compact stats */
+    }
+    
+    .pearl-icon,
+    .level-icon,
+    .exp-icon {
+        font-size: var(--font-size-base);
+    }
+    
+    /* Compact search and filter */
+    .avatar-search-input {
+        padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .filter-dropdown {
+        padding: 0.625rem 0.5rem;
+        font-size: 0.8125rem;
+    }
+    
+    /* Compact preview sections */
+    .preview-title {
+        font-size: var(--font-size-base); /* Smaller preview titles */
+    }
+    
+    .sidebar-title {
+        font-size: var(--font-size-base);
     }
 }
 
@@ -1875,7 +2015,7 @@ body.modal-open {
 @media (max-width: 360px) {
     .avatar-shop-container {
         padding: var(--spacing-xs);
-        padding-top: 3rem;
+        padding-top: 5rem;
         padding-bottom: 4rem;
     }
     

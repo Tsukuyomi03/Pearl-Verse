@@ -263,14 +263,14 @@
 /* Tier Reward */
 .tier-reward {
     text-align: center;
-    padding: 16px;
+    padding: 12px;
     background: #374151;
     border-radius: 12px;
     border: 1px solid #4a5568;
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     justify-content: center;
 }
 
@@ -284,15 +284,6 @@
     opacity: 0.7;
 }
 
-.reward-icon {
-    font-size: 32px;
-    color: #f6d55c;
-    margin-bottom: 8px;
-}
-
-.tier-reward.locked .reward-icon {
-    color: #a0aec0;
-}
 
 .reward-info {
     display: flex;
@@ -607,16 +598,17 @@
     text-align: center;
 }
 
-/* Responsive Design */
+/* Responsive Design - Keep horizontal scrolling */
 @media (max-width: 1200px) {
     .battle-pass-grid {
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        /* Keep horizontal flex layout */
         gap: 12px;
     }
     
     .battle-pass-tier {
         min-height: 200px;
         padding: 16px;
+        width: 160px; /* Slightly smaller on medium screens */
     }
     
     .battle-pass-stats {
@@ -649,7 +641,7 @@
     }
     
     .battle-pass-grid {
-        grid-template-columns: 1fr;
+        /* Keep horizontal scrolling on mobile */
         gap: 12px;
     }
     
@@ -662,9 +654,6 @@
         font-size: 28px;
     }
     
-    .reward-icon {
-        font-size: 28px;
-    }
     
     .bp-tips ul {
         gap: 8px;
@@ -686,9 +675,6 @@
         font-size: 24px;
     }
     
-    .reward-icon {
-        font-size: 24px;
-    }
     
     .reward-title {
         font-size: 12px;
@@ -814,53 +800,46 @@
     border-color: #9f7aea;
 }
 
-.battle-pass-tier.premium .reward-icon {
-    color: #d69e2e;
-    text-shadow: 0 0 10px rgba(214, 158, 46, 0.5);
-}
 
-/* Mobile grid adjustments */
+/* Mobile tier adjustments for horizontal scrolling */
 @media (max-width: 600px) {
-    .battle-pass-grid {
-        grid-template-columns: 1fr;
+    .battle-pass-tier {
+        width: 140px; /* Smaller width for mobile */
     }
 }
 
 @media (min-width: 601px) and (max-width: 900px) {
-    .battle-pass-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .battle-pass-tier {
+        width: 150px;
     }
 }
 
 @media (min-width: 901px) and (max-width: 1200px) {
-    .battle-pass-grid {
-        grid-template-columns: repeat(3, 1fr);
+    .battle-pass-tier {
+        width: 160px;
     }
 }
 
 @media (min-width: 1201px) {
-    .battle-pass-grid {
-        grid-template-columns: repeat(4, 1fr);
+    .battle-pass-tier {
+        width: 180px;
     }
 }
 
 /* Large screen optimizations */
 @media (min-width: 1600px) {
     .battle-pass-grid {
-        grid-template-columns: repeat(5, 1fr);
         gap: 20px;
     }
     
     .battle-pass-tier {
         min-height: 220px;
         padding: 24px;
+        width: 200px;
     }
     
     .level-number {
         font-size: 36px;
     }
     
-    .reward-icon {
-        font-size: 36px;
-    }
 }

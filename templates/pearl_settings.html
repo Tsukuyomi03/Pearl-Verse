@@ -22,6 +22,9 @@
     
     <!-- Settings Page Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_settings.css') }}">
+    
+    <!-- Toast System -->
+    {% include 'toast_system.html' %}
 </head>
 <body>
     <!-- Include Modular Side Navigation -->
@@ -63,105 +66,155 @@
                             </div>
                             
                             <div class="section-content">
-                                <form class="settings-form" id="profileForm">
-                                    <div class="form-grid">
-                                        <div class="form-group">
-                                            <label for="firstName" class="form-label">
-                                                <i class="fas fa-id-badge" aria-hidden="true"></i>
-                                                <span>First Name</span>
-                                            </label>
-                                            <input 
-                                                type="text" 
-                                                id="firstName" 
-                                                name="firstName" 
-                                                class="form-input"
-                                                placeholder="Enter your first name"
-                                                value="Player"
-                                                required
-                                            >
-                                            <div class="input-error" id="firstNameError"></div>
-                                        </div>
-                                        
-                                        <div class="form-group">
-                                            <label for="lastName" class="form-label">
-                                                <i class="fas fa-id-badge" aria-hidden="true"></i>
-                                                <span>Last Name</span>
-                                            </label>
-                                            <input 
-                                                type="text" 
-                                                id="lastName" 
-                                                name="lastName" 
-                                                class="form-input"
-                                                placeholder="Enter your last name"
-                                                value="Name"
-                                                required
-                                            >
-                                            <div class="input-error" id="lastNameError"></div>
+                                <div class="profile-content">
+                                    <!-- Profile Display Mode -->
+                                    <div class="profile-display" id="profile-display">
+                                        <div class="profile-info-grid">
+                                            <div class="profile-info-item">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                                    <span>First Name</span>
+                                                </label>
+                                                <div class="profile-info-value" id="display-firstName">Player</div>
+                                            </div>
+                                            
+                                            <div class="profile-info-item">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                                    <span>Last Name</span>
+                                                </label>
+                                                <div class="profile-info-value" id="display-lastName">Name</div>
+                                            </div>
+                                            
+                                            <div class="profile-info-item profile-info-full">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-at" aria-hidden="true"></i>
+                                                    <span>Email Address</span>
+                                                </label>
+                                                <div class="profile-info-value" id="display-email">player@example.com</div>
+                                            </div>
+                                            
+                                            <div class="profile-info-item profile-info-full">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                                                    <span>Date of Birth</span>
+                                                </label>
+                                                <div class="profile-info-value" id="display-birthday">Not set</div>
+                                            </div>
                                         </div>
                                     </div>
                                     
-                                    <div class="form-group">
-                                        <label for="email" class="form-label">
-                                            <i class="fas fa-at" aria-hidden="true"></i>
-                                            <span>Email Address</span>
-                                        </label>
-                                        <input 
-                                            type="email" 
-                                            id="email" 
-                                            name="email" 
-                                            class="form-input"
-                                            placeholder="Enter your email address"
-                                            value="player@example.com"
-                                            required
-                                        >
-                                        <div class="input-error" id="emailError"></div>
+                                    <!-- Profile Edit Mode -->
+                                    <div class="profile-edit" id="profile-edit" style="display: none;">
+                                        <form class="settings-form" id="profileForm">
+                                            <div class="form-grid">
+                                                <div class="form-group">
+                                                    <label for="firstName" class="form-label">
+                                                        <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                                        <span>First Name</span>
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        id="firstName" 
+                                                        name="firstName" 
+                                                        class="form-input"
+                                                        placeholder="Enter your first name"
+                                                        value="Player"
+                                                        required
+                                                    >
+                                                    <div class="input-error" id="firstNameError"></div>
+                                                </div>
+                                                
+                                                <div class="form-group">
+                                                    <label for="lastName" class="form-label">
+                                                        <i class="fas fa-id-badge" aria-hidden="true"></i>
+                                                        <span>Last Name</span>
+                                                    </label>
+                                                    <input 
+                                                        type="text" 
+                                                        id="lastName" 
+                                                        name="lastName" 
+                                                        class="form-input"
+                                                        placeholder="Enter your last name"
+                                                        value="Name"
+                                                        required
+                                                    >
+                                                    <div class="input-error" id="lastNameError"></div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="email" class="form-label">
+                                                    <i class="fas fa-at" aria-hidden="true"></i>
+                                                    <span>Email Address</span>
+                                                </label>
+                                                <input 
+                                                    type="email" 
+                                                    id="email" 
+                                                    name="email" 
+                                                    class="form-input"
+                                                    placeholder="Enter your email address"
+                                                    value="player@example.com"
+                                                    required
+                                                >
+                                                <div class="input-error" id="emailError"></div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label class="form-label">
+                                                    <i class="fas fa-calendar-days" aria-hidden="true"></i>
+                                                    <span>Date of Birth</span>
+                                                </label>
+                                                <div class="birthday-inputs">
+                                                    <select id="birthMonth" name="birthMonth" class="form-input birthday-select" required>
+                                                        <option value="">Month</option>
+                                                        <option value="1">January</option>
+                                                        <option value="2">February</option>
+                                                        <option value="3">March</option>
+                                                        <option value="4">April</option>
+                                                        <option value="5">May</option>
+                                                        <option value="6">June</option>
+                                                        <option value="7">July</option>
+                                                        <option value="8">August</option>
+                                                        <option value="9">September</option>
+                                                        <option value="10">October</option>
+                                                        <option value="11">November</option>
+                                                        <option value="12">December</option>
+                                                    </select>
+                                                    <select id="birthDay" name="birthDay" class="form-input birthday-select" required>
+                                                        <option value="">Day</option>
+                                                        <!-- Days 1-31 will be populated by JavaScript -->
+                                                    </select>
+                                                    <select id="birthYear" name="birthYear" class="form-input birthday-select" required>
+                                                        <option value="">Year</option>
+                                                        <!-- Years will be populated by JavaScript -->
+                                                    </select>
+                                                </div>
+                                                <div class="input-error" id="birthdayError"></div>
+                                                <div class="input-help" id="ageDisplay"></div>
+                                            </div>
+                                            
+                                            <div class="form-actions profile-actions">
+                                                <button type="button" class="btn btn-secondary" id="cancel-profile-btn">
+                                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                                    <span>Cancel</span>
+                                                </button>
+                                                <button type="submit" class="btn btn-primary" id="save-profile-btn">
+                                                    <i class="fas fa-save" aria-hidden="true"></i>
+                                                    <span>Save Changes</span>
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                     
-                                    <div class="form-group">
-                                        <label class="form-label">
-                                            <i class="fas fa-calendar-days" aria-hidden="true"></i>
-                                            <span>Date of Birth</span>
-                                        </label>
-                                        <div class="birthday-inputs">
-                                            <select id="birthMonth" name="birthMonth" class="form-input birthday-select" required>
-                                                <option value="">Month</option>
-                                                <option value="1">January</option>
-                                                <option value="2">February</option>
-                                                <option value="3">March</option>
-                                                <option value="4">April</option>
-                                                <option value="5">May</option>
-                                                <option value="6">June</option>
-                                                <option value="7">July</option>
-                                                <option value="8">August</option>
-                                                <option value="9">September</option>
-                                                <option value="10">October</option>
-                                                <option value="11">November</option>
-                                                <option value="12">December</option>
-                                            </select>
-                                            <select id="birthDay" name="birthDay" class="form-input birthday-select" required>
-                                                <option value="">Day</option>
-                                                <!-- Days 1-31 will be populated by JavaScript -->
-                                            </select>
-                                            <select id="birthYear" name="birthYear" class="form-input birthday-select" required>
-                                                <option value="">Year</option>
-                                                <!-- Years will be populated by JavaScript -->
-                                            </select>
-                                        </div>
-                                        <div class="input-error" id="birthdayError"></div>
-                                        <div class="input-help" id="ageDisplay"></div>
-                                    </div>
-                                    
-                                    <div class="form-actions">
-                                        <button type="button" class="btn btn-secondary" id="cancelProfile">
-                                            <i class="fas fa-xmark" aria-hidden="true"></i>
-                                            <span>Cancel</span>
+                                    <!-- Profile Edit Button -->
+                                    <div class="profile-actions-display">
+                                        <button class="btn btn-primary" id="edit-profile-btn">
+                                            <i class="fas fa-pencil-alt"></i>
+                                            <span>Edit Profile</span>
                                         </button>
-                                        <button type="submit" class="btn btn-primary" id="saveProfile">
-                                            <i class="fas fa-floppy-disk" aria-hidden="true"></i>
-                                            <span>Save Changes</span>
-                                        </button>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </section>
 
@@ -217,82 +270,124 @@
                             </div>
                             
                             <div class="section-content">
-                                <form class="settings-form" id="passwordForm">
-                                    <div class="form-group">
-                                        <label for="currentPassword" class="form-label">
-                                            <i class="fas fa-lock" aria-hidden="true"></i>
-                                            <span>Current Password</span>
-                                        </label>
-                                        <div class="password-input-wrapper">
-                                            <input 
-                                                type="password" 
-                                                id="currentPassword" 
-                                                name="currentPassword" 
-                                                class="form-input password-input"
-                                                placeholder="Enter your current password"
-                                                required
-                                            >
-                                            <button type="button" class="password-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
-                                                <i class="fas fa-eye" aria-hidden="true"></i>
-                                            </button>
+                                <div class="password-content">
+                                    <!-- Password Display Mode -->
+                                    <div class="password-display" id="password-display">
+                                        <div class="profile-info-grid">
+                                            <div class="profile-info-item profile-info-full">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-lock" aria-hidden="true"></i>
+                                                    <span>Current Password</span>
+                                                </label>
+                                                <div class="profile-info-value">••••••••••••</div>
+                                            </div>
+                                            
+                                            <div class="profile-info-item profile-info-full">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                                                    <span>Password Strength</span>
+                                                </label>
+                                                <div class="profile-info-value">Strong</div>
+                                            </div>
+                                            
+                                            <div class="profile-info-item profile-info-full">
+                                                <label class="profile-info-label">
+                                                    <i class="fas fa-calendar" aria-hidden="true"></i>
+                                                    <span>Last Changed</span>
+                                                </label>
+                                                <div class="profile-info-value" id="display-lastChanged">Never</div>
+                                            </div>
                                         </div>
-                                        <div class="input-error" id="currentPasswordError"></div>
                                     </div>
                                     
-                                    <div class="form-group">
-                                        <label for="newPassword" class="form-label">
-                                            <i class="fas fa-key" aria-hidden="true"></i>
-                                            <span>New Password</span>
-                                        </label>
-                                        <div class="password-input-wrapper">
-                                            <input 
-                                                type="password" 
-                                                id="newPassword" 
-                                                name="newPassword" 
-                                                class="form-input password-input"
-                                                placeholder="Enter your new password"
-                                                required
-                                            >
-                                            <button type="button" class="password-toggle" data-target="newPassword" aria-label="Toggle password visibility">
-                                                <i class="fas fa-eye" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                        <div class="password-strength" id="passwordStrength"></div>
-                                        <div class="input-error" id="newPasswordError"></div>
+                                    <!-- Password Edit Mode -->
+                                    <div class="password-edit" id="password-edit" style="display: none;">
+                                        <form class="settings-form" id="passwordForm" novalidate>
+                                            <div class="form-group">
+                                                <label for="currentPassword" class="form-label">
+                                                    <i class="fas fa-lock" aria-hidden="true"></i>
+                                                    <span>Current Password</span>
+                                                </label>
+                                                <div class="password-input-wrapper">
+                                                    <input 
+                                                        type="password" 
+                                                        id="currentPassword" 
+                                                        name="currentPassword" 
+                                                        class="form-input password-input form-control"
+                                                        placeholder="Enter your current password"
+                                                        readonly
+                                                    >
+                                                    <button type="button" class="password-toggle" data-target="currentPassword" aria-label="Toggle password visibility">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="input-error" id="currentPasswordError"></div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="newPassword" class="form-label">
+                                                    <i class="fas fa-key" aria-hidden="true"></i>
+                                                    <span>New Password</span>
+                                                </label>
+                                                <div class="password-input-wrapper">
+                                                    <input 
+                                                        type="password" 
+                                                        id="newPassword" 
+                                                        name="newPassword" 
+                                                        class="form-input password-input form-control"
+                                                        placeholder="Enter your new password"
+                                                        readonly
+                                                    >
+                                                    <button type="button" class="password-toggle" data-target="newPassword" aria-label="Toggle password visibility">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="password-strength" id="passwordStrength"></div>
+                                                <div class="input-error" id="newPasswordError"></div>
+                                            </div>
+                                            
+                                            <div class="form-group">
+                                                <label for="confirmPassword" class="form-label">
+                                                    <i class="fas fa-check-double" aria-hidden="true"></i>
+                                                    <span>Confirm New Password</span>
+                                                </label>
+                                                <div class="password-input-wrapper">
+                                                    <input 
+                                                        type="password" 
+                                                        id="confirmPassword" 
+                                                        name="confirmPassword" 
+                                                        class="form-input password-input form-control"
+                                                        placeholder="Confirm your new password"
+                                                        readonly
+                                                    >
+                                                    <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Toggle password visibility">
+                                                        <i class="fas fa-eye" aria-hidden="true"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="input-error" id="confirmPasswordError"></div>
+                                            </div>
+                                            
+                                            <div class="form-actions password-actions">
+                                                <button type="button" class="btn btn-secondary" id="cancel-password-btn">
+                                                    <i class="fas fa-times" aria-hidden="true"></i>
+                                                    <span>Cancel</span>
+                                                </button>
+                                                <button type="submit" class="btn btn-primary" id="save-password-btn">
+                                                    <i class="fas fa-shield-halved" aria-hidden="true"></i>
+                                                    <span>Update Password</span>
+                                                </button>
+                                            </div>
+                                        </form>
                                     </div>
                                     
-                                    <div class="form-group">
-                                        <label for="confirmPassword" class="form-label">
-                                            <i class="fas fa-check-double" aria-hidden="true"></i>
-                                            <span>Confirm New Password</span>
-                                        </label>
-                                        <div class="password-input-wrapper">
-                                            <input 
-                                                type="password" 
-                                                id="confirmPassword" 
-                                                name="confirmPassword" 
-                                                class="form-input password-input"
-                                                placeholder="Confirm your new password"
-                                                required
-                                            >
-                                            <button type="button" class="password-toggle" data-target="confirmPassword" aria-label="Toggle password visibility">
-                                                <i class="fas fa-eye" aria-hidden="true"></i>
-                                            </button>
-                                        </div>
-                                        <div class="input-error" id="confirmPasswordError"></div>
-                                    </div>
-                                    
-                                    <div class="form-actions">
-                                        <button type="button" class="btn btn-secondary" id="cancelPassword">
-                                            <i class="fas fa-xmark" aria-hidden="true"></i>
-                                            <span>Cancel</span>
+                                    <!-- Password Edit Button -->
+                                    <div class="password-actions-display">
+                                        <button class="btn btn-primary" id="edit-password-btn">
+                                            <i class="fas fa-pencil-alt"></i>
+                                            <span>Change Password</span>
                                         </button>
-                                        <button type="submit" class="btn btn-primary" id="changePassword">
-                                            <i class="fas fa-shield-halved" aria-hidden="true"></i>
-                                            <span>Update Password</span>
-                                        </button>
                                     </div>
-                                </form>
+                                </div>
                             </div>
                         </section>
                     </div>
@@ -811,6 +906,8 @@
     {% include 'modular_botnav.html' %}
 
     <!-- Scripts -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="{{ url_for('static', filename='js/modular_sidenav.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modular_topnav.js') }}"></script>
     <script src="{{ url_for('static', filename='js/modular_botnav.js') }}"></script>

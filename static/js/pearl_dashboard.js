@@ -11,6 +11,9 @@ class PearlDashboard {
   }
 
   async init() {
+    // Initialize adaptive grid system
+    this.initAdaptiveGrids();
+
     // Initialize tab functionality
     this.initTabs();
 
@@ -31,6 +34,9 @@ class PearlDashboard {
 
     // Load initial content based on stored or default tab (after user data is loaded)
     this.loadTabContent(this.currentTab);
+
+    // Initialize responsive handling
+    this.initResponsiveHandlers();
   }
 
   // Tab Management
@@ -118,6 +124,375 @@ class PearlDashboard {
         this.loadInfoContent();
         this.loadActiveSocials();
         break;
+    }
+  }
+
+  // ===== MODERN ADAPTIVE GRID SYSTEM =====
+  
+  // Initialize adaptive grid system
+  initAdaptiveGrids() {
+    console.log('Initializing modern adaptive grid system...');
+    
+    // Check for container query support
+    this.supportsContainerQueries = CSS.supports('container-type: inline-size');
+    console.log('Container queries supported:', this.supportsContainerQueries);
+    
+    // Initialize modern grid observers
+    this.initModernGridObservers();
+    
+    // Apply initial responsive adjustments
+    this.applyModernResponsiveAdjustments();
+    
+    // Setup viewport change handlers
+    this.setupViewportHandlers();
+  }
+  
+  // Initialize modern grid observers for dynamic adjustments
+  initModernGridObservers() {
+    // Use ResizeObserver to watch all adaptive grid containers
+    if (window.ResizeObserver) {
+      this.modernGridObserver = new ResizeObserver((entries) => {
+        // Debounce resize events for better performance
+        clearTimeout(this.resizeTimeout);
+        this.resizeTimeout = setTimeout(() => {
+          for (const entry of entries) {
+            const container = entry.target;
+            const width = entry.contentRect.width;
+            const height = entry.contentRect.height;
+            
+            // Update grid properties based on container dimensions
+            this.updateModernGridLayout(container, width, height);
+          }
+        }, 50); // 50ms debounce
+      });
+      
+      // Observe all modern adaptive grid containers
+      const gridSelectors = [
+        '.modern-adaptive-grid',
+        '.adaptive-grid-container', // Legacy support
+        '.wallet-layout',
+        '.info-layout',
+        '.wallet-dashboard-container', // New wallet-specific layout
+        '.wallet-grid-row-1',
+        '.wallet-grid-row-2',
+        '.wallet-grid-row-3'
+      ];
+      
+      gridSelectors.forEach(selector => {
+        const containers = document.querySelectorAll(selector);
+        containers.forEach(container => {
+          if (container.offsetParent !== null) { // Only observe visible containers
+            this.modernGridObserver.observe(container);
+          }
+        });
+      });
+      
+      console.log(`Observing ${document.querySelectorAll(gridSelectors.join(', ')).length} grid containers`);
+    }
+  }
+  
+  // Update modern grid layout based on container dimensions
+  updateModernGridLayout(container, width, height) {
+    // Skip if container is not visible
+    if (width === 0 || height === 0) return;
+    
+    // Determine optimal layout based on container type and size
+    let minCardWidth = 320;
+    let maxColumns = 4;
+    
+    // Set layout parameters based on container class
+    if (container.classList.contains('wallet-layout')) {
+      minCardWidth = 300;
+      maxColumns = 3;
+    } else if (container.classList.contains('info-layout')) {
+      minCardWidth = 280;
+      maxColumns = 3;
+    } else if (container.classList.contains('adaptive-grid-container')) {
+      minCardWidth = 320;
+      maxColumns = 4;
+    }
+    
+    // Calculate optimal column count
+    const gap = parseInt(getComputedStyle(container).gap) || 24;
+    const availableWidth = width - (gap * 2); // Account for padding
+    let optimalColumns = Math.max(1, Math.floor((availableWidth + gap) / (minCardWidth + gap)));
+    optimalColumns = Math.min(optimalColumns, maxColumns);
+    
+    // Apply CSS custom properties for responsive behavior
+    container.style.setProperty('--grid-columns', optimalColumns);
+    container.style.setProperty('--container-width', `${width}px`);
+    container.style.setProperty('--container-height', `${height}px`);
+    
+    // Update adaptive components within the container
+    this.updateAdaptiveComponents(container, width, optimalColumns);
+    
+    // Handle wide cards based on available columns
+    this.updateWideCardBehavior(container, optimalColumns);
+    
+    // Log layout updates for debugging
+    if (this.debugMode) {
+      console.log(`Updated ${container.className}: ${width}px → ${optimalColumns} columns`);
+    }
+  }
+  
+  // Update adaptive components within containers
+  updateAdaptiveComponents(container, width, columns) {
+    // Update adaptive stats grids
+    const statsGrids = container.querySelectorAll('.adaptive-stats-grid');
+    statsGrids.forEach(grid => {
+      const itemWidth = width < 400 ? 100 : width < 600 ? 120 : 140;
+      grid.style.gridTemplateColumns = `repeat(auto-fit, minmax(${itemWidth}px, 1fr))`;
+    });
+    
+    // Update adaptive action grids
+    const actionGrids = container.querySelectorAll('.adaptive-action-grid');
+    actionGrids.forEach(grid => {
+      const buttonMinWidth = width < 300 ? 80 : width < 400 ? 90 : 100;
+      grid.style.gridTemplateColumns = `repeat(auto-fit, minmax(${buttonMinWidth}px, 1fr))`;
+    });
+    
+    // Update adaptive claim grids  
+    const claimGrids = container.querySelectorAll('.adaptive-claim-grid');
+    claimGrids.forEach(grid => {
+      const claimWidth = width < 350 ? 70 : 80;
+      grid.style.gridTemplateColumns = `repeat(auto-fit, minmax(${claimWidth}px, 1fr))`;
+    });
+    
+    // Update showcase and achievement grids
+    const showcaseGrids = container.querySelectorAll('.adaptive-showcase-grid');
+    showcaseGrids.forEach(grid => {
+      const showcaseWidth = width < 400 ? 100 : width < 600 ? 110 : 120;
+      grid.style.gridTemplateColumns = `repeat(auto-fit, minmax(${showcaseWidth}px, 1fr))`;
+    });
+    
+    const achievementGrids = container.querySelectorAll('.adaptive-achievements-grid');
+    achievementGrids.forEach(grid => {
+      const achievementWidth = width < 400 ? 80 : width < 600 ? 90 : 100;
+      grid.style.gridTemplateColumns = `repeat(auto-fit, minmax(${achievementWidth}px, 1fr))`;
+    });
+    
+    // Update social grids
+    const socialGrids = container.querySelectorAll('.adaptive-socials-grid');
+    socialGrids.forEach(grid => {
+      const maxSocials = width < 300 ? 4 : width < 400 ? 5 : 6;
+      const socialWidth = Math.max(40, Math.min(48, width / maxSocials - 12));
+      grid.style.gridTemplateColumns = `repeat(auto-fit, minmax(${socialWidth}px, 1fr))`;
+    });
+  }
+  
+  // Update wide card behavior based on column count
+  updateWideCardBehavior(container, columnCount) {
+    const wideCards = container.querySelectorAll('.wide-card, .grid-wide');
+    
+    wideCards.forEach(card => {
+      if (columnCount >= 2) {
+        // Span 2 columns when space allows
+        card.style.gridColumn = 'span 2';
+      } else {
+        // Single column when space is limited
+        card.style.gridColumn = 'auto';
+      }
+    });
+  }
+  
+  // Apply modern responsive adjustments throughout the dashboard
+  applyModernResponsiveAdjustments() {
+    // Enable smooth transitions for layout changes
+    this.enableSmoothTransitions();
+    
+    // Apply viewport-based adjustments
+    this.applyViewportOptimizations();
+    
+    // Initialize component-level responsiveness
+    this.initComponentResponsiveness();
+    
+    // Set up automatic font scaling
+    this.setupAutomaticFontScaling();
+  }
+  
+  // Enable smooth transitions for layout changes
+  enableSmoothTransitions() {
+    const grids = document.querySelectorAll('.modern-adaptive-grid, .adaptive-grid-container');
+    
+    grids.forEach(grid => {
+      grid.style.transition = 'gap 0.3s ease, padding 0.3s ease';
+    });
+    
+    const cards = document.querySelectorAll('.adaptive-card, .grid-card');
+    cards.forEach(card => {
+      card.style.transition = 'transform 0.2s ease, box-shadow 0.2s ease, font-size 0.3s ease';
+    });
+  }
+  
+  // Apply viewport-based optimizations
+  applyViewportOptimizations() {
+    const viewport = {
+      width: window.innerWidth,
+      height: window.innerHeight
+    };
+    
+    // Set global CSS custom properties for viewport-aware styling
+    document.documentElement.style.setProperty('--viewport-width', `${viewport.width}px`);
+    document.documentElement.style.setProperty('--viewport-height', `${viewport.height}px`);
+    
+    // Apply size-class for global responsive behavior
+    document.documentElement.classList.remove('viewport-xs', 'viewport-sm', 'viewport-md', 'viewport-lg', 'viewport-xl');
+    
+    if (viewport.width < 480) {
+      document.documentElement.classList.add('viewport-xs');
+    } else if (viewport.width < 768) {
+      document.documentElement.classList.add('viewport-sm');
+    } else if (viewport.width < 1024) {
+      document.documentElement.classList.add('viewport-md');
+    } else if (viewport.width < 1440) {
+      document.documentElement.classList.add('viewport-lg');
+    } else {
+      document.documentElement.classList.add('viewport-xl');
+    }
+  }
+  
+  // Initialize component-level responsiveness
+  initComponentResponsiveness() {
+    // Enhance action buttons
+    const actionGrids = document.querySelectorAll('.adaptive-action-grid, .action-buttons');
+    actionGrids.forEach(grid => {
+      if (!grid.classList.contains('adaptive-action-grid')) {
+        grid.classList.add('adaptive-action-grid');
+      }
+    });
+    
+    // Enhance stat grids
+    const statGrids = document.querySelectorAll('.referral-stats, .profile-stats');
+    statGrids.forEach(grid => {
+      if (!grid.classList.contains('adaptive-stats-grid')) {
+        grid.classList.add('adaptive-stats-grid');
+      }
+    });
+  }
+  
+  // Setup automatic font scaling based on container size
+  setupAutomaticFontScaling() {
+    // This is handled by CSS clamp() and container queries in modern browsers
+    // Fallback for older browsers that don't support container queries
+    if (!this.supportsContainerQueries) {
+      console.log('Enabling JavaScript fallback for font scaling');
+      
+      const cards = document.querySelectorAll('.adaptive-card, .grid-card');
+      cards.forEach(card => {
+        // Create a ResizeObserver for each card for font scaling fallback
+        if (window.ResizeObserver) {
+          const cardObserver = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+              const width = entry.contentRect.width;
+              const fontSize = Math.max(12, Math.min(16, width / 25));
+              entry.target.style.fontSize = `${fontSize}px`;
+            }
+          });
+          cardObserver.observe(card);
+        }
+      });
+    }
+  }
+  
+  // Setup viewport change handlers
+  setupViewportHandlers() {
+    // Listen for window resize to update viewport optimizations
+    let viewportTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(viewportTimeout);
+      viewportTimeout = setTimeout(() => {
+        this.applyViewportOptimizations();
+        this.refreshModernGrids();
+      }, 100);
+    });
+    
+    // Listen for orientation change on mobile devices
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        this.applyViewportOptimizations();
+        this.refreshModernGrids();
+      }, 300); // Delay to allow orientation change to complete
+    });
+  }
+  
+  // Initialize responsive handlers
+  initResponsiveHandlers() {
+    // Listen for tab changes to refresh grids
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+          const target = mutation.target;
+          if (target.classList.contains('tab-pane') && target.classList.contains('active')) {
+            // Tab became active, refresh grids with delay
+            setTimeout(() => {
+              this.refreshModernGrids();
+            }, 150);
+          }
+        }
+      });
+    });
+    
+    // Observe tab panes for activation
+    const tabPanes = document.querySelectorAll('.tab-pane');
+    tabPanes.forEach(pane => {
+      observer.observe(pane, { attributes: true, attributeFilter: ['class'] });
+    });
+  }
+  
+  // Refresh all modern adaptive grids
+  refreshModernGrids() {
+    const gridSelectors = [
+      '.modern-adaptive-grid',
+      '.adaptive-grid-container',
+      '.wallet-layout',
+      '.info-layout'
+    ];
+    
+    let refreshCount = 0;
+    
+    gridSelectors.forEach(selector => {
+      const containers = document.querySelectorAll(selector);
+      containers.forEach(container => {
+        if (container.offsetParent !== null) { // Only process visible containers
+          const rect = container.getBoundingClientRect();
+          if (rect.width > 0 && rect.height > 0) {
+            this.updateModernGridLayout(container, rect.width, rect.height);
+            refreshCount++;
+          }
+        }
+      });
+    });
+    
+    // Apply modern responsive adjustments
+    this.applyModernResponsiveAdjustments();
+    
+    if (this.debugMode) {
+      console.log(`Refreshed ${refreshCount} grid containers`);
+    }
+  }
+  
+  // Legacy support - refresh all adaptive grids
+  refreshAdaptiveGrids() {
+    this.refreshModernGrids();
+  }
+  
+  // Save user grid preferences (placeholder for future API)
+  saveGridPreferences(preferences) {
+    try {
+      localStorage.setItem('pearl_dashboard_grid_preferences', JSON.stringify(preferences));
+    } catch (error) {
+      console.warn('Failed to save grid preferences:', error);
+    }
+  }
+  
+  // Load user grid preferences (placeholder for future API)
+  loadGridPreferences() {
+    try {
+      const saved = localStorage.getItem('pearl_dashboard_grid_preferences');
+      return saved ? JSON.parse(saved) : {};
+    } catch (error) {
+      console.warn('Failed to load grid preferences:', error);
+      return {};
     }
   }
 
@@ -948,6 +1323,11 @@ class PearlDashboard {
   // Info Content
   async loadInfoContent() {
     console.log("Loading info content, userData:", !!this.userData);
+    console.log("Info tab should now be visible with cards:");
+    console.log("- Personal Information Card");
+    console.log("- Active Socials Card");
+    console.log("- Showcase Card");
+    console.log("- Achievements Card");
     
     // If no user data, wait a bit and try again
     if (!this.userData) {
@@ -966,6 +1346,18 @@ class PearlDashboard {
     
     // Initialize showcase management
     this.initShowcaseManagement();
+    
+    // Debug: Check if Info tab elements exist
+    const personalInfoCard = document.querySelector('.personal-info-card');
+    const socialsCard = document.querySelector('.active-socials-card');
+    const showcaseCard = document.querySelector('.showcase-card');
+    const achievementsCard = document.querySelector('.achievements-card');
+    
+    console.log('Info tab elements found:');
+    console.log('Personal Info Card:', !!personalInfoCard);
+    console.log('Socials Card:', !!socialsCard);
+    console.log('Showcase Card:', !!showcaseCard);
+    console.log('Achievements Card:', !!achievementsCard);
   }
 
 
@@ -1281,6 +1673,233 @@ class PearlDashboard {
     this.showNotification(message, "error");
   }
 
+  // Global toast notification method that can be used throughout the app
+  showGlobalToast(message, type = "info") {
+    // Check if global toast system exists (e.g., window.toast, window.showToast, etc.)
+    if (typeof window.toast !== 'undefined' && window.toast.show) {
+      // Use global toast system if available
+      window.toast.show(message, {
+        type: type,
+        duration: 3000,
+        position: 'top-right'
+      });
+      return;
+    }
+    
+    // Check for other common toast libraries
+    if (typeof window.showToast === 'function') {
+      window.showToast(message, type);
+      return;
+    }
+    
+    if (typeof window.Toastify !== 'undefined') {
+      window.Toastify({
+        text: message,
+        duration: 3000,
+        gravity: "top",
+        position: "right",
+        backgroundColor: type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'
+      }).showToast();
+      return;
+    }
+    
+    // Fallback: Use internal notification system with enhanced styling
+    this.showEnhancedNotification(message, type);
+  }
+
+  showEnhancedNotification(message, type = "info") {
+    // Create enhanced notification element with better styling
+    const notification = document.createElement("div");
+    notification.className = `global-toast toast-${type}`;
+    
+    const iconMap = {
+      success: 'fa-check-circle',
+      error: 'fa-exclamation-circle',
+      warning: 'fa-exclamation-triangle',
+      info: 'fa-info-circle'
+    };
+    
+    notification.innerHTML = `
+      <div class="toast-content">
+        <div class="toast-icon">
+          <i class="fas ${iconMap[type] || iconMap.info}"></i>
+        </div>
+        <div class="toast-message">${message}</div>
+        <button class="toast-close" onclick="this.parentElement.parentElement.remove()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    `;
+
+    // Add enhanced styles if not already present
+    this.ensureToastStyles();
+
+    // Add to page
+    document.body.appendChild(notification);
+
+    // Show notification with animation
+    requestAnimationFrame(() => {
+      notification.classList.add("show");
+    });
+
+    // Auto remove after duration
+    const duration = type === 'error' ? 5000 : 3000; // Errors stay longer
+    setTimeout(() => {
+      if (notification.parentElement) {
+        notification.classList.add("hide");
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.remove();
+          }
+        }, 300);
+      }
+    }, duration);
+  }
+
+  ensureToastStyles() {
+    if (document.getElementById('global-toast-styles')) {
+      return; // Styles already added
+    }
+    
+    const styles = document.createElement('style');
+    styles.id = 'global-toast-styles';
+    styles.textContent = `
+      .global-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        z-index: 10000;
+        min-width: 320px;
+        max-width: 480px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        transform: translateX(100%) scale(0.95);
+        opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 12px;
+      }
+      
+      .global-toast.show {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+      }
+      
+      .global-toast.hide {
+        transform: translateX(100%) scale(0.95);
+        opacity: 0;
+      }
+      
+      .toast-content {
+        display: flex;
+        align-items: flex-start;
+        padding: 16px;
+        gap: 12px;
+      }
+      
+      .toast-icon {
+        flex-shrink: 0;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2px;
+      }
+      
+      .toast-success .toast-icon {
+        color: #22c55e;
+      }
+      
+      .toast-error .toast-icon {
+        color: #ef4444;
+      }
+      
+      .toast-warning .toast-icon {
+        color: #f59e0b;
+      }
+      
+      .toast-info .toast-icon {
+        color: #3b82f6;
+      }
+      
+      .toast-message {
+        flex: 1;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.4;
+        color: #1f2937;
+        word-wrap: break-word;
+      }
+      
+      .toast-close {
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #9ca3af;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+        margin-top: 2px;
+      }
+      
+      .toast-close:hover {
+        background: #f3f4f6;
+        color: #6b7280;
+      }
+      
+      .toast-success {
+        border-left: 4px solid #22c55e;
+      }
+      
+      .toast-error {
+        border-left: 4px solid #ef4444;
+      }
+      
+      .toast-warning {
+        border-left: 4px solid #f59e0b;
+      }
+      
+      .toast-info {
+        border-left: 4px solid #3b82f6;
+      }
+      
+      /* Stack multiple toasts */
+      .global-toast:nth-of-type(n+2) {
+        margin-top: -12px;
+        transform: translateX(100%) scale(0.9);
+      }
+      
+      .global-toast.show:nth-of-type(n+2) {
+        transform: translateX(0) scale(0.95);
+      }
+      
+      .global-toast:nth-of-type(n+3) {
+        transform: translateX(100%) scale(0.85);
+      }
+      
+      .global-toast.show:nth-of-type(n+3) {
+        transform: translateX(0) scale(0.9);
+      }
+      
+      @media (max-width: 640px) {
+        .global-toast {
+          left: 16px;
+          right: 16px;
+          min-width: auto;
+          max-width: none;
+        }
+      }
+    `;
+    
+    document.head.appendChild(styles);
+  }
+
   // Time utility function
   getTimeAgo(timestamp) {
     if (!timestamp) return "unknown";
@@ -1435,14 +2054,14 @@ class PearlDashboard {
 
   // Top Up Modal
   openTopUpModal() {
-    this.showNotification("Top Up feature coming soon! 💰", "info");
+    window.showInfoToast("Coming Soon!", { duration: 3000 });
     // TODO: Implement actual top up functionality
     // Could include payment gateways, in-app purchases, etc.
   }
 
   // Watch Ads Modal
   openWatchAdsModal() {
-    this.showNotification("Watch Ads feature coming soon! 📺", "info");
+    window.showInfoToast("Coming Soon!", { duration: 3000 });
     // TODO: Implement actual ads functionality
     // Could include rewarded video ads, banner ads, etc.
   }
@@ -1569,19 +2188,19 @@ class PearlDashboard {
 
     // Validate inputs
     if (!this.validateWalletAddress(recipientAddress)) {
-      this.showError("Invalid wallet address format");
+      this.showGlobalToast("Invalid wallet address format", "error");
       return;
     }
 
     if (!amount || amount <= 0) {
-      this.showError("Please enter a valid amount");
+      this.showGlobalToast("Please enter a valid amount", "error");
       return;
     }
 
     const balance = this.userData?.pearl || 0;
 
     if (amount > balance) {
-      this.showError("Insufficient balance");
+      this.showGlobalToast("Insufficient balance", "error");
       return;
     }
 
@@ -1591,49 +2210,104 @@ class PearlDashboard {
       .prop("disabled", true)
       .html('<i class="fas fa-spinner fa-spin"></i> Sending...');
 
-    try {
-      const response = await fetch("/api/wallet/send", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          recipient_address: recipientAddress,
-          amount: amount,
-        }),
-      });
+    // Use jQuery AJAX for better control and consistency
+    $.ajax({
+      url: "/api/wallet/send",
+      method: "POST",
+      contentType: "application/json",
+      dataType: "json",
+      data: JSON.stringify({
+        recipient_address: recipientAddress,
+        amount: amount,
+      }),
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        console.log('Sending pearls:', { recipient: recipientAddress, amount: amount });
+      },
+      success: (data) => {
+        console.log('Send pearls response:', data);
+        
+        if (data.success) {
+          // Show success toast with formatted amount
+          const formattedAmount = this.formatNumber(amount);
+          this.showGlobalToast(`Successfully sent ${formattedAmount} pearls! ✨`, "success");
 
-      const data = await response.json();
+          // Update balance dynamically with animation
+          if (this.userData && data.new_balance !== undefined) {
+            const oldBalance = this.userData.pearl;
+            this.userData.pearl = data.new_balance;
+            this.updateBalanceElements(data.new_balance, true);
+            
+            console.log(`Balance updated from ${oldBalance} to ${data.new_balance}`);
+          }
 
-      if (data.success) {
-        this.showNotification("Pearls sent successfully! ✨", "success");
+          // Close modal with fade effect
+          this.closeSendPearlsModal();
 
-        // Update balance dynamically with animation
-        if (this.userData) {
-          const oldBalance = this.userData.pearl;
-          this.userData.pearl = data.new_balance;
-          this.updateBalanceElements(data.new_balance, true);
+          // Refresh wallet data to show new transaction
+          setTimeout(() => {
+            this.refreshWalletData();
+          }, 500);
+          
+          // Add success animation to balance display
+          setTimeout(() => {
+            $('.balance-amount').addClass('balance-success');
+            setTimeout(() => {
+              $('.balance-amount').removeClass('balance-success');
+            }, 1000);
+          }, 200);
+        } else {
+          this.showGlobalToast(data.message || "Failed to send pearls", "error");
         }
-
-        // Close modal with fade effect
-        this.closeSendPearlsModal();
-
-        // Refresh wallet data to show new transaction
-        setTimeout(() => {
-          this.refreshWalletData();
-        }, 500);
-      } else {
-        this.showError(data.message || "Failed to send pearls");
+      },
+      error: (xhr, textStatus, errorThrown) => {
+        console.error('Send pearls AJAX error:', {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          textStatus: textStatus,
+          errorThrown: errorThrown,
+          responseText: xhr.responseText
+        });
+        
+        let errorTitle = 'Send Failed';
+        let errorText = 'A network error occurred. Please try again.';
+        
+        // Parse error response if available
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          if (errorData.message) {
+            errorText = errorData.message;
+          }
+        } catch (e) {
+          // If response is not JSON, use status-based messages
+          if (xhr.status === 401) {
+            errorTitle = 'Session Expired';
+            errorText = 'Your session has expired. Please log in again.';
+          } else if (xhr.status === 403) {
+            errorTitle = 'Access Denied';
+            errorText = 'You do not have permission to send pearls.';
+          } else if (xhr.status === 404) {
+            errorTitle = 'Service Not Found';
+            errorText = 'The send pearls service is temporarily unavailable.';
+          } else if (xhr.status === 500) {
+            errorTitle = 'Server Error';
+            errorText = 'A server error occurred. Please try again later.';
+          } else if (xhr.status === 0) {
+            errorTitle = 'Connection Error';
+            errorText = 'Unable to connect to the server. Please check your internet connection.';
+          }
+        }
+        
+        this.showGlobalToast(errorText, "error");
+      },
+      complete: () => {
+        // Reset button state with jQuery
+        $confirmBtn
+          .removeClass("loading")
+          .prop("disabled", false)
+          .html('<i class="fas fa-paper-plane"></i> Send Pearls');
       }
-    } catch (error) {
-      this.showError("Network error. Please try again.");
-    } finally {
-      // Reset button state with jQuery
-      $confirmBtn
-        .removeClass("loading")
-        .prop("disabled", false)
-        .html('<i class="fas fa-paper-plane"></i> Send Pearls');
-    }
+    });
   }
 
   validateWalletAddress(address) {
@@ -1903,17 +2577,21 @@ class PearlDashboard {
         }
       }
 
-      const response = await fetch("/api/daily-claim/claim", {
+      // Use jQuery AJAX for consistency with send pearls
+      const response = await $.ajax({
+        url: "/api/daily-claim/claim",
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        contentType: "application/json",
+        dataType: "json"
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        this.showNotification(`${data.message} 🎆`, "success");
+      if (response.success) {
+        // Use global toast for success notification
+        if (window.Toast) {
+          window.Toast.success(`${response.message} 🎆`);
+        } else {
+          this.showGlobalToast(`${response.message} 🎆`, "success");
+        }
 
         // Update balance and EXP dynamically with animation
         if (this.userData) {
@@ -1921,39 +2599,41 @@ class PearlDashboard {
           const oldExp = this.userData.exp;
           const oldLevel = this.userData.level;
           
-          this.userData.pearl = data.new_pearl_balance;
-          this.userData.exp = data.new_exp_balance;
+          this.userData.pearl = response.new_pearl_balance;
+          this.userData.exp = response.new_exp_balance;
           
           // Check for level up and update level display
-          if (data.level_up_info && data.level_up_info.leveled_up) {
-            this.userData.level = data.level_up_info.new_level;
+          if (response.level_up_info && response.level_up_info.leveled_up) {
+            this.userData.level = response.level_up_info.new_level;
             
             // Update all level display elements
             const levelElements = document.querySelectorAll('#level, #user-level, #current-level, #bp-current-level');
             levelElements.forEach(element => {
               if (element) {
-                element.textContent = data.level_up_info.new_level;
+                element.textContent = response.level_up_info.new_level;
               }
             });
             
             // Show special level up notification if there was a level change
-            if (data.level_up_info.level_ups > 0) {
+            if (response.level_up_info.level_ups > 0) {
               setTimeout(() => {
-                this.showNotification(
-                  `🎉 Level Up! You reached level ${data.level_up_info.new_level}! 🎉`, 
-                  "success"
-                );
+                // Use global toast for level up notification as well
+                if (window.Toast) {
+                  window.Toast.success(`🎉 Level Up! You reached level ${response.level_up_info.new_level}! 🎉`);
+                } else {
+                  this.showGlobalToast(`🎉 Level Up! You reached level ${response.level_up_info.new_level}! 🎉`, "success");
+                }
               }, 500);
             }
           }
           
-          this.updateBalanceElements(data.new_pearl_balance, true);
+          this.updateBalanceElements(response.new_pearl_balance, true);
           
           // Update EXP display if it exists
           const expElements = document.querySelectorAll('#user-exp, #bp-total-exp, #current-exp');
           expElements.forEach(element => {
             if (element) {
-              element.textContent = this.formatNumber(data.new_exp_balance);
+              element.textContent = this.formatNumber(response.new_exp_balance);
             }
           });
         }
@@ -1963,7 +2643,12 @@ class PearlDashboard {
           this.refreshWalletData();
         }, 1000);
       } else {
-        this.showError(data.message);
+        // Use global toast for error notification as well
+        if (window.Toast) {
+          window.Toast.error(response.message || "Failed to claim daily reward");
+        } else {
+          this.showGlobalToast(response.message || "Failed to claim daily reward", "error");
+        }
       }
     } catch (error) {
       this.showError("Failed to claim daily reward");
@@ -2409,7 +3094,7 @@ class PearlDashboard {
       
       ${this.generateExpGauge()}
 
-      <div class="battle-pass-grid">
+      <div class="battle-pass-grid" id="battle-pass-grid">
         ${this.generateBattlePassGrid(maxDisplayLevel)}
       </div>
       
@@ -2427,6 +3112,11 @@ class PearlDashboard {
     `;
     
     battlePassContainer.innerHTML = battlePassHTML;
+    
+    // Auto-scroll to current level after a short delay to ensure DOM is ready
+    setTimeout(() => {
+      this.scrollToCurrentLevel(currentLevel);
+    }, 100);
   }
 
   getNextRewardLevel(currentLevel) {
@@ -2529,9 +3219,6 @@ class PearlDashboard {
           </div>
           
           <div class="tier-reward ${isUnlocked ? 'unlocked' : 'locked'}">
-            <div class="reward-icon">
-              <i class="fas ${reward.icon}"></i>
-            </div>
             <div class="reward-info">
               <span class="reward-title">${reward.title}</span>
               <span class="reward-value">${reward.value}</span>
@@ -2561,8 +3248,8 @@ class PearlDashboard {
     const pearlAmount = level * 100;
     return {
       icon: 'fa-gem',
-      title: 'Pearl Bonus',
-      value: `${this.formatNumber(pearlAmount)} Pearls`,
+      title: '',
+      value: `<i class="fas fa-gem" style="color: #f59e0b; margin-right: 4px;"></i>${this.formatNumber(pearlAmount)}`,
       type: 'pearls',
       amount: pearlAmount
     };
@@ -2636,57 +3323,111 @@ class PearlDashboard {
   }
 
   async claimBattlePassReward(level) {
-    const tierElement = document.querySelector(`[data-level="${level}"]`);
-    const claimButton = tierElement?.querySelector('.claim-reward-btn');
+    const $tierElement = $(`[data-level="${level}"]`);
+    const $claimButton = $tierElement.find('.claim-reward-btn');
     
-    if (!claimButton) return;
+    if ($claimButton.length === 0) return;
     
-    // Show claiming animation
-    const originalHTML = claimButton.innerHTML;
-    claimButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-    claimButton.disabled = true;
+    // Show claiming animation using jQuery
+    const originalHTML = $claimButton.html();
+    $claimButton.html('<i class="fas fa-spinner fa-spin"></i>').prop('disabled', true);
     
-    try {
-      const response = await fetch(`/api/battle-pass/claim-reward/${level}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        this.showNotification(`${data.message} 🎉`, "success");
+    // Use jQuery AJAX for consistency with send pearls functionality
+    $.ajax({
+      url: `/api/battle-pass/claim-reward/${level}`,
+      method: "POST",
+      contentType: "application/json",
+      dataType: "json",
+      beforeSend: function(xhr) {
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        console.log('Claiming battle pass reward for level:', level);
+      },
+      success: (data) => {
+        console.log('Battle pass claim response:', data);
         
-        // Update balance using the server-provided new balance
-        if (data.new_pearl_balance !== undefined && this.userData) {
-          this.userData.pearl = data.new_pearl_balance;
-          this.updateBalanceElements(data.new_pearl_balance, true);
+        if (data.success) {
+          // Use global toast for success notification
+          if (window.Toast) {
+            window.Toast.success(`${data.message} 🎉`);
+          } else {
+            this.showGlobalToast(`${data.message} 🎉`, "success");
+          }
+          
+          // Update balance using the server-provided new balance
+          if (data.new_pearl_balance !== undefined && this.userData) {
+            this.userData.pearl = data.new_pearl_balance;
+            this.updateBalanceElements(data.new_pearl_balance, true);
+          }
+          
+          // Mark as claimed in UI using jQuery
+          $claimButton.replaceWith('<i class="fas fa-check-circle reward-claimed"></i>');
+          $tierElement.addClass('reward-claimed');
+          
+          // Refresh wallet data to show new transaction after a brief delay
+          setTimeout(() => {
+            this.refreshWalletData();
+          }, 1000);
+          
+        } else {
+          // Use global toast for error notification
+          if (window.Toast) {
+            window.Toast.error(data.message || "Failed to claim reward");
+          } else {
+            this.showGlobalToast(data.message || "Failed to claim reward", "error");
+          }
+          // Reset button on error using jQuery
+          $claimButton.html(originalHTML).prop('disabled', false);
+        }
+      },
+      error: (xhr, textStatus, errorThrown) => {
+        console.error('Battle pass claim AJAX error:', {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          textStatus: textStatus,
+          errorThrown: errorThrown,
+          responseText: xhr.responseText
+        });
+        
+        let errorTitle = 'Claim Failed';
+        let errorText = 'A network error occurred. Please try again.';
+        
+        // Parse error response if available
+        try {
+          const errorData = JSON.parse(xhr.responseText);
+          if (errorData.message) {
+            errorText = errorData.message;
+          }
+        } catch (e) {
+          // If response is not JSON, use status-based messages
+          if (xhr.status === 401) {
+            errorTitle = 'Session Expired';
+            errorText = 'Your session has expired. Please log in again.';
+          } else if (xhr.status === 403) {
+            errorTitle = 'Access Denied';
+            errorText = 'You do not have permission to claim this reward.';
+          } else if (xhr.status === 404) {
+            errorTitle = 'Reward Not Found';
+            errorText = 'The reward service is temporarily unavailable.';
+          } else if (xhr.status === 500) {
+            errorTitle = 'Server Error';
+            errorText = 'A server error occurred. Please try again later.';
+          } else if (xhr.status === 0) {
+            errorTitle = 'Connection Error';
+            errorText = 'Unable to connect to the server. Please check your internet connection.';
+          }
         }
         
-        // Mark as claimed in UI
-        claimButton.outerHTML = '<i class="fas fa-check-circle reward-claimed"></i>';
-        tierElement.classList.add('reward-claimed');
+        // Use global toast for error notification
+        if (window.Toast) {
+          window.Toast.error(errorText);
+        } else {
+          this.showGlobalToast(errorText, "error");
+        }
         
-        // Refresh wallet data to show new transaction after a brief delay
-        setTimeout(() => {
-          this.refreshWalletData();
-        }, 1000);
-        
-      } else {
-        this.showError(data.message || "Failed to claim reward");
-        // Reset button on error
-        claimButton.innerHTML = originalHTML;
-        claimButton.disabled = false;
+        // Reset button on error using jQuery
+        $claimButton.html(originalHTML).prop('disabled', false);
       }
-    } catch (error) {
-      console.error('Battle pass claim error:', error);
-      this.showError("Network error. Please try again.");
-      // Reset button on error
-      claimButton.innerHTML = originalHTML;
-      claimButton.disabled = false;
-    }
+    });
   }
 
   displayBattlePassWithData(apiTiers) {
@@ -2721,9 +3462,6 @@ class PearlDashboard {
           
           ${tier.has_reward ? `
             <div class="tier-reward ${isUnlocked ? 'unlocked' : 'locked'}">
-              <div class="reward-icon">
-                <i class="fas ${tier.reward.icon}"></i>
-              </div>
               <div class="reward-info">
                 <span class="reward-title">${tier.reward.title}</span>
                 <span class="reward-value">${tier.reward.value}</span>
@@ -2972,6 +3710,43 @@ class PearlDashboard {
   // Refresh avatar display (useful when items are equipped/unequipped)
   async refreshAvatarDisplay() {
     await this.loadUserAvatarConfiguration();
+  }
+
+  // Auto-scroll to current level in battle pass
+  scrollToCurrentLevel(currentLevel) {
+    // Find the current level tier element
+    const currentTierElement = document.querySelector(`[data-level="${currentLevel}"]`);
+    
+    if (!currentTierElement) {
+      console.warn(`Could not find tier element for level ${currentLevel}`);
+      return;
+    }
+
+    // Get the battle pass grid container
+    const battlePassGrid = document.getElementById('battle-pass-grid');
+    if (!battlePassGrid) {
+      console.warn('Battle pass grid not found for scrolling');
+      return;
+    }
+
+    // Scroll the current level to the start of the visible area (hide completed levels)
+    currentTierElement.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'start'
+    });
+
+    // Add a subtle highlight animation to the current level
+    setTimeout(() => {
+      currentTierElement.classList.add('current-level-highlight');
+      
+      // Remove the highlight after animation
+      setTimeout(() => {
+        currentTierElement.classList.remove('current-level-highlight');
+      }, 2000);
+    }, 500);
+
+    console.log(`Auto-scrolled to current level: ${currentLevel}`);
   }
 }
 

@@ -240,10 +240,13 @@ body {
     position: relative;
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 .password-input {
     padding-right: 3rem;
+    width: 100%;
+    flex: 1;
 }
 
 .password-toggle {
@@ -431,6 +434,114 @@ body {
 
 .social-input {
     margin: 0;
+}
+
+/* Profile Information Display Styling */
+.profile-content {
+    position: relative;
+}
+
+.profile-display {
+    padding: 1rem;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.profile-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+.profile-info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-info-item.profile-info-full {
+    grid-column: 1 / -1;
+}
+
+.profile-info-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.profile-info-label i {
+    color: #06b6d4;
+    font-size: 0.875rem;
+}
+
+.profile-info-value {
+    color: #f1f5f9;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1.5;
+    padding: 0.75rem;
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 6px;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.profile-edit {
+    display: none;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+}
+
+.profile-actions-display {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #334155;
+}
+
+/* Password actions display styling */
+.password-actions-display {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+}
+
+.password-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #334155;
+}
+
+/* Ensure proper modal behavior for profile */
+.profile-edit[style*="block"] {
+    display: block !important;
+}
+
+.profile-display[style*="none"] {
+    display: none !important;
 }
 
 /* Bio Section Styling */
@@ -649,6 +760,12 @@ body {
     .form-grid {
         grid-template-columns: 1fr;
         gap: 1rem;
+    }
+    
+    /* Profile display grid mobile */
+    .profile-info-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
     }
     
     .form-actions {

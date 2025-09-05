@@ -1,0 +1,44 @@
+<!-- Global Toast Notification System Template - Pearl Verse -->
+<!-- Include this template in all pages for consistent toast functionality -->
+
+<!-- Toast CSS -->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+
+<!-- Note: Toast JavaScript is loaded at the bottom of the page after SweetAlert2 -->
+
+<!-- Toast container will be automatically created by JavaScript -->
+<!-- No need to add HTML here - the JS handles DOM creation -->
+
+<script>
+// Initialize toast system when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure toast system is initialized
+    if (window.Toast) {
+        window.Toast.updatePosition();
+    }
+    
+    // Update position on window resize for responsive design
+    window.addEventListener('resize', function() {
+        if (window.Toast) {
+            window.Toast.updatePosition();
+        }
+    });
+    
+    // Update position when topnav changes (e.g., mobile menu toggle)
+    const topnav = document.querySelector('.topnav');
+    if (topnav) {
+        // Use MutationObserver to watch for topnav height changes
+        const observer = new MutationObserver(function() {
+            if (window.Toast) {
+                window.Toast.updatePosition();
+            }
+        });
+        
+        observer.observe(topnav, {
+            attributes: true,
+            childList: true,
+            subtree: true
+        });
+    }
+});
+</script>

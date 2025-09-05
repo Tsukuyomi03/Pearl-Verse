@@ -932,7 +932,7 @@ function initPurchaseSystem() {
 }
 
 /**
- * Confirm purchase of an item using jQuery with improved error handling
+ * Confirm purchase of an item using jQuery with improved error handling and global toast
  */
 function confirmPurchase() {
     // Get the item being purchased from the modal using jQuery
@@ -966,13 +966,16 @@ function confirmPurchase() {
         $confirmBtn.html(originalText);
         $confirmBtn.prop('disabled', false);
         
+        // Use global toast for insufficient pearls
         Swal.fire({
+            icon: 'error',
             title: 'Insufficient Pearls',
             text: 'You do not have enough pearls to purchase this item.',
-            icon: 'error',
-            background: '#2d3748',
-            color: '#e2e8f0',
-            confirmButtonColor: '#4299e1'
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true
         });
         return;
     }
@@ -1012,31 +1015,41 @@ function confirmPurchase() {
                 // Auto-equip the purchased item
                 autoEquipPurchasedItem(data).then((equipResult) => {
                     try {
-                        // Show success message with level up info and auto-equip status
-                        let successMessage = data.message || `You purchased the item for ${purchasePrice.toLocaleString()} pearls.`;
+                        // Prepare success message
+                        let successMessage = data.message || `Successfully purchased for ${purchasePrice.toLocaleString()} pearls!`;
                         
-                        // Add auto-equip success message
+                        // Add auto-equip status
                         if (equipResult.equipped) {
-                            successMessage += `\n\n✨ ${equipResult.item.name} has been automatically equipped!`;
-                        } else if (equipResult.reason) {
-                            successMessage += `\n\n⚠️ Item purchased but auto-equip failed: ${equipResult.reason}`;
+                            successMessage = `Successfully equipped ${equipResult.item.name}!`;
                         }
                         
-                        // Check for level up and add celebration message
-                        if (data.level_up_info && data.level_up_info.leveled_up) {
-                            successMessage += `\n\n🎉 LEVEL UP! You are now level ${data.level_up_info.new_level}!`;
-                        }
-                        
+                        // Show success toast instead of modal
                         Swal.fire({
-                            title: equipResult.equipped ? 'Purchase & Equip Successful!' : 'Purchase Successful!',
-                            text: successMessage,
                             icon: 'success',
-                            background: '#2d3748',
-                            color: '#e2e8f0',
-                            confirmButtonColor: '#4299e1',
-                            timer: equipResult.equipped ? 3000 : 2500, // Longer display for auto-equip
-                            showConfirmButton: true
+                            title: 'Purchase Successful!',
+                            text: successMessage,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: equipResult.equipped ? 3500 : 3000,
+                            timerProgressBar: true
                         });
+                        
+                        // Show level up toast if applicable
+                        if (data.level_up_info && data.level_up_info.leveled_up) {
+                            setTimeout(() => {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '🎉 LEVEL UP!',
+                                    text: `You are now level ${data.level_up_info.new_level}!`,
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 4000,
+                                    timerProgressBar: true
+                                });
+                            }, 500);
+                        }
                         
                         // Update avatar preview to show newly equipped item immediately
                         if (equipResult.equipped) {
@@ -1057,36 +1070,50 @@ function confirmPurchase() {
                         addToRecentPurchases(itemId);
                     } catch (uiError) {
                         console.error('Error in success UI handling:', uiError);
-                        // Still show basic success message if UI update fails
+                        // Still show basic success toast if UI update fails
                         Swal.fire({
+                            icon: 'success',
                             title: 'Purchase Successful!',
                             text: 'Your item was purchased successfully.',
-                            icon: 'success',
-                            background: '#2d3748',
-                            color: '#e2e8f0',
-                            confirmButtonColor: '#4299e1'
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
                         });
                     }
                 }).catch((error) => {
                     console.error('Auto-equip error:', error);
                     
-                    // Still show purchase success even if auto-equip failed
-                    let successMessage = data.message || `You purchased the item for ${purchasePrice.toLocaleString()} pearls.`;
-                    successMessage += `\n\n⚠️ Item purchased successfully but could not be auto-equipped. You can manually equip it from your inventory.`;
-                    
-                    // Check for level up and add celebration message
-                    if (data.level_up_info && data.level_up_info.leveled_up) {
-                        successMessage += `\n\n🎉 LEVEL UP! You are now level ${data.level_up_info.new_level}!`;
-                    }
+                    // Still show purchase success toast even if auto-equip failed
+                    let successMessage = `Successfully purchased for ${purchasePrice.toLocaleString()} pearls!`;
                     
                     Swal.fire({
+                        icon: 'success',
                         title: 'Purchase Successful!',
                         text: successMessage,
-                        icon: 'success',
-                        background: '#2d3748',
-                        color: '#e2e8f0',
-                        confirmButtonColor: '#4299e1'
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true
                     });
+                    
+                    // Show level up toast if applicable
+                    if (data.level_up_info && data.level_up_info.leveled_up) {
+                        setTimeout(() => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '🎉 LEVEL UP!',
+                                text: `You are now level ${data.level_up_info.new_level}!`,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 4000,
+                                timerProgressBar: true
+                            });
+                        }, 500);
+                    }
                     
                     // Refresh the current category to show the newly owned item
                     const activeCategory = $('.category-tab.active').attr('data-category');
@@ -1099,14 +1126,16 @@ function confirmPurchase() {
                 });
                 
             } else {
-                // Show error message from server
+                // Show error toast from server
                 Swal.fire({
+                    icon: 'error',
                     title: 'Purchase Failed',
                     text: data.message || 'An error occurred while purchasing the item.',
-                    icon: 'error',
-                    background: '#2d3748',
-                    color: '#e2e8f0',
-                    confirmButtonColor: '#4299e1'
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 4000,
+                    timerProgressBar: true
                 });
             }
         },
@@ -1126,7 +1155,7 @@ function confirmPurchase() {
             // Determine error type and message
             let errorTitle = 'Purchase Failed';
             let errorText = 'A network error occurred. Please try again.';
-            let showLoginButton = false;
+            let showLoginRedirect = false;
             
             // Parse error response if available
             try {
@@ -1139,7 +1168,7 @@ function confirmPurchase() {
                 if (xhr.status === 401) {
                     errorTitle = 'Session Expired';
                     errorText = 'Your session has expired. Please log in again to continue.';
-                    showLoginButton = true;
+                    showLoginRedirect = true;
                 } else if (xhr.status === 403) {
                     errorTitle = 'Access Denied';
                     errorText = 'You do not have permission to purchase this item.';
@@ -1155,25 +1184,19 @@ function confirmPurchase() {
                 }
             }
             
-            // Show error message with potential login option
-            const swalConfig = {
+            // Show error toast
+            Swal.fire({
+                icon: 'error',
                 title: errorTitle,
                 text: errorText,
-                icon: 'error',
-                background: '#2d3748',
-                color: '#e2e8f0',
-                confirmButtonColor: '#4299e1'
-            };
-            
-            if (showLoginButton) {
-                swalConfig.showCancelButton = true;
-                swalConfig.confirmButtonText = 'Go to Login';
-                swalConfig.cancelButtonText = 'Cancel';
-                swalConfig.cancelButtonColor = '#6b7280';
-            }
-            
-            Swal.fire(swalConfig).then((result) => {
-                if (result.isConfirmed && showLoginButton) {
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: showLoginRedirect,
+                confirmButtonText: showLoginRedirect ? 'Go to Login' : undefined,
+                timer: showLoginRedirect ? 0 : 4000,
+                timerProgressBar: !showLoginRedirect
+            }).then((result) => {
+                if (result.isConfirmed && showLoginRedirect) {
                     // Redirect to login page
                     window.location.href = '/login';
                 }
@@ -1741,7 +1764,7 @@ function showItemDetails(item) {
 }
 
 /**
- * Toggle equip/unequip of an item using jQuery
+ * Toggle equip/unequip of an item using jQuery (AJAX - no page reload)
  * @param {Object} item - The item to equip or unequip
  */
 function toggleEquipItem(item) {
@@ -1768,7 +1791,7 @@ function toggleEquipItem(item) {
         $btn.prop('disabled', true);
     });
     
-    // Send equip/unequip request to API using jQuery AJAX
+    // Send equip/unequip request to API using jQuery AJAX (prevents page reload)
     $.ajax({
         url: '/api/avatar-shop/equip',
         method: 'POST',
@@ -1791,21 +1814,20 @@ function toggleEquipItem(item) {
                     $modal.modal('hide');
                 }
                 
-                // Show success message with shorter duration for better UX
-                Swal.fire({
-                    title: item.selected ? 'Item Equipped!' : 'Item Unequipped',
-                    text: data.message || (item.selected ? 
-                        `You are now wearing the ${item.name}.` : 
-                        `You are no longer wearing the ${item.name}.`),
-                    icon: 'success',
-                    background: '#2d3748',
-                    color: '#e2e8f0',
-                    confirmButtonColor: '#4299e1',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
+                // Show success toast instead of modal (global toast system)
+                const successMessage = data.message || (item.selected ? 
+                    `✨ ${item.name} equipped successfully!` : 
+                    `${item.name} unequipped`);
                 
-                // Dynamically refresh everything using jQuery
+                // Use global toast system for better UX
+                if (typeof showSuccessToast === 'function') {
+                    showSuccessToast(successMessage, { duration: 2000 });
+                } else {
+                    // Fallback to console if toast system not available
+                    console.log('Success:', successMessage);
+                }
+                
+                // Dynamically refresh everything using jQuery without page reload
                 refreshPreviewCard(item);
                 refreshItemGrid(item);
                 
@@ -1814,7 +1836,7 @@ function toggleEquipItem(item) {
                     loadUserAvatar();
                 }, 200);
                 
-                // Refresh the current category to reflect changes
+                // Refresh the current category to reflect changes without full page reload
                 const activeCategory = $('.category-tab.active').attr('data-category');
                 if (activeCategory) {
                     setTimeout(() => {
@@ -1823,29 +1845,29 @@ function toggleEquipItem(item) {
                 }
                 
             } else {
-                // Show error message
-                Swal.fire({
-                    title: 'Error',
-                    text: data.message || 'Failed to update item equipment status',
-                    icon: 'error',
-                    background: '#2d3748',
-                    color: '#e2e8f0',
-                    confirmButtonColor: '#4299e1'
-                });
+                // Show error toast instead of modal
+                const errorMessage = data.message || 'Failed to update item equipment status';
+                
+                if (typeof showErrorToast === 'function') {
+                    showErrorToast(errorMessage, { duration: 3000 });
+                } else {
+                    // Fallback to console if toast system not available
+                    console.error('Error:', errorMessage);
+                }
             }
         },
         error: function(xhr, status, error) {
             console.error('Error toggling item equipment:', error);
             
-            // Show error message
-            Swal.fire({
-                title: 'Network Error',
-                text: 'Failed to update item. Please try again.',
-                icon: 'error',
-                background: '#2d3748',
-                color: '#e2e8f0',
-                confirmButtonColor: '#4299e1'
-            });
+            // Show error toast for network errors
+            const errorMessage = 'Network error. Please check your connection and try again.';
+            
+            if (typeof showErrorToast === 'function') {
+                showErrorToast(errorMessage, { duration: 4000 });
+            } else {
+                // Fallback to console if toast system not available
+                console.error('Network Error:', errorMessage);
+            }
         },
         complete: function() {
             // Reset button states using jQuery
@@ -2427,138 +2449,121 @@ function showPurchaseConfirmation(item) {
     // Determine if the item is free
     const isFree = item.price === 0;
     
-    // Populate modal body with enhanced purchase details
-    modalBody.innerHTML = `
-        <div class="purchase-confirmation">
-            <!-- Item Preview Section -->
-            <div class="purchase-item-preview">
-                <img src="${imageUrl}" alt="${item.name}" class="purchase-image" loading="lazy"
-                     onerror="this.src='/static/images/avatar-placeholder.png'">
-                <div class="purchase-item-rarity rarity-${rarityName.toLowerCase()}">${rarityName}</div>
-            </div>
-            
-            <!-- Purchase Details Section -->
-            <div class="purchase-details">
-                <h4 class="purchase-item-name">${item.name}</h4>
-                <p class="purchase-item-category">${categoryName}</p>
-                
-                <!-- Item Description -->
-                <div class="purchase-item-description">
-                    ${itemDescription}
-                </div>
-                
-                <!-- Price Section -->
-                <div class="purchase-price-section">
-                    <div class="purchase-price-header">
-                        <i class="fas fa-tag"></i>
-                        Item Price
-                    </div>
-                        <div class="purchase-price-container">
-                            ${discountHtml}
-                            <div class="purchase-price ${isFree ? 'free' : ''}">
-                                <i class="fas fa-${isFree ? 'gift' : 'gem'}"></i>
-                                <span>${isFree ? 'FREE' : formatNumber(item.price)}</span>
-                            </div>
-                        </div>
-                </div>
-                
-                <!-- Balance and Transaction Summary -->
-                ${!isFree ? `
-                    <div class="purchase-balance-section">
-                        <div class="purchase-balance-header">
-                            <i class="fas fa-wallet"></i>
-                            Your Balance
-                        </div>
-                        <div class="purchase-balance">
-                            <div class="balance-item">
-                                <span class="balance-label">Current Balance:</span>
-                                <span class="balance-value">
-                                    <i class="fas fa-gem"></i>
-                                    ${formatNumber(userPearls)}
-                                </span>
-                            </div>
-                            <div class="balance-item">
-                                <span class="balance-label">Item Cost:</span>
-                                <span class="balance-value">
-                                    <i class="fas fa-minus"></i>
-                                    ${formatNumber(item.price)}
-                                </span>
-                            </div>
-                            <div class="balance-item">
-                                <span class="balance-label">Balance After:</span>
-                                <span class="balance-value ${hasEnoughPearls ? 'sufficient' : 'insufficient'}">
-                                    <i class="fas fa-gem"></i>
-                                    ${formatNumber(balanceAfterPurchase)}
-                                </span>
-                            </div>
-                        </div>
-                        
-                        ${!hasEnoughPearls ? `
-                            <div class="balance-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                You need ${formatNumber(item.price - userPearls)} more pearls to purchase this item.
-                            </div>
-                        ` : `
-                            <div class="balance-after">
-                                ✨ You'll have ${formatNumber(balanceAfterPurchase)} pearls remaining after this purchase
-                            </div>
-                        `}
+    // Determine if this is a banner item for different image styling
+    const isBanner = (item.category || '').toLowerCase() === 'banner';
+    
+            // Populate modal body with simplified purchase details in single column
+            modalBody.innerHTML = `
+                <div class="purchase-confirmation single-column">
+                    <!-- Item Preview Section -->
+                    <div class="purchase-item-preview ${isBanner ? 'banner-preview' : ''}">
+                        <img src="${imageUrl}" alt="${item.name}" class="purchase-image" loading="lazy"
+                             onerror="this.src='/static/images/avatar-placeholder.png'">
                     </div>
                     
-                    <!-- Transaction Summary -->
-                    <div class="transaction-summary">
-                        <div class="transaction-summary-header">
-                            <i class="fas fa-receipt"></i>
-                            Transaction Summary
+                    <!-- Purchase Details Section -->
+                    <div class="purchase-details">
+                        <!-- Price Section -->
+                        <div class="purchase-price-section">
+                            <div class="purchase-price-header">
+                                <i class="fas fa-tag"></i>
+                                Item Price
+                            </div>
+                                <div class="purchase-price-container">
+                                    ${discountHtml}
+                                    <div class="purchase-price ${isFree ? 'free' : ''}">
+                                        <i class="fas fa-${isFree ? 'gift' : 'gem'}"></i>
+                                        <span>${isFree ? 'FREE' : formatNumber(item.price)}</span>
+                                    </div>
+                                </div>
                         </div>
-                        <div class="transaction-item">
-                            <span class="transaction-label">${item.name}</span>
-                            <span class="transaction-value">
-                                <i class="fas fa-gem"></i>
-                                ${formatNumber(item.price)}
-                            </span>
-                        </div>
-                        ${item.discount ? `
-                            <div class="transaction-item">
-                                <span class="transaction-label">Discount (${item.discount}%)</span>
-                                <span class="transaction-value" style="color: var(--success);">
-                                    <i class="fas fa-minus"></i>
-                                    ${formatNumber(item.originalPrice - item.price)}
-                                </span>
+                        
+                        <!-- Balance and Transaction Summary -->
+                        ${!isFree ? `
+                            <div class="purchase-balance-section">
+                                <div class="purchase-balance-header">
+                                    <i class="fas fa-wallet"></i>
+                                    Your Balance
+                                </div>
+                                <div class="purchase-balance">
+                                    <div class="balance-item">
+                                        <span class="balance-label">Current Balance:</span>
+                                        <span class="balance-value">
+                                            <i class="fas fa-gem"></i>
+                                            ${formatNumber(userPearls)}
+                                        </span>
+                                    </div>
+                                    <div class="balance-item">
+                                        <span class="balance-label">Item Cost:</span>
+                                        <span class="balance-value">
+                                            <i class="fas fa-minus"></i>
+                                            ${formatNumber(item.price)}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                ${!hasEnoughPearls ? `
+                                    <div class="balance-warning">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                        You need ${formatNumber(item.price - userPearls)} more pearls to purchase this item.
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <!-- Transaction Summary -->
+                            <div class="transaction-summary">
+                                <div class="transaction-summary-header">
+                                    <i class="fas fa-receipt"></i>
+                                    Transaction Summary
+                                </div>
+                                <div class="transaction-item">
+                                    <span class="transaction-label">${item.name}</span>
+                                    <span class="transaction-value">
+                                        <i class="fas fa-gem"></i>
+                                        ${formatNumber(item.price)}
+                                    </span>
+                                </div>
+                                ${item.discount ? `
+                                    <div class="transaction-item">
+                                        <span class="transaction-label">Discount (${item.discount}%)</span>
+                                        <span class="transaction-value" style="color: var(--success);">
+                                            <i class="fas fa-minus"></i>
+                                            ${formatNumber(item.originalPrice - item.price)}
+                                        </span>
+                                    </div>
+                                ` : ''}
+                                <div class="transaction-item">
+                                    <span class="transaction-label">Total Cost:</span>
+                                    <span class="transaction-value total">
+                                        <i class="fas fa-gem"></i>
+                                        ${formatNumber(item.price)}
+                                    </span>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="purchase-price-section">
+                                <div class="purchase-price-header">
+                                    <i class="fas fa-gift"></i>
+                                    Special Offer
+                                </div>
+                                <div class="balance-after" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1)); border-color: rgba(16, 185, 129, 0.3); color: var(--success);">
+                                    🎉 This item is completely FREE! No pearls required.
+                                </div>
+                            </div>
+                        `}
+                        
+                        <!-- Insufficient balance options -->
+                        ${!hasEnoughPearls && !isFree ? `
+                            <div class="insufficient-balance-options">
+                                <h5 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: var(--font-size-base);">Need more pearls?</h5>
+                                <button class="topup-option">
+                                    <i class="fas fa-plus-circle"></i> Top Up Pearls
+                                </button>
                             </div>
                         ` : ''}
-                        <div class="transaction-item">
-                            <span class="transaction-label">Total Cost:</span>
-                            <span class="transaction-value total">
-                                <i class="fas fa-gem"></i>
-                                ${formatNumber(item.price)}
-                            </span>
-                        </div>
                     </div>
-                ` : `
-                    <div class="purchase-price-section">
-                        <div class="purchase-price-header">
-                            <i class="fas fa-gift"></i>
-                            Special Offer
-                        </div>
-                        <div class="balance-after" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(34, 197, 94, 0.1)); border-color: rgba(16, 185, 129, 0.3); color: var(--success);">
-                            🎉 This item is completely FREE! No pearls required.
-                        </div>
-                    </div>
-                `}
-                
-                <!-- Insufficient balance options -->
-                ${!hasEnoughPearls && !isFree ? `
-                    <div class="insufficient-balance-options">
-                        <h5 style="color: var(--text-primary); margin-bottom: var(--spacing-md); font-size: var(--font-size-base);">Need more pearls?</h5>
-                        <button class="topup-option">
-                            <i class="fas fa-plus-circle"></i> Top Up Pearls
-                        </button>
-                    </div>
-                ` : ''}
-            </div>
-        </div>
-    `;
+                </div>
+            `;
     
     // Update the purchase button text and state
     const purchaseBtnText = confirmPurchaseBtn.querySelector('.purchase-btn-text');
@@ -3028,6 +3033,29 @@ function addEquipmentTransitionAnimations() {
                 .no-equipped-items i {
                     margin-right: 0.5rem;
                     opacity: 0.7;
+                }
+                
+                /* Purchase Modal Banner Preview Styles */
+                .purchase-item-preview {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-bottom: 1rem;
+                }
+                
+                .purchase-item-preview .purchase-image {
+                    max-width: 200px;
+                    max-height: 200px;
+                    border-radius: 8px;
+                    object-fit: cover;
+                }
+                
+                .purchase-item-preview.banner-preview .purchase-image {
+                    max-width: 300px;
+                    max-height: 150px;
+                    aspect-ratio: 2/1;
+                    border-radius: 12px;
+                    object-fit: cover;
                 }
                 
                 @keyframes slideIn {

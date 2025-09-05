@@ -5,7 +5,34 @@
 
 $(document).ready(function() {
     console.log('Loading marketplace items from database...');
+    
+    // Initialize marketplace functionality
+    initializeEventListeners();
+    
+    // Load unique card names for category filter
+    loadUniqueCardNames();
+    
+    // Load marketplace items
     loadMarketplaceItems();
+    
+    // Test toast system availability after DOM is ready
+    // Wait longer to ensure toast system is fully loaded
+    setTimeout(() => {
+        console.log('Testing toast system availability...');
+        console.log('window.Toast:', window.Toast);
+        console.log('window.Toast methods:', window.Toast ? Object.keys(window.Toast) : 'N/A');
+        
+        if (window.Toast && typeof window.Toast.success === 'function') {
+            console.log('✅ Toast system is available and ready');
+            // Uncomment the line below to test toast visibility
+            // window.Toast.info('Pearl Market loaded successfully!', { duration: 2000 });
+        } else {
+            console.error('❌ Toast system not available or not properly initialized!');
+            console.log('Debugging info:');
+            console.log('- window.Toast exists:', !!window.Toast);
+            console.log('- window.Toast.success exists:', window.Toast ? typeof window.Toast.success : 'N/A');
+        }
+    }, 2000);
 });
 
 // Global variables
@@ -18,7 +45,8 @@ let currentFilters = {
     rarity: 'all',
     priceMin: null,
     priceMax: null,
-    sort: 'newest'
+    sort: 'newest',
+    favorites_only: false
 };
 
 /**
@@ -38,14 +66,101 @@ function initializeMarket() {
 }
 
 /**
+ * Suppress search results dropdown on marketplace page
+ */
+function suppressSearchResultsDropdown() {
+    // Simple dropdown suppression - let CSS handle the styling
+    const searchResultsElements = document.querySelectorAll('#searchResults, .search-results');
+    searchResultsElements.forEach(element => {
+        if (element) {
+            element.style.display = 'none';
+        }
+    });
+    
+    console.log('Search results dropdown suppressed on marketplace page');
+}
+
+/**
  * Initialize all event listeners
  */
 function initializeEventListeners() {
-    // Search functionality
-    $('#searchInput').on('input', debounce(function() {
-        currentFilters.search = $(this).val();
-        resetAndLoadItems();
-    }, 300));
+    // Completely suppress search results dropdown on marketplace
+    suppressSearchResultsDropdown();
+    
+    // Integrate with global search from top navigation
+    // Wait for topNav to be ready, then override its search functionality
+    setTimeout(() => {
+        if (window.topNav && window.topNav.performSearch) {
+            // Store reference to original search method
+            const originalPerformSearch = window.topNav.performSearch.bind(window.topNav);
+            
+            // Override the global search to work with marketplace
+            window.topNav.performSearch = function(query) {
+                // If we're on the marketplace page, handle search here
+                if (window.location.pathname.includes('market') || window.location.pathname.includes('marketplace')) {
+                    console.log('Marketplace search:', query);
+                    currentFilters.search = query;
+                    resetAndLoadItems();
+                    // Force hide search results dropdown
+                    this.hideSearchResults();
+                    suppressSearchResultsDropdown();
+                } else {
+                    // Otherwise use original functionality
+                    originalPerformSearch(query);
+                }
+            }.bind(window.topNav);
+            
+            // Override multiple search-related methods to prevent conflicts
+            const originalDisplaySearchResults = window.topNav.displaySearchResults.bind(window.topNav);
+            window.topNav.displaySearchResults = function(query) {
+                // Don't show search results dropdown on marketplace page
+                if (window.location.pathname.includes('market') || window.location.pathname.includes('marketplace')) {
+                    suppressSearchResultsDropdown();
+                    return; // Do nothing - let marketplace handle its own results
+                } else {
+                    originalDisplaySearchResults(query);
+                }
+            }.bind(window.topNav);
+            
+            const originalShowSearchResults = window.topNav.showSearchResults.bind(window.topNav);
+            window.topNav.showSearchResults = function() {
+                // Don't show search results dropdown on marketplace page
+                if (window.location.pathname.includes('market') || window.location.pathname.includes('marketplace')) {
+                    suppressSearchResultsDropdown();
+                    return; // Do nothing
+                } else {
+                    originalShowSearchResults();
+                }
+            }.bind(window.topNav);
+            
+            const originalShowSearchLoading = window.topNav.showSearchLoading.bind(window.topNav);
+            window.topNav.showSearchLoading = function() {
+                // Don't show search loading on marketplace page
+                if (window.location.pathname.includes('market') || window.location.pathname.includes('marketplace')) {
+                    suppressSearchResultsDropdown();
+                    return; // Do nothing
+                } else {
+                    originalShowSearchLoading();
+                }
+            }.bind(window.topNav);
+            
+            const originalShowSearchHints = window.topNav.showSearchHints.bind(window.topNav);
+            window.topNav.showSearchHints = function() {
+                // Don't show search hints on marketplace page
+                if (window.location.pathname.includes('market') || window.location.pathname.includes('marketplace')) {
+                    suppressSearchResultsDropdown();
+                    return; // Do nothing
+                } else {
+                    originalShowSearchHints();
+                }
+            }.bind(window.topNav);
+            
+            console.log('Marketplace search integration initialized with complete suppression');
+        }
+        
+        // Force suppress every 500ms as a safeguard
+        setInterval(suppressSearchResultsDropdown, 500);
+    }, 100);
 
     // Filter dropdowns
     $('#categoryFilter').on('change', function() {
@@ -74,6 +189,13 @@ function initializeEventListeners() {
         resetAndLoadItems();
     });
 
+    // Favorites toggle
+    $('#favoritesToggle').on('change', function() {
+        currentFilters.favorites_only = $(this).is(':checked');
+        console.log('Favorites filter:', currentFilters.favorites_only ? 'enabled' : 'disabled');
+        resetAndLoadItems();
+    });
+
     // Load more products
     $('#loadMoreBtn').on('click', function() {
         loadMoreProducts();
@@ -89,14 +211,6 @@ function initializeEventListeners() {
     });
 
     // Product actions (delegated events)
-    $(document).on('click', '.btn-cart', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        const productId = $(this).closest('.product-card').data('product-id');
-        const productData = $(this).closest('.product-card').data('product');
-        addToCart(productId, productData);
-    });
-
     $(document).on('click', '.btn-buy', function(e) {
         e.preventDefault();
         e.stopPropagation();
@@ -106,9 +220,29 @@ function initializeEventListeners() {
         showQuickView(productData);
     });
 
-    $(document).on('click', '.product-card', function() {
+    // Favorite button click handler
+    $(document).on('click', '.favorite-btn', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const productId = $(this).data('product-id');
+        const isFavorited = $(this).hasClass('favorited');
+        toggleFavorite(productId, !isFavorited, $(this));
+    });
+
+    $(document).on('click', '.product-card', function(e) {
+        // Don't trigger card click when clicking favorite button or buy button
+        if ($(e.target).closest('.favorite-btn, .btn-buy').length > 0) {
+            return;
+        }
+        
         const productData = $(this).data('product');
-        showProductDetails(productData);
+        const cardName = productData.name || productData.title || 'Unknown';
+        const cardSeries = productData.series || 'Unknown';
+        
+        console.log('Navigating to card set:', cardName, cardSeries);
+        
+        // Redirect to pearl card set page with both card_name and card_series as parameters
+        window.location.href = `/pearl_card_set?card_name=${encodeURIComponent(cardName)}&card_series=${encodeURIComponent(cardSeries)}`;
     });
 
     // Checkout functionality
@@ -145,8 +279,9 @@ function loadMarketplaceItems() {
     if (currentFilters.priceMin) params.append('price_min', currentFilters.priceMin);
     if (currentFilters.priceMax) params.append('price_max', currentFilters.priceMax);
     if (currentFilters.sort) params.append('sort', currentFilters.sort);
+    if (currentFilters.favorites_only) params.append('favorites_only', 'true');
     
-    const apiUrl = `/api/marketplace/items?${params.toString()}`;
+    const apiUrl = `/api/marketplace?${params.toString()}`;
     
     fetch(apiUrl)
         .then(response => {
@@ -218,29 +353,39 @@ function renderProducts(products) {
  * Create product card HTML from API data
  */
 function createProductCard(product) {
+    const heartIcon = product.is_favorite ? 'fas fa-heart' : 'far fa-heart';
+    const heartClass = product.is_favorite ? 'favorite-btn favorited' : 'favorite-btn';
+    
+    // Create image element - use actual image if available, otherwise show placeholder
+    const imageElement = product.image_url ? 
+        `<img src="${product.image_url}" alt="${product.name}" style="width: 100%; height: 100%; object-fit: cover;">` :
+        `<div class="product-placeholder">
+            <i class="${product.category_icon || 'fas fa-cube'}"></i>
+        </div>`;
+    
     const cardElement = $(`
         <div class="product-card fade-in" data-product-id="${product.id}">
             <div class="product-image">
-                <div class="product-placeholder">
-                    <i class="${product.category_icon || 'fas fa-cube'}"></i>
+                ${imageElement}
+                <div class="series-tag">
+                    <span>${product.series || 'Unknown'}</span>
                 </div>
+                <button class="${heartClass}" data-product-id="${product.id}" title="Add to favorites">
+                    <i class="${heartIcon}"></i>
+                </button>
             </div>
             <div class="product-info">
-                <h3 class="product-title">${product.title}</h3>
+                <h3 class="product-title">${product.name}</h3>
                 <p class="product-description">${product.description || 'No description available'}</p>
                 
                 <div class="product-price">
-                    <span class="current-price">${product.price} pearls</span>
+                    <span class="current-price"><i class="fas fa-gem me-1"></i>${product.price}</span>
                     ${product.original_price && product.original_price > product.price ? 
-                        `<span class="original-price">${product.original_price} pearls</span>` : ''}
+                        `<span class="original-price"><i class="fas fa-gem me-1"></i>${product.original_price}</span>` : ''}
                 </div>
                 
                 <div class="product-actions">
-                    <button class="btn-cart" data-product-id="${product.id}">
-                        <i class="fas fa-shopping-cart me-1"></i>
-                        Add to Cart
-                    </button>
-                    <button class="btn-buy" data-product-id="${product.id}">
+                    <button class="btn-buy form-control" data-product-id="${product.id}">
                         <i class="fas fa-bolt me-1"></i>
                         Buy Now
                     </button>
@@ -261,16 +406,19 @@ function createProductCard(product) {
 function updatePagination(pagination) {
     const loadMoreBtn = $('#loadMoreBtn');
     
-    if (pagination.has_next) {
+    // Handle cases where pagination data might be missing
+    if (pagination && pagination.has_next) {
         loadMoreBtn.show();
         loadMoreBtn.text(`Load More (${pagination.total - (pagination.page * pagination.per_page)} remaining)`);
     } else {
         loadMoreBtn.hide();
     }
     
-    // Update results count
-    const resultsText = `Showing ${Math.min(pagination.page * pagination.per_page, pagination.total)} of ${pagination.total} items`;
-    $('.results-count').text(resultsText);
+    // Update results count only if pagination data is available
+    if (pagination && pagination.total !== undefined) {
+        const resultsText = `Showing ${Math.min(pagination.page * pagination.per_page, pagination.total)} of ${pagination.total} items`;
+        $('.results-count').text(resultsText);
+    }
 }
 
 /**
@@ -312,7 +460,7 @@ function updateFilterStats(stats) {
     
     // Update price range
     if (stats.price_range) {
-        $('.price-range-info').text(`Price range: ${stats.price_range.min} - ${stats.price_range.max} pearls`);
+        $('.price-range-info').html(`Price range: <i class="fas fa-gem me-1"></i>${stats.price_range.min} - <i class="fas fa-gem me-1"></i>${stats.price_range.max}`);
     }
 }
 
@@ -341,16 +489,16 @@ function addToCart(productId, productData) {
     // Update cart display
     updateCartDisplay();
     
-    // Show success notification
-    Swal.fire({
-        icon: 'success',
-        title: 'Added to Cart!',
-        text: `${productData.title} has been added to your cart`,
-        showConfirmButton: false,
-        timer: 2000,
-        toast: true,
-        position: 'top-end'
-    });
+    // Show success notification using global toast system
+    if (window.Toast && window.Toast.success) {
+        window.Toast.success(`${productData.title} added to cart!`, {
+            icon: 'fas fa-shopping-cart',
+            duration: 2500
+        });
+    } else {
+        console.log(`SUCCESS: ${productData.title} added to cart!`);
+        alert(`✅ ${productData.title} added to cart!`);
+    }
     
     // Pulse animation for cart button
     $('#floatingCart').addClass('pulse');
@@ -376,21 +524,55 @@ function showQuickView(product) {
                 <p><strong>Listed:</strong> ${product.time_ago}</p>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <span class="fs-4 fw-bold" style="color: ${product.rarity_color}">
-                        <i class="fas fa-gem me-1"></i>${product.price} pearls
+                        <i class="fas fa-gem me-1"></i>${product.price}
                     </span>
                 </div>
             </div>
         `,
         showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-shopping-cart me-2"></i>Add to Cart',
+        confirmButtonText: '<i class="fas fa-gem me-2"></i>Purchase Now',
         cancelButtonText: 'Close',
         confirmButtonColor: product.rarity_color,
         width: '500px'
     }).then((result) => {
         if (result.isConfirmed) {
-            addToCart(product.id, product);
+            // Process direct purchase
+            processDirectPurchase(product);
         }
     });
+}
+
+/**
+ * Process direct purchase of a single product
+ */
+function processDirectPurchase(product) {
+    Swal.fire({
+        title: 'Processing Purchase...',
+        html: `
+            <div class="text-center">
+                <div class="spinner-border text-warning mb-3" role="status"></div>
+                <p>Processing your purchase of <i class="fas fa-gem me-1"></i>${product.price}</p>
+            </div>
+        `,
+        allowOutsideClick: false,
+        showConfirmButton: false
+    });
+    
+    setTimeout(() => {
+        // Show success
+        Swal.fire({
+            icon: 'success',
+            title: 'Purchase Successful!',
+            html: `
+                <p>Thank you for your purchase!</p>
+                <p><strong>${product.name || product.title}</strong></p>
+                <p>Total: <strong><i class="fas fa-gem text-warning me-1"></i>${product.price}</strong></p>
+                <p>Item has been added to your collection!</p>
+            `,
+            confirmButtonText: 'View Collection',
+            confirmButtonColor: '#f39c12'
+        });
+    }, 2000);
 }
 
 /**
@@ -432,7 +614,7 @@ function updateCartDisplay() {
                     </div>
                     <div class="cart-item-details">
                         <div class="cart-item-name">${item.title}</div>
-                        <div class="cart-item-price">${item.price} pearls</div>
+                        <div class="cart-item-price"><i class="fas fa-gem me-1"></i>${item.price}</div>
                         <div class="cart-item-quantity">
                             <button class="qty-btn" data-action="decrease" data-item-id="${item.id}">-</button>
                             <input type="number" class="qty-input" value="${item.quantity}" min="1" readonly>
@@ -515,11 +697,16 @@ function closeCart() {
  */
 function proceedToCheckout() {
     if (cartItems.length === 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Cart is Empty',
-            text: 'Please add some items to your cart before checkout'
-        });
+        // Show warning using global toast system
+        if (window.Toast && window.Toast.warning) {
+            window.Toast.warning('Please add some items to your cart before checkout', {
+                icon: 'fas fa-shopping-cart',
+                duration: 4000
+            });
+        } else {
+            console.log('WARNING: Cart is empty');
+            alert('⚠️ Please add some items to your cart before checkout');
+        }
         return;
     }
     
@@ -533,14 +720,14 @@ function proceedToCheckout() {
                 ${cartItems.map(item => `
                     <div class="d-flex justify-content-between mb-2">
                         <span>${item.title} (×${item.quantity})</span>
-                        <span>${item.price * item.quantity} pearls</span>
+                        <span><i class="fas fa-gem me-1"></i>${item.price * item.quantity}</span>
                     </div>
                 `).join('')}
                 <hr>
                 <div class="d-flex justify-content-between fw-bold">
                     <span>Total:</span>
                     <span class="text-warning">
-                        <i class="fas fa-gem me-1"></i>${total} pearls
+                        <i class="fas fa-gem me-1"></i>${total}
                     </span>
                 </div>
             </div>
@@ -566,7 +753,7 @@ function processOrderPayment(total) {
         html: `
             <div class="text-center">
                 <div class="spinner-border text-warning mb-3" role="status"></div>
-                <p>Processing your purchase of ${total} pearls</p>
+                <p>Processing your purchase of <i class="fas fa-gem me-1"></i>${total}</p>
             </div>
         `,
         allowOutsideClick: false,
@@ -586,7 +773,7 @@ function processOrderPayment(total) {
             title: 'Purchase Successful!',
             html: `
                 <p>Thank you for your purchase!</p>
-                <p>Total: <strong><i class="fas fa-gem text-warning me-1"></i>${total} pearls</strong></p>
+                <p>Total: <strong><i class="fas fa-gem text-warning me-1"></i>${total}</strong></p>
                 <p>Items have been added to your collection!</p>
             `,
             confirmButtonText: 'View Collection',
@@ -695,6 +882,212 @@ function clearAllFilters() {
     
     // Reload items
     resetAndLoadItems();
+}
+
+/**
+ * Check if toast system is ready
+ * @returns {boolean} True if toast system is available and ready to use
+ */
+function isToastSystemReady() {
+    return window.Toast && 
+           typeof window.Toast.success === 'function' && 
+           typeof window.Toast.info === 'function' && 
+           typeof window.Toast.error === 'function' && 
+           typeof window.Toast.warning === 'function';
+}
+
+/**
+ * Wait for toast system to be ready with timeout
+ * @param {function} callback - Function to call when toast is ready
+ * @param {number} timeout - Maximum time to wait in milliseconds
+ */
+function waitForToastSystem(callback, timeout = 5000) {
+    const startTime = Date.now();
+    const checkInterval = 100;
+    
+    const checkToastReady = () => {
+        if (isToastSystemReady()) {
+            console.log('✅ Toast system ready!');
+            callback(true);
+        } else if (Date.now() - startTime > timeout) {
+            console.error('❌ Toast system timeout - falling back to alerts');
+            callback(false);
+        } else {
+            setTimeout(checkToastReady, checkInterval);
+        }
+    };
+    
+    checkToastReady();
+}
+
+/**
+ * Show toast or fallback alert
+ * @param {string} type - Toast type (success, info, error, warning)
+ * @param {string} message - Message to display
+ * @param {object} options - Toast options
+ * @param {string} fallbackEmoji - Emoji for fallback alert
+ */
+function showToastOrFallback(type, message, options = {}, fallbackEmoji = '📢') {
+    if (isToastSystemReady()) {
+        window.Toast[type](message, options);
+    } else {
+        console.log(`${type.toUpperCase()}: ${message}`);
+        alert(`${fallbackEmoji} ${message}`);
+    }
+}
+
+/**
+ * Toggle favorite status for an item
+ */
+function toggleFavorite(itemId, addToFavorites, buttonElement) {
+    const method = addToFavorites ? 'POST' : 'DELETE';
+    const apiUrl = '/api/marketplace/favorites';
+    
+    // Disable button during request
+    buttonElement.prop('disabled', true);
+    
+    fetch(apiUrl, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            item_id: itemId
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        buttonElement.prop('disabled', false);
+        
+        if (data.success) {
+            // Update button appearance
+            const heartIcon = buttonElement.find('i');
+            if (addToFavorites) {
+                // Added to favorites
+                heartIcon.removeClass('far fa-heart').addClass('fas fa-heart');
+                buttonElement.addClass('favorited');
+                buttonElement.attr('title', 'Remove from favorites');
+                
+                // Get product name for personalized toast
+                const productCard = buttonElement.closest('.product-card');
+                const productData = productCard.data('product');
+                const itemName = productData ? productData.name : 'Item';
+                
+                // Show success toast using global toast system
+                showToastOrFallback('success', `${itemName} added to favorites!`, {
+                    icon: 'fas fa-heart',
+                    duration: 3000
+                }, '❤️');
+            } else {
+                // Removed from favorites
+                heartIcon.removeClass('fas fa-heart').addClass('far fa-heart');
+                buttonElement.removeClass('favorited');
+                buttonElement.attr('title', 'Add to favorites');
+                
+                // Get product name for personalized toast
+                const productCard = buttonElement.closest('.product-card');
+                const productData = productCard.data('product');
+                const itemName = productData ? productData.name : 'Item';
+                
+                // Show info toast using global toast system
+                showToastOrFallback('info', `${itemName} removed from favorites`, {
+                    icon: 'fas fa-heart-broken',
+                    duration: 2500
+                }, '💔');
+            }
+            
+            // Update product data to reflect new favorite status
+            const productCard = buttonElement.closest('.product-card');
+            const productData = productCard.data('product');
+            if (productData) {
+                productData.is_favorite = addToFavorites;
+                productCard.data('product', productData);
+            }
+        } else {
+            // Show error message using global toast system
+            window.Toast.error(data.message || 'Failed to update favorites', {
+                icon: 'fas fa-exclamation-triangle',
+                duration: 4000
+            });
+        }
+    })
+    .catch(error => {
+        buttonElement.prop('disabled', false);
+        console.error('Error toggling favorite:', error);
+        
+        // Handle authentication errors
+        if (error.message.includes('401')) {
+            // Show login required toast
+            window.Toast.warning('Please log in to add items to your favorites', {
+                icon: 'fas fa-sign-in-alt',
+                duration: 5000,
+                persistent: false
+            });
+            
+            // Optionally redirect to login after a delay
+            setTimeout(() => {
+                if (confirm('Would you like to go to the login page now?')) {
+                    window.location.href = '/login';
+                }
+            }, 2000);
+        } else {
+            // Show connection error toast
+            window.Toast.error('Unable to update favorites. Please check your connection and try again.', {
+                icon: 'fas fa-wifi',
+                duration: 5000
+            });
+        }
+    });
+}
+
+/**
+ * Load unique card names for category filter
+ */
+function loadUniqueCardNames() {
+    fetch('/api/marketplace/unique-card-names')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success && data.card_names) {
+                populateCategoryFilter(data.card_names);
+                console.log(`Loaded ${data.card_names.length} unique card names for category filter`);
+            } else {
+                console.error('Failed to load unique card names:', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading unique card names:', error);
+            // Don't show error to user for this - just log it and continue with empty categories
+        });
+}
+
+/**
+ * Populate category filter dropdown with unique card names
+ */
+function populateCategoryFilter(cardNames) {
+    const categoryFilter = $('#categoryFilter');
+    
+    // Clear existing options (keep only the "All Categories" option)
+    categoryFilter.find('option').not(':first').remove();
+    
+    // Add card names as options
+    cardNames.forEach(cardName => {
+        const option = $('<option></option>')
+            .attr('value', cardName)
+            .text(cardName);
+        categoryFilter.append(option);
+    });
+    
+    console.log(`Populated category filter with ${cardNames.length} card names`);
 }
 
 /**

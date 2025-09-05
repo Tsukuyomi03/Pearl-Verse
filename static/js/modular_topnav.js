@@ -31,6 +31,14 @@ class TopNavigation {
         this.bindEvents();
         this.loadUserData();
         this.setupAccessibility();
+        this.updateSearchPlaceholder();
+    }
+    
+    updateSearchPlaceholder() {
+        // Update search placeholder based on current page
+        if (window.location.pathname.includes('market') || window.location.pathname.includes('marketplace')) {
+            this.setSearchPlaceholder('Search card sets, themes, or rarity...');
+        }
     }
     
     bindEvents() {

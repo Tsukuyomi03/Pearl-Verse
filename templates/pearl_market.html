@@ -33,6 +33,17 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    
+    <!-- Modular Component Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_sidenav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_topnav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_botnav.css') }}">
+    
+    <!-- Pearl Market Styles -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_market.css') }}">
+    
+    <!-- Toast System -->
+    {% include 'toast_system.html' %}
   </head>
   <body class="pearl-market-body">
     <style>
@@ -58,7 +69,7 @@
       /* Main Content Layout */
       .main-content {
         margin-left: 0;
-        padding: 80px 0 0; /* Increased top padding for the fixed topnav to prevent overlap */
+        padding: 72px 0 0; /* Match topnav height consistently with other pages */
         min-height: 100vh;
         transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
@@ -75,7 +86,7 @@
       @media (max-width: 1023px) {
         .main-content {
           margin-left: 0;
-          padding-top: 80px; /* Increased for mobile to prevent overlap */
+          padding-top: 72px; /* Consistent with other pages */
           padding-bottom: 90px;
         }
       }
@@ -333,7 +344,6 @@
       }
 
       .btn-primary-market:hover {
-        transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
       }
 
@@ -377,7 +387,6 @@
         color: #e2e8f0;
         border-color: #94a3b8;
         background: rgba(148, 163, 184, 0.1);
-        transform: translateY(-2px);
       }
 
       /* Market Features */
@@ -449,7 +458,6 @@
       }
 
       .counter-card:hover {
-        transform: translateY(-5px) scale(1.02);
         border-color: rgba(6, 182, 212, 0.3);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
       }
@@ -625,7 +633,6 @@
       }
 
       .activity-banner:hover {
-        transform: translateY(-2px);
         box-shadow: 0 5px 15px rgba(34, 197, 94, 0.2);
       }
 
@@ -717,7 +724,6 @@
       }
 
       .achievement-badge:hover {
-        transform: translateY(-3px) scale(1.02);
         box-shadow: 0 12px 35px rgba(245, 158, 11, 0.4);
       }
 
@@ -801,7 +807,6 @@
       }
 
       .stat-card:hover {
-        transform: translateY(-5px);
         border-color: rgba(6, 182, 212, 0.3);
       }
 
@@ -990,6 +995,219 @@
         letter-spacing: 0.05em;
       }
 
+      /* Simple Header Styles */
+      .simple-header {
+        padding: 2rem 0;
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.8));
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .header-card {
+        background: rgba(30, 41, 59, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 2rem;
+        backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      }
+      
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+      }
+      
+      .header-title h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #e2e8f0;
+        margin: 0;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+      }
+      
+      .header-title h1 i {
+        background: linear-gradient(135deg, #06b6d4, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      .header-subtitle {
+        font-size: 1rem;
+        color: #94a3b8;
+        margin: 0;
+        font-weight: 500;
+      }
+      
+      .stats-container {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+      
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        min-width: 140px;
+      }
+      
+      .stat-item:hover {
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      }
+      
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+      }
+      
+      .stat-item:nth-child(1) .stat-icon {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+      }
+      
+      .stat-item:nth-child(2) .stat-icon {
+        background: linear-gradient(135deg, #06b6d4, #0891b2);
+        color: white;
+      }
+      
+      .stat-item:nth-child(3) .stat-icon {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        color: white;
+      }
+      
+      .stat-item:nth-child(4) .stat-icon {
+        background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        color: white;
+      }
+      
+      .stat-details {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+      
+      .stat-number {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #e2e8f0;
+        line-height: 1;
+      }
+      
+      .stat-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+      }
+      
+      /* Responsive adjustments for simple header */
+      @media (max-width: 1200px) {
+        .stats-container {
+          gap: 1rem;
+        }
+        
+        .stat-item {
+          min-width: 120px;
+          padding: 0.75rem;
+        }
+      }
+      
+      @media (max-width: 992px) {
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.5rem;
+        }
+        
+        .stats-container {
+          align-self: stretch;
+          justify-content: space-between;
+          gap: 0.75rem;
+        }
+        
+        .stat-item {
+          flex: 1;
+          min-width: unset;
+          padding: 0.75rem 0.5rem;
+        }
+        
+        .stat-number {
+          font-size: 1.25rem;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .header-title h1 {
+          font-size: 2rem;
+        }
+        
+        .header-card {
+          padding: 1.5rem;
+        }
+        
+        .stats-container {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        
+        .stat-item {
+          flex: none;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .simple-header {
+          padding: 1.5rem 0;
+        }
+        
+        .header-card {
+          padding: 1rem;
+        }
+        
+        .header-title h1 {
+          font-size: 1.75rem;
+        }
+        
+        .stat-item {
+          padding: 0.75rem;
+          gap: 0.5rem;
+        }
+        
+        .stat-icon {
+          width: 35px;
+          height: 35px;
+          font-size: 1rem;
+        }
+        
+        .stat-number {
+          font-size: 1.125rem;
+        }
+        
+        .stat-label {
+          font-size: 0.75rem;
+        }
+      }
+
       /* Search and Filter Section */
       .search-filter-section {
         padding: 2rem 0;
@@ -1008,37 +1226,7 @@
         overflow: hidden;
       }
 
-      .market-search-container {
-        position: relative;
-        min-width: 0; /* Allow flex items to shrink */
-      }
-
-      .market-search-input {
-        background: rgba(15, 23, 42, 0.8);
-        border: 2px solid rgba(255, 255, 255, 0.1);
-        color: #e2e8f0;
-        padding: 0.75rem 3rem 0.75rem 1rem;
-        border-radius: 12px;
-        font-size: 1rem;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        width: 100%;
-      }
-
-      .market-search-input:focus {
-        outline: none;
-        border-color: #06b6d4;
-        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
-        background: rgba(15, 23, 42, 1);
-      }
-
-      .market-search-icon {
-        position: absolute;
-        right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #64748b;
-        font-size: 1.125rem;
-      }
+      /* Market search styles removed - using global top navigation search instead */
 
       .filter-select {
         background: rgba(15, 23, 42, 0.8);
@@ -1066,6 +1254,92 @@
       .filter-select option {
         background: #0f172a;
         color: #e2e8f0;
+      }
+      
+      /* Favorites Toggle Styles */
+      .favorites-toggle-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+      }
+      
+      .form-check {
+        margin: 0;
+        padding: 0;
+        gap: 0.75rem;
+      }
+      
+      .favorites-toggle {
+        width: 3rem;
+        height: 1.5rem;
+        background-color: rgba(15, 23, 42, 0.8);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        background-image: none;
+      }
+      
+      .favorites-toggle:focus {
+        border-color: #ef4444;
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        outline: none;
+      }
+      
+      .favorites-toggle:checked {
+        background-color: #ef4444;
+        border-color: #ef4444;
+        background-image: none;
+      }
+      
+      .favorites-toggle:checked:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+      }
+      
+      .favorites-label {
+        color: #e2e8f0;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        transition: color 0.3s ease;
+        margin: 0;
+      }
+      
+      .favorites-label:hover {
+        color: #ef4444;
+      }
+      
+      .favorites-label i {
+        color: #ef4444;
+        transition: all 0.3s ease;
+      }
+      
+      .favorites-toggle:checked + .favorites-label {
+        color: #ef4444;
+      }
+      
+      .favorites-toggle:checked + .favorites-label i {
+        color: #ef4444;
+        transform: scale(1.1);
+      }
+      
+      /* Responsive adjustments for favorites toggle */
+      @media (max-width: 768px) {
+        .favorites-toggle-container {
+          justify-content: flex-start;
+        }
+        
+        .favorites-label {
+          font-size: 0.8125rem;
+        }
+        
+        .favorites-toggle {
+          width: 2.5rem;
+          height: 1.25rem;
+        }
       }
 
       /* Featured Banner */
@@ -1153,7 +1427,6 @@
       }
 
       .banner-btn:hover {
-        transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
         background: #f8fafc;
         color: #7c3aed;
@@ -1182,7 +1455,6 @@
 
       /* Products Section */
       .products-section {
-        padding: 4rem 0;
         background: rgba(15, 23, 42, 0.3);
       }
 
@@ -1226,7 +1498,7 @@
         color: white;
       }
 
-        /* Products Grid - Flexible 6-item layout */
+        /* Products Grid - Optimized 6-item layout */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
@@ -1234,37 +1506,61 @@
             margin-bottom: 3rem;
         }
         
-        /* Responsive grid adjustments */
-        @media (max-width: 1599px) {
+        /* Responsive grid adjustments - Desktop to Mobile */
+        
+        /* Large Desktop - 6 items */
+        @media (min-width: 1600px) {
+            .products-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 1.75rem;
+            }
+        }
+        
+        /* Desktop - 5 items */
+        @media (max-width: 1599px) and (min-width: 1400px) {
             .products-grid {
                 grid-template-columns: repeat(5, 1fr);
+                gap: 1.5rem;
             }
         }
         
-        @media (max-width: 1399px) {
+        /* Medium Desktop - 4 items */
+        @media (max-width: 1399px) and (min-width: 1200px) {
             .products-grid {
                 grid-template-columns: repeat(4, 1fr);
+                gap: 1.5rem;
             }
         }
         
-        @media (max-width: 1199px) {
+        /* Small Desktop/Large Tablet - 3 items */
+        @media (max-width: 1199px) and (min-width: 992px) {
             .products-grid {
                 grid-template-columns: repeat(3, 1fr);
                 gap: 1.25rem;
             }
         }
         
-        @media (max-width: 991px) {
+        /* Tablet - 2 items */
+        @media (max-width: 991px) and (min-width: 576px) {
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 1rem;
             }
         }
         
+        /* Mobile - 2 items (minimum) - Compact Layout */
         @media (max-width: 575px) {
             .products-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+            }
+        }
+        
+        /* Extra Small Mobile - Still 2 items but with tighter spacing */
+        @media (max-width: 400px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.375rem;
             }
         }
 
@@ -1281,14 +1577,12 @@
         }
 
       .product-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         border-color: rgba(6, 182, 212, 0.3);
       }
 
         .product-image {
             position: relative;
-            height: 180px;
+            height: 140px;
             background: linear-gradient(135deg, #1e293b, #334155);
             display: flex;
             align-items: center;
@@ -1299,13 +1593,13 @@
         /* Responsive image height adjustments */
         @media (max-width: 1199px) {
             .product-image {
-                height: 160px;
+                height: 120px;
             }
         }
         
         @media (max-width: 767px) {
             .product-image {
-                height: 200px;
+                height: 140px;
             }
         }
 
@@ -1336,18 +1630,52 @@
       }
 
       .product-card:hover .product-placeholder {
-        transform: scale(1.1);
         color: rgba(6, 182, 212, 0.6);
       }
 
+      /* Favorite Button - Always visible for mobile/touch devices */
+      .favorite-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        background: rgba(0, 0, 0, 0.6);
+        border: none;
+        border-radius: 50%;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #e2e8f0;
+        font-size: 0.875rem;
+        transition: background-color 0.2s ease;
+        z-index: 3;
+        backdrop-filter: blur(10px);
+        opacity: 1;
+      }
+
+      .favorite-btn:hover {
+        background: rgba(0, 0, 0, 0.8);
+        color: #06b6d4;
+      }
+
+      .favorite-btn.favorited {
+        background: rgba(239, 68, 68, 0.9);
+        color: white;
+      }
+
+      .favorite-btn.favorited:hover {
+        background: rgba(239, 68, 68, 1);
+      }
+
         .product-info {
-            padding: 1.25rem;
+            padding: 0.875rem;
         }
         
         /* Responsive padding adjustments */
         @media (max-width: 991px) {
             .product-info {
-                padding: 1.5rem;
+                padding: 1rem;
             }
         }
 
@@ -1437,32 +1765,45 @@
       .btn-cart:hover {
         background: #06b6d4;
         color: white;
-        transform: translateY(-1px);
       }
 
         .btn-buy {
-            flex: 1;
+            width: 100%;
             background: linear-gradient(135deg, #7c3aed, #ec4899);
             color: white;
             border: none;
-            padding: 0.625rem;
+            padding: 0.75rem 1rem;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 0.8125rem;
+            font-size: 0.875rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-align: center;
+            min-height: 44px;
         }
         
-        /* Responsive button adjustments */
-        @media (max-width: 991px) {
-            .btn-cart,
-            .btn-buy {
-                padding: 0.75rem;
-                font-size: 0.875rem;
-            }
+      /* Mobile-optimized button styles */
+      @media (max-width: 991px) {
+        .btn-cart,
+        .btn-buy {
+          padding: 0.75rem;
+          font-size: 0.875rem;
+          min-height: 48px; /* Minimum touch target size for accessibility */
+          touch-action: manipulation; /* Prevent zoom on touch */
         }
+      }
+      
+      /* Prevent zoom on touch for better mobile experience */
+      .btn-buy,
+      .favorite-btn {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
 
       .btn-buy:hover {
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
       }
 
@@ -1481,7 +1822,6 @@
       .load-more-btn:hover {
         background: #06b6d4;
         color: white;
-        transform: translateY(-2px);
         box-shadow: 0 8px 24px rgba(6, 182, 212, 0.2);
       }
 
@@ -1509,11 +1849,6 @@
           margin-top: 2rem;
         }
 
-        .products-grid {
-          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-          gap: 1rem;
-        }
-
         .section-header {
           flex-direction: column;
           text-align: center;
@@ -1535,10 +1870,6 @@
 
         .market-title {
           font-size: 1.875rem;
-        }
-
-        .products-grid {
-          grid-template-columns: 1fr;
         }
       }
 
@@ -1588,6 +1919,249 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #475569;
       }
+      
+      /* Series Tag Styles */
+      .series-tag {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+        color: #ffffff;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 3;
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .series-tag span {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+      
+.product-card:hover .series-tag {
+        background: linear-gradient(135deg, rgba(6, 182, 212, 0.9), rgba(59, 130, 246, 0.9));
+      }
+      
+      /* Responsive Series Tag */
+      @media (max-width: 576px) {
+        .series-tag {
+          font-size: 0.65rem;
+          padding: 4px 8px;
+          top: 6px;
+          left: 6px;
+        }
+        
+        .favorite-btn {
+          width: 30px;
+          height: 30px;
+          top: 6px;
+          right: 6px;
+          font-size: 0.8rem;
+        }
+      }
+      
+      /* Mobile Compact Layout - Enhanced */
+      @media (max-width: 575px) {
+        /* Header Compact */
+        .market-header {
+          padding: 1.5rem 0;
+        }
+        
+        .market-title-compact {
+          font-size: 2rem;
+          margin-bottom: 0.75rem;
+        }
+        
+        .header-badge {
+          font-size: 0.75rem;
+          padding: 0.5rem 1rem;
+          margin-bottom: 1.5rem;
+        }
+        
+        .counter-card {
+          padding: 1rem;
+        }
+        
+        .counter-number {
+          font-size: 1.75rem;
+          margin-bottom: 0.25rem;
+        }
+        
+        .counter-label {
+          font-size: 0.75rem;
+        }
+        
+        .counter-icon {
+          width: 48px;
+          height: 48px;
+          font-size: 1.5rem;
+        }
+        
+        .activity-banner {
+          padding: 0.75rem;
+          margin-bottom: 0.75rem;
+        }
+        
+        .activity-stat {
+          font-size: 0.7rem;
+        }
+        
+        /* Filter Section Compact */
+        .search-filter-section {
+          padding: 1.5rem 0;
+        }
+        
+        .search-filter-card {
+          padding: 1rem;
+          border-radius: 12px;
+        }
+        
+        .market-search-input {
+          padding: 0.625rem 2.5rem 0.625rem 0.75rem;
+          font-size: 0.875rem;
+        }
+        
+        .filter-select {
+          padding: 0.625rem 0.5rem;
+          font-size: 0.8125rem;
+        }
+        
+        /* Products Section Compact */
+        .products-section {
+          /* padding: 2.5rem 0; */
+        }
+        
+        .container-fluid {
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+        }
+        
+        /* Product Cards Compact */
+        .product-card {
+          border-radius: 12px;
+        }
+        
+        .product-image {
+          height: 100px;
+        }
+        
+        .product-placeholder {
+          font-size: 2.5rem;
+        }
+        
+        .product-info {
+          padding: 0.625rem;
+        }
+        
+        .product-title {
+          font-size: 0.875rem;
+          margin-bottom: 0.375rem;
+          line-height: 1.3;
+          -webkit-line-clamp: 1;
+        }
+        
+        .product-description {
+          font-size: 0.75rem;
+          margin-bottom: 0.625rem;
+          -webkit-line-clamp: 1;
+          line-height: 1.4;
+        }
+        
+        .product-price {
+          margin-bottom: 0.625rem;
+        }
+        
+        .current-price {
+          font-size: 1rem;
+        }
+        
+        .original-price {
+          font-size: 0.8125rem;
+        }
+        
+        .btn-buy {
+          padding: 0.5rem;
+          font-size: 0.75rem;
+          min-height: 36px;
+          border-radius: 8px;
+        }
+        
+        .btn-cart {
+          padding: 0.5rem;
+          font-size: 0.75rem;
+          min-height: 36px;
+          border-radius: 8px;
+        }
+        
+        /* Compact Series Tag & Favorite Button */
+        .series-tag {
+          font-size: 0.6rem;
+          padding: 3px 6px;
+          top: 4px;
+          left: 4px;
+        }
+        
+        .favorite-btn {
+          width: 26px;
+          height: 26px;
+          top: 4px;
+          right: 4px;
+          font-size: 0.7rem;
+        }
+      }
+      
+      /* Extra Small Mobile - Even More Compact */
+      @media (max-width: 400px) {
+        .market-title-compact {
+          font-size: 1.75rem;
+        }
+        
+        .counter-card {
+          padding: 0.75rem;
+        }
+        
+        .counter-number {
+          font-size: 1.5rem;
+        }
+        
+        .counter-icon {
+          width: 42px;
+          height: 42px;
+          font-size: 1.25rem;
+        }
+        
+        .product-image {
+          height: 90px;
+        }
+        
+        .product-info {
+          padding: 0.5rem;
+        }
+        
+        .product-title {
+          font-size: 0.8125rem;
+        }
+        
+        .product-description {
+          font-size: 0.7rem;
+        }
+        
+        .current-price {
+          font-size: 0.9375rem;
+        }
+        
+        .btn-buy,
+        .btn-cart {
+          font-size: 0.7rem;
+          min-height: 32px;
+        }
+      }
     </style>
 
     <!-- Include Modular Top Navigation -->
@@ -1598,153 +2172,59 @@
 
     <!-- Main Content -->
     <main class="main-content">
-      <!-- Market Header with Focused Counters -->
-      <div class="market-header">
-        <div class="header-background">
-          <div class="floating-cards">
-            <div class="floating-card card-1">
-              <i class="fas fa-diamond"></i>
-            </div>
-            <div class="floating-card card-2"><i class="fas fa-star"></i></div>
-            <div class="floating-card card-3"><i class="fas fa-crown"></i></div>
-            <div class="floating-card card-4"><i class="fas fa-gem"></i></div>
-            <div class="floating-card card-5"><i class="fas fa-magic"></i></div>
-            <div class="floating-card card-6"><i class="fas fa-fire"></i></div>
-          </div>
-        </div>
-
-        <div class="container position-relative">
-          <div class="row py-4">
-            <div class="col-lg-4 col-md-5 mb-4 mb-md-0">
-              <div class="compact-header-content">
-                <div class="header-badge">
-                  <i class="fas fa-sparkles me-2"></i>
-                  <span>Premium Marketplace</span>
-                  <div class="badge-glow"></div>
-                </div>
-
-                <h1 class="market-title-compact">
-                  <span class="title-highlight">Pearl</span>
-                  <span class="title-main">Market</span>
-                </h1>
-
-                <div class="activity-banner mt-3">
-                  <div class="activity-indicator">
-                    <div class="activity-dot"></div>
-                    <div class="activity-pulse"></div>
+      
+      <!-- Simple Header with Counters -->
+      <div class="simple-header">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="header-card">
+                <div class="header-content">
+                  <div class="header-title">
+                    <h1><i class="fas fa-store me-2"></i>Pearl Market</h1>
+                    <p class="header-subtitle">Discover and collect premium card sets</p>
                   </div>
-                  <div class="activity-content">
-                    <div class="activity-stats">
-                      <span class="activity-stat">
-                        <i class="fas fa-eye"></i>
-                        <span
-                          class="live-counter"
-                          data-target="89"
-                          data-speed="3000"
-                          >0</span
-                        >
-                        viewing now
-                      </span>
-                      <span class="activity-stat">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span
-                          class="live-counter"
-                          data-target="23"
-                          data-speed="5000"
-                          >0</span
-                        >
-                        recent purchases
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-8 col-md-7">
-              <div class="counters-container">
-                <div class="counters-grid-compact">
-                  <div class="counter-card counter-primary">
-                    <div class="counter-icon-wrapper">
-                      <div class="counter-icon">
+                  
+                  <div class="stats-container">
+                    <div class="stat-item">
+                      <div class="stat-icon">
                         <i class="fas fa-layer-group"></i>
                       </div>
-                      <div class="counter-pulse"></div>
-                    </div>
-                    <div class="counter-content">
-                      <div
-                        class="counter-number"
-                        data-target="256"
-                        data-suffix="+"
-                      >
-                        0+
+                      <div class="stat-details">
+                        <div class="stat-number" data-target="256" data-suffix="">0</div>
+                        <div class="stat-label">Total Cards</div>
                       </div>
-                      <div class="counter-label">Card Collections</div>
                     </div>
-                    <div class="counter-glow"></div>
-                  </div>
-
-                  <div class="counter-card counter-secondary">
-                    <div class="counter-icon-wrapper">
-                      <div class="counter-icon">
-                        <i class="fas fa-users"></i>
+                    
+                    <div class="stat-item">
+                      <div class="stat-icon">
+                        <i class="fas fa-shopping-cart"></i>
                       </div>
-                      <div class="counter-pulse"></div>
-                    </div>
-                    <div class="counter-content">
-                      <div
-                        class="counter-number"
-                        data-target="52847"
-                        data-suffix=""
-                        data-format="compact"
-                      >
-                        0
+                      <div class="stat-details">
+                        <div class="stat-number" data-target="1247" data-suffix="">0</div>
+                        <div class="stat-label">Total Sold</div>
                       </div>
-                      <div class="counter-label">Active Collectors</div>
                     </div>
-                    <div class="counter-glow"></div>
-                  </div>
-
-                  <div class="counter-card counter-accent">
-                    <div class="counter-icon-wrapper">
-                      <div class="counter-icon">
-                        <i class="fas fa-exchange-alt"></i>
+                    
+                    <div class="stat-item">
+                      <div class="stat-icon">
+                        <i class="fas fa-wallet"></i>
                       </div>
-                      <div class="counter-pulse"></div>
-                    </div>
-                    <div class="counter-content">
-                      <div
-                        class="counter-number"
-                        data-target="1247893"
-                        data-suffix=""
-                        data-format="compact"
-                      >
-                        0
+                      <div class="stat-details">
+                        <div class="stat-number" data-target="5250" data-suffix="">0</div>
+                        <div class="stat-label">Balance</div>
                       </div>
-                      <div class="counter-label">Cards Traded</div>
                     </div>
-                    <div class="counter-glow"></div>
-                  </div>
-
-                  <div class="counter-card counter-special">
-                    <div class="counter-icon-wrapper">
-                      <div class="counter-icon">
-                        <i class="fas fa-star"></i>
+                    
+                    <div class="stat-item">
+                      <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
                       </div>
-                      <div class="counter-pulse"></div>
-                    </div>
-                    <div class="counter-content">
-                      <div
-                        class="counter-number"
-                        data-target="99.9"
-                        data-suffix="%"
-                        data-decimals="1"
-                      >
-                        0.0%
+                      <div class="stat-details">
+                        <div class="stat-number" data-target="3890" data-suffix="">0</div>
+                        <div class="stat-label">Total Spent</div>
                       </div>
-                      <div class="counter-label">Satisfaction Rate</div>
                     </div>
-                    <div class="counter-glow"></div>
                   </div>
                 </div>
               </div>
@@ -1759,65 +2239,47 @@
           <div class="row">
             <div class="col-12">
               <div class="search-filter-card">
-                <div class="row g-2 g-md-3 align-items-end">
-                  <!-- Search Bar -->
-                  <div class="col-lg-4 col-md-12 col-sm-12 mb-2 mb-lg-0">
-                    <div class="market-search-container">
-                      <input
-                        type="text"
-                        id="searchInput"
-                        class="market-search-input"
-                        placeholder="Search card sets, themes, or rarity..."
-                      />
-                      <i class="fas fa-search market-search-icon"></i>
+                <div class="row g-2 g-md-3 align-items-center">
+                  <!-- Filter Title -->
+                  <div class="col-lg-2 col-md-12 col-12 mb-2 mb-lg-0">
+                    <div class="filter-section-title">
+                      <h3 style="font-size: 1.25rem; font-weight: 700; color: #e2e8f0; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-filter" style="color: #06b6d4; font-size: 1.125rem;"></i>
+                        <span>Filters</span>
+                      </h3>
+                      <p style="font-size: 0.75rem; color: #94a3b8; margin: 0; margin-top: 0.25rem;">Refine your search results</p>
                     </div>
                   </div>
 
                   <!-- Category Filter -->
-                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
+                  <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mb-lg-0">
                     <select class="filter-select" id="categoryFilter">
                       <option value="">All Categories</option>
-                      <option value="premium">💎 Premium</option>
-                      <option value="limited">⭐ Limited</option>
-                      <option value="classic">🏛️ Classic</option>
-                      <option value="fantasy">🧙 Fantasy</option>
-                      <option value="sci-fi">🚀 Sci-Fi</option>
-                      <option value="nature">🌿 Nature</option>
+                      <!-- Dynamic card names will be populated here by JavaScript -->
                     </select>
                   </div>
 
-                  <!-- Rarity Filter -->
-                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
-                    <select class="filter-select" id="rarityFilter">
-                      <option value="">All Rarities</option>
-                      <option value="common">⚪ Common</option>
-                      <option value="rare">🔵 Rare</option>
-                      <option value="epic">🟣 Epic</option>
-                      <option value="legendary">🟡 Legendary</option>
-                      <option value="mythic">🔴 Mythic</option>
-                    </select>
-                  </div>
-
-                  <!-- Price Filter -->
-                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
-                    <select class="filter-select" id="priceFilter">
-                      <option value="">All Prices</option>
-                      <option value="0-500">💰 0-500</option>
-                      <option value="500-1000">💎 500-1K</option>
-                      <option value="1000-2500">⭐ 1K-2.5K</option>
-                      <option value="2500+">👑 2.5K+</option>
-                    </select>
-                  </div>
-
-                  <!-- Sort Options -->
-                  <div class="col-lg-2 col-md-3 col-sm-6 col-6 mb-2 mb-lg-0">
+                  <!-- Price Sort -->
+                  <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-2 mb-lg-0">
                     <select class="filter-select" id="sortFilter">
-                      <option value="popular">🔥 Popular</option>
-                      <option value="newest">🆕 Newest</option>
-                      <option value="price-low">💸 Low→High</option>
-                      <option value="price-high">💰 High→Low</option>
-                      <option value="rating">⭐ Rating</option>
+                      <option value="newest">🆕 Newest First</option>
+                      <option value="oldest">🕒 Oldest First</option>
+                      <option value="price_low">💸 Lowest Price</option>
+                      <option value="price_high">💰 Highest Price</option>
                     </select>
+                  </div>
+
+                  <!-- Favorites Toggle -->
+                  <div class="col-lg-4 col-md-4 col-sm-12 col-12 mb-2 mb-lg-0">
+                    <div class="favorites-toggle-container">
+                      <div class="form-check form-switch d-flex align-items-center">
+                        <input class="form-check-input favorites-toggle" type="checkbox" id="favoritesToggle">
+                        <label class="form-check-label favorites-label" for="favoritesToggle">
+                          <i class="fas fa-heart me-2"></i>
+                          <span>Show Favorites Only</span>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1858,10 +2320,13 @@
       crossorigin="anonymous"
     ></script>
 
-    <!-- Pearl Market JavaScript - Simple Version -->
-    <script src="{{ url_for('static', filename='js/pearl_market_simple.js') }}?v={{ cache_buster }}"></script>
-    
     <!-- SweetAlert2 for modern alerts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Toast Notification System -->
+    <script src="{{ url_for('static', filename='js/toast.js') }}?v={{ cache_buster }}"></script>
+    
+    <!-- Pearl Market JavaScript -->
+    <script src="{{ url_for('static', filename='js/pearl_market.js') }}?v={{ cache_buster }}"></script>
   </body>
 </html>

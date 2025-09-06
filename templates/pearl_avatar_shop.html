@@ -1,236 +1,380 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Avatar Shop - Pearl Verse</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 CSS for Toast Notifications -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     
-    <!-- Stylesheets -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/scrollbar-hide.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/pearl_avatar_shop.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_sidenav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_topnav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/modular_botnav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/toast.css') }}">
+    <!-- Inter Font for modern typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/pearl_avatar_shop.css">
+    
+    <!-- Global Toast CSS -->
+    <link rel="stylesheet" href="/static/css/toast.css">
+    
+    <!-- Lazy Loading CSS -->
+    <link rel="stylesheet" href="/static/css/lazy-loading.css">
 </head>
-<body class="scrollbar-hide-global">
-    <!-- Include Modular Side Navigation -->
+<body>
+    <!-- Include Modular Navigation Components -->
     {% include 'modular_sidenav.html' %}
-    
-    <!-- Include Modular Top Navigation -->
     {% include 'modular_topnav.html' %}
-    
-    <!-- Include Modular Bottom Navigation -->
     {% include 'modular_botnav.html' %}
     
-    <!-- Main Avatar Shop Content -->
-    <main class="avatar-shop-main">
-        <div class="avatar-shop-container">
-            <!-- Header Section -->
-            <div class="avatar-shop-header">
-                <h1 class="avatar-shop-title">Avatar Shop</h1>
-                <p class="avatar-shop-subtitle">Customize your digital identity and express yourself in the Pearl Verse</p>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container-fluid px-3 px-lg-4">
+            <!-- Avatar Shop Header -->
+            <div class="avatar-shop-header mb-4">
+                <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3">
+                    <div>
+                        <h1 class="mb-2">
+                            <i class="fas fa-user-astronaut me-3"></i>
+                            Avatar Shop
+                        </h1>
+                        <p class="mb-0 text-secondary fs-6">
+                            Customize your profile with banners, avatars, and decorations
+                        </p>
+                    </div>
+                    
+                    <!-- User Stats -->
+                    <div class="user-stats-container">
+                        <div class="stat-card pearls">
+                            <i class="fas fa-gem"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="userPearls">0</span>
+                                <span class="stat-label">Pearls</span>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card level">
+                            <i class="fas fa-star"></i>
+                            <div class="stat-info">
+                                <span class="stat-value" id="userLevel">1</span>
+                                <span class="stat-label">Level</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
             </div>
             
-            <!-- Main Content Grid -->
-            <div class="avatar-content-grid">
-                <!-- Preview Sections -->
-                <div class="preview-sections">
-                    <!-- Banner Preview Section -->
-                    <div class="banner-preview-section">
-                        <div class="preview-header">
-                            <h3 class="preview-title"><i class="fas fa-image"></i> Banner Preview</h3>
-                        </div>
-                        <div class="banner-preview-container">
-                            <div class="banner-display" id="banner-display">
-                                <div class="banner-placeholder">
-                                    <i class="fas fa-image"></i>
-                                    <span>Select a banner</span>
+            <!-- Shop Layout -->
+            <div class="row g-4">
+                <!-- Preview Section -->
+                <div class="col-lg-4">
+                    <div class="preview-section">
+                        <!-- Live Preview Card -->
+                        <div class="preview-card bg-dark mb-4">
+                            <div class="card-header bg-secondary">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-eye me-2"></i>
+                                    Live Preview
+                                </h6>
+                            </div>
+                            <div class="card-body p-3">
+                                <!-- Profile Preview Container -->
+                                <div class="profile-preview-container">
+                                    <!-- Banner Preview -->
+                                    <div class="banner-preview-section mb-3">
+                                        <label class="form-label small text-secondary mb-2">Profile Banner</label>
+                                        <div class="preview-banner" id="previewBanner">
+                                            <div class="preview-placeholder">
+                                                <i class="fas fa-image fs-2 text-muted mb-2"></i>
+                                                <span class="small text-muted">No banner selected</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Avatar Preview -->
+                                    <div class="avatar-preview-section mb-3">
+                                        <label class="form-label small text-secondary mb-2">Avatar & Decoration</label>
+                                        <div class="preview-avatar">
+                                            <div class="avatar-container" id="previewAvatarContainer">
+                                                <img data-src="/static/images/default-avatar.png" alt="Avatar" 
+                                                     class="avatar-image lazy-image" id="previewAvatar" loading="lazy"
+                                                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236b7280' font-size='10'%3ELoading...%3C/text%3E%3C/svg%3E"
+                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                                <div class="preview-placeholder position-absolute" style="display: none;">
+                                                    <i class="fas fa-user text-muted"></i>
+                                                </div>
+                                                <!-- Decoration Overlay -->
+                                                <div class="avatar-decorations position-absolute" id="previewDecoration">
+                                                    <!-- Decoration overlay will be added here -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Avatar & Decoration Preview Section -->
-                    <div class="avatar-preview-section">
-                        <div class="preview-header">
-                            <h3 class="preview-title"><i class="fas fa-user"></i> Avatar & Decoration</h3>
-                        </div>
-                        <div class="avatar-preview-container">
-                            <div class="avatar-display" id="avatar-display">
-                                <div class="avatar-placeholder">
-                                    <i class="fas fa-user"></i>
-                                    <span>Select an avatar</span>
+                </div>
+                
+                <!-- Shop Section -->
+                <div class="col-lg-8">
+                        <!-- Shop Header -->
+                        <div class="shop-header mb-4">
+                            <!-- Row 1: Category Tabs -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <h5 class="mb-0 text-light d-flex align-items-center">
+                                            <i class="fas fa-shopping-bag me-2 text-primary"></i>
+                                            Browse Items
+                                        </h5>
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Click on items to preview
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Row 2: Category Tabs -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="category-tabs">
+                                        <div class="btn-group w-100 d-flex" role="group">
+                                            <input type="radio" class="btn-check" name="category" id="categoryBanner" value="banner" checked>
+                                            <label class="btn btn-outline-primary flex-fill" for="categoryBanner">
+                                                <i class="fas fa-image me-1 d-none d-sm-inline"></i>
+                                                <span class="d-none d-sm-inline">Banners</span>
+                                                <span class="d-inline d-sm-none">Banners</span>
+                                            </label>
+                                            
+                                            <input type="radio" class="btn-check" name="category" id="categoryAvatar" value="avatar">
+                                            <label class="btn btn-outline-primary flex-fill" for="categoryAvatar">
+                                                <i class="fas fa-user-circle me-1 d-none d-sm-inline"></i>
+                                                <span class="d-none d-sm-inline">Avatars</span>
+                                                <span class="d-inline d-sm-none">Avatars</span>
+                                            </label>
+                                            
+                                            <input type="radio" class="btn-check" name="category" id="categoryDecoration" value="decoration">
+                                            <label class="btn btn-outline-primary flex-fill" for="categoryDecoration">
+                                                <i class="fas fa-magic me-1 d-none d-sm-inline"></i>
+                                                <span class="d-none d-sm-inline">Decorations</span>
+                                                <span class="d-inline d-sm-none">Decor</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Row 3: Search and Filters -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="shop-controls d-flex gap-2">
+                                        <div class="search-group flex-grow-1">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-secondary border-0">
+                                                    <i class="fas fa-search text-muted"></i>
+                                                </span>
+                                                <input type="text" class="form-control bg-secondary border-0 text-light" 
+                                                       placeholder="Search items..." id="searchItems">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="ownership-filter">
+                                            <select class="form-select bg-secondary border-0 text-light" id="ownershipFilter" title="Filter by ownership">
+                                                <option value="all">🔍 All Items</option>
+                                                <option value="owned">✅ Owned Items</option>
+                                                <option value="unowned">🛒 Available to Buy</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Avatar Actions -->
-                    <div class="avatar-actions">
-                        <button class="btn-save-avatar" id="save-avatar">
-                            <i class="fas fa-save"></i> Save Avatar
-                        </button>
-                        <button class="btn-reset-avatar" id="reset-avatar">
-                            <i class="fas fa-undo"></i> Reset
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Customization Section -->
-                <div class="customization-section">
-                    <div class="customization-header">
-                        <h2 class="customization-title">Customize</h2>
-                        <div class="user-stats-display">
-                            <div class="pearl-balance-display">
-                                <i class="fas fa-gem pearl-icon"></i>
-                                <span class="pearl-amount" id="user-pearls">2,500</span>
+                        
+        <!-- Items Grid -->
+                        <div class="items-grid-container">
+                            <div class="items-grid" id="itemsGrid">
+                                <!-- Loading Placeholder -->
+                                <div class="loading-placeholder" id="loadingPlaceholder">
+                                    <div class="spinner-border text-primary mb-3" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="text-muted">Loading avatar shop items...</p>
+                                </div>
+                                
+                                <!-- Items will be populated dynamically by JavaScript -->
                             </div>
-                            <div class="level-display">
-                                <i class="fas fa-star level-icon"></i>
-                                <span class="level-text">Level <span id="user-level">1</span></span>
-                            </div>
-                            <div class="exp-display">
-                                <i class="fas fa-chart-line exp-icon"></i>
-                                <span class="exp-text"><span id="user-exp">0</span> EXP to next level</span>
+                            
+                            <!-- Empty State -->
+                            <div class="empty-state" id="emptyState" style="display: none;">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-shopping-bag fa-4x text-muted mb-3"></i>
+                                </div>
+                                <h5 class="text-muted">No Items Found</h5>
+                                <p class="text-secondary">Try adjusting your filters or check back later for new items.</p>
                             </div>
                         </div>
-                    </div>
-                    
-                    <!-- Category Tabs -->
-                    <div class="category-tabs">
-                        <button class="category-tab active" data-category="banner">
-                            <i class="fas fa-image category-tab-icon"></i>
-                            <span>Banner</span>
-                        </button>
-                        <button class="category-tab" data-category="avatar">
-                            <i class="fas fa-user category-tab-icon"></i>
-                            <span>Avatar</span>
-                        </button>
-                        <button class="category-tab" data-category="decoration">
-                            <i class="fas fa-sparkles category-tab-icon"></i>
-                            <span>Decoration</span>
-                        </button>
-                    </div>
-                    
-                    <!-- Search and Filter Section -->
-                    <div class="search-filter-section">
-                        <div class="avatar-search-container">
-                            <i class="fas fa-search avatar-search-icon"></i>
-                            <input type="text" class="avatar-search-input" placeholder="Search items..." id="item-search">
-                        </div>
-                        <select class="filter-dropdown" id="owned-filter">
-                            <option value="all">All Items</option>
-                            <option value="owned">Owned Only</option>
-                            <option value="unowned">Not Owned</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Items Grid -->
-                    <div class="avatar-items-grid" id="items-grid">
-                        <!-- Items will be loaded dynamically -->
-                        <div class="loading-spinner"></div>
-                        <div class="loading-text">Loading avatar items...</div>
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <div class="pagination" id="items-pagination">
-                        <button class="pagination-btn" id="prev-page" disabled>
-                            <i class="fas fa-chevron-left"></i> Previous
-                        </button>
-                        <span class="page-info">
-                            Page <span id="current-page">1</span> of <span id="total-pages">1</span>
-                        </span>
-                        <button class="pagination-btn" id="next-page">
-                            Next <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
+                        
+                        <!-- Pagination -->
+                        <nav class="mt-4" id="paginationNav" style="display: none;">
+                            <ul class="pagination pagination-dark justify-content-center" id="paginationList">
+                                <!-- Pagination will be generated by JavaScript -->
+                            </ul>
+                        </nav>
                 </div>
-                
             </div>
         </div>
     </main>
     
-    <!-- Item Detail Modal -->
-    <div class="modal fade" id="itemDetailModal" tabindex="-1" aria-labelledby="itemDetailTitle" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="itemDetailTitle">Item Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Purchase Confirmation Modal -->
+    <div class="modal fade" id="purchaseModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        Confirm Purchase
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body" id="itemDetailBody">
-                    <!-- Item details will be loaded here -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="equipItem">Equip Item</button>
-                    <button type="button" class="btn btn-success" id="buyItem">Buy Item</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Enhanced Purchase Confirmation Modal -->
-    <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="purchaseModalTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content purchase-modal-content">
-                <div class="purchase-modal-header">
-                    <div class="purchase-modal-title-section">
-                        <h3 class="purchase-modal-title" id="purchaseModalTitle">
-                            <i class="fas fa-shopping-cart"></i>
-                            Confirm Purchase
-                        </h3>
-                        <p class="purchase-modal-subtitle">Review your purchase details below</p>
+                <div class="modal-body">
+                    <div class="d-flex gap-3 mb-3">
+                        <img id="modalItemImage" data-src="" alt="" class="rounded lazy-image" loading="lazy" style="width: 80px; height: 80px; object-fit: cover;" 
+                             src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='80' height='80' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%236b7280' font-size='10'%3ELoading...%3C/text%3E%3C/svg%3E">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1" id="modalItemName"></h6>
+                            <span class="badge text-bg-secondary" id="modalItemCategory"></span>
+                            <div class="mt-2">
+                                <span class="fs-5 fw-bold text-success" id="modalItemPrice"></span>
+                                <i class="fas fa-gem ms-1 text-success"></i>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" class="purchase-modal-close" data-bs-dismiss="modal" aria-label="Close">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Are you sure you want to purchase this item?
+                    </div>
+                    
+                    <div class="d-flex justify-content-between text-sm">
+                        <span>Current Balance:</span>
+                        <span class="fw-bold" id="modalCurrentBalance">0 <i class="fas fa-gem"></i></span>
+                    </div>
+                    <div class="d-flex justify-content-between text-sm">
+                        <span>After Purchase:</span>
+                        <span class="fw-bold" id="modalNewBalance">0 <i class="fas fa-gem"></i></span>
+                    </div>
                 </div>
-                
-                <div class="purchase-modal-body" id="purchaseModalBody">
-                    <!-- Enhanced purchase confirmation content will be populated here -->
-                </div>
-                
-                <div class="purchase-modal-footer">
-                    <button type="button" class="btn-cancel-purchase" data-bs-dismiss="modal">
-                        <i class="fas fa-times"></i>
-                        Cancel
-                    </button>
-                    <button type="button" class="btn-confirm-purchase" id="confirmPurchase">
-                        <i class="fas fa-gem"></i>
-                        <span class="purchase-btn-text">Complete Purchase</span>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirmPurchase">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        Purchase Item
                     </button>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Include Modular Bottom Navigation -->
-    {% include 'modular_botnav.html' %}
+    <!-- Global Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" id="toastContainer"></div>
     
     <!-- Scripts -->
-    <!-- jQuery Library -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Bootstrap JS Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    <!-- SweetAlert2 JavaScript for Toast Notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <!-- Application Scripts -->
-    <script src="{{ url_for('static', filename='js/modular_sidenav.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/modular_topnav.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/modular_botnav.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/pearl_avatar_shop.js') }}"></script>
+    <!-- Global Toast Script -->
+    <script src="/static/js/toast.js"></script>
+    
+    <!-- Number Formatter Script - Pearl Dashboard Compatible -->
+    <script>
+        // Pearl Balance Formatter - Exact copy from Pearl Dashboard
+        window.formatPearlBalance = function(num) {
+            // Handle invalid, null, or undefined values
+            if (num === null || num === undefined || isNaN(num)) {
+                return "0";
+            }
+
+            // Convert to number if it's a string
+            const numValue = typeof num === "string" ? parseFloat(num) : num;
+
+            // Check again after conversion
+            if (isNaN(numValue)) {
+                return "0";
+            }
+
+            // Handle negative numbers
+            const absValue = Math.abs(numValue);
+            const isNegative = numValue < 0;
+            const prefix = isNegative ? "-" : "";
+
+            // Format with proper suffixes: K (100K+), M (1M+), B (1B+), T (1T+), Q (1Q+), Qi (1Qi+), Sx (1Sx+)
+            if (absValue >= 1000000000000000000000) {
+                // Sextillions (1,000,000,000,000,000,000,000+)
+                return prefix + (absValue / 1000000000000000000000).toFixed(1) + "Sx";
+            }
+            if (absValue >= 1000000000000000000) {
+                // Quintillions (1,000,000,000,000,000,000+)
+                return prefix + (absValue / 1000000000000000000).toFixed(1) + "Qi";
+            }
+            if (absValue >= 1000000000000000) {
+                // Quadrillions (1,000,000,000,000,000+)
+                return prefix + (absValue / 1000000000000000).toFixed(1) + "Q";
+            }
+            if (absValue >= 1000000000000) {
+                // Trillions (1,000,000,000,000+)
+                return prefix + (absValue / 1000000000000).toFixed(1) + "T";
+            }
+            if (absValue >= 1000000000) {
+                // Billions (1,000,000,000+)
+                return prefix + (absValue / 1000000000).toFixed(1) + "B";
+            }
+            if (absValue >= 1000000) {
+                // Millions (1,000,000+)
+                return prefix + (absValue / 1000000).toFixed(1) + "M";
+            }
+            if (absValue >= 100000) {
+                // Hundreds of thousands (100,000+) - use K suffix
+                return prefix + (absValue / 1000).toFixed(1) + "K";
+            }
+
+            // Less than 100,000 - show as is with comma separators
+            return numValue.toLocaleString();
+        };
+        
+        // Legacy support
+        window.formatNumber = window.formatPearlBalance;
+        
+        console.log('Pearl Dashboard formatter loaded successfully!');
+        console.log('Test large number:', window.formatPearlBalance(1234567890987631400));
+    </script>
+    
+    <!-- Avatar Shop Script -->
+    <script src="/static/js/pearl_avatar_shop.js"></script>
+    
+    <!-- Initialize lazy loading for initial images -->
+    <script>
+        $(document).ready(function() {
+            // Load any initial images that might be present
+            setTimeout(function() {
+                if (window.AvatarShop && typeof window.AvatarShop.loadImages === 'function') {
+                    window.AvatarShop.loadImages();
+                }
+            }, 500);
+        });
+    </script>
 </body>
 </html>

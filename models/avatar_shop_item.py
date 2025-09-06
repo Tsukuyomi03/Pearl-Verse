@@ -15,7 +15,6 @@ class AvatarShopItem(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(255), nullable=False)
     category_id = db.Column(db.Integer, nullable=False)  # 1=banner, 2=avatar, 3=decoration
-    rarity_id = db.Column(db.Integer, nullable=False)    # 1=common, 2=rare, 3=epic, 4=legendary, 5=mythic
     file_path = db.Column(db.String(500), nullable=False)
     file_name = db.Column(db.String(255), nullable=False)
     file_extension = db.Column(db.String(10), nullable=False)
@@ -33,11 +32,6 @@ class AvatarShopItem(db.Model):
         """Get category name from category_id"""
         categories = {1: 'banner', 2: 'avatar', 3: 'decoration'}
         return categories.get(self.category_id, 'unknown')
-    
-    def get_rarity_name(self):
-        """Get rarity name from rarity_id"""
-        rarities = {1: 'common', 2: 'rare', 3: 'epic', 4: 'legendary', 5: 'mythic'}
-        return rarities.get(self.rarity_id, 'common')
     
     def get_full_file_path(self):
         """Get the full file path for web serving using Flask url_for"""
@@ -60,12 +54,10 @@ class AvatarShopItem(db.Model):
             'name': self.name,
             'category': self.get_category_name(),
             'category_id': self.category_id,
-            'rarity': self.get_rarity_name(),
-            'rarity_id': self.rarity_id,
             'price': self.price,
             'currency': self.currency,
             'description': self.description,
-            'image': self.get_full_url(),
+            'image_url': self.get_full_url(),
             'file_name': self.file_name,
             'file_extension': self.file_extension,
             'is_active': self.is_active,

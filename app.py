@@ -2733,10 +2733,43 @@ def get_avatar_shop_items():
         formatted_items = []
         for item in paginated_items:
             item_dict = item.to_dict()
+            
+            # Handle image URL with proper fallback to placeholder
+            try:
+                # Try to get the full URL from the model (uses url_for)
+                image_url = item.get_full_url()
+                
+                # Check if the actual file exists, if not use placeholder
+                import os
+                static_file_path = os.path.join(app.static_folder, item.get_full_file_path())
+                if not os.path.exists(static_file_path):
+                    # Use placeholder image based on category
+                    category = item.get_category_name()
+                    placeholder_filename = f'images/avatar_shop/placeholders/{category}_placeholder.webp'
+                    
+                    # Check if category-specific placeholder exists
+                    placeholder_path = os.path.join(app.static_folder, placeholder_filename)
+                    if os.path.exists(placeholder_path):
+                        image_url = url_for('static', filename=placeholder_filename)
+                    else:
+                        # Use generic placeholder
+                        image_url = url_for('static', filename='images/avatar_shop/placeholders/default_placeholder.webp')
+                        
+                # Update the image URL in the item dictionary
+                item_dict['image'] = image_url
+                item_dict['image_url'] = image_url  # Also provide as image_url for consistency
+                
+            except Exception as e:
+                # Fallback to generic placeholder if anything fails
+                print(f"Error loading image for item {item.id}: {str(e)}")
+                item_dict['image'] = url_for('static', filename='images/avatar_shop/placeholders/default_placeholder.webp')
+                item_dict['image_url'] = url_for('static', filename='images/avatar_shop/placeholders/default_placeholder.webp')
+            
             # Add ownership status
             item_dict['owned'] = item.id in owned_items
             # Add selection status based on user's current avatar configuration
             item_dict['selected'] = item.id in selected_items
+            
             formatted_items.append(item_dict)
         
         return jsonify({
@@ -3111,6 +3144,90 @@ def equip_avatar_item():
         return jsonify({
             'success': False,
             'message': 'An error occurred while updating item'
+        }), 500
+
+@app.route('/api/avatar-shop/configuration', methods=['GET'])
+def get_avatar_shop_configuration():
+    """Get user's current avatar configuration - alias for user-configuration endpoint"""
+    return get_user_avatar_configuration()
+
+@app.route('/api/avatar-shop/stats', methods=['GET'])
+def get_avatar_shop_stats():
+    """Get avatar shop statistics for the logged-in user"""
+    try:
+        # Check if user is logged in
+        if not session.get('logged_in') or not session.get('user_id'):
+            return jsonify({
+                'success': False,
+                'message': 'Please log in to view avatar shop statistics'
+            }), 401
+        
+        user_id = session['user_id']
+        user = db.session.get(User, user_id)
+        
+        if not user:
+            return jsonify({
+                'success': False,
+                'message': 'User not found'
+            }), 404
+        
+        # Get user's owned avatar items count
+        owned_items_count = UserAvatarItem.query.filter_by(user_id=user_id).count()
+        
+        # Get total available items count
+        total_items_count = AvatarShopItem.query.filter_by(is_active=True).count()
+        
+        # Get owned items by category
+        owned_by_category = db.session.query(
+            AvatarShopItem.category_id,
+            db.func.count(UserAvatarItem.id).label('count')
+        ).join(
+            UserAvatarItem, AvatarShopItem.id == UserAvatarItem.avatar_item_id
+        ).filter(
+            UserAvatarItem.user_id == user_id,
+            AvatarShopItem.is_active == True
+        ).group_by(AvatarShopItem.category_id).all()
+        
+        # Format category counts
+        category_map = {1: 'banner', 2: 'avatar', 3: 'decoration'}
+        category_stats = {}
+        for category_id, count in owned_by_category:
+            category_name = category_map.get(category_id, 'unknown')
+            category_stats[category_name] = count
+        
+        # Ensure all categories are present
+        for category_name in ['banner', 'avatar', 'decoration']:
+            if category_name not in category_stats:
+                category_stats[category_name] = 0
+        
+        # Calculate total pearls spent on avatar items
+        pearls_spent = db.session.query(
+            db.func.sum(UserAvatarItem.purchased_price)
+        ).filter(
+            UserAvatarItem.user_id == user_id
+        ).scalar() or 0
+        
+        # Calculate completion percentage
+        completion_percentage = round((owned_items_count / total_items_count) * 100) if total_items_count > 0 else 0
+        
+        return jsonify({
+            'success': True,
+            'stats': {
+                'owned_items': owned_items_count,
+                'total_items': total_items_count,
+                'completion_percentage': completion_percentage,
+                'pearls_spent': pearls_spent,
+                'current_pearls': user.pearl,
+                'user_level': user.level,
+                'category_breakdown': category_stats
+            }
+        }), 200
+        
+    except Exception as e:
+        print(f"Avatar shop stats error: {str(e)}")
+        return jsonify({
+            'success': False,
+            'message': 'An error occurred while fetching avatar shop statistics'
         }), 500
 
 # Simple Marketplace API Route
@@ -4101,93 +4218,6 @@ def pearl_card_set():
                          owned_count=owned_count,
                          missing_count=missing_count,
                          completion_percentage=completion_percentage)
-
-@app.route('/api/purchase_card', methods=['POST'])
-def api_purchase_card():
-    """API endpoint to purchase a card from a collection"""
-    try:
-        # Check if user is logged in
-        if not session.get('logged_in') or not session.get('user_id'):
-            return jsonify({
-                'success': False,
-                'message': 'Please log in to purchase cards'
-            }), 401
-        
-        user_id = session['user_id']
-        user = db.session.get(User, user_id)
-        
-        if not user:
-            return jsonify({
-                'success': False,
-                'message': 'User not found'
-            }), 404
-        
-        # Get JSON data from request
-        data = request.get_json()
-        if not data:
-            return jsonify({
-                'success': False,
-                'message': 'No data provided'
-            }), 400
-        
-        card_id = data.get('card_id')
-        if not card_id:
-            return jsonify({
-                'success': False,
-                'message': 'Card ID is required'
-            }), 400
-        
-        # For demo purposes, simulate successful purchase
-        # In a real implementation, you would:
-        # 1. Check if card exists and is available for purchase
-        # 2. Check if user has sufficient pearls
-        # 3. Update user's card collection
-        # 4. Deduct pearls from user's account
-        # 5. Create transaction record
-        
-        # Mock card prices for demo
-        card_prices = {
-            '1': 500, '2': 750, '3': 1000, '4': 2500, '5': 5000, '6': 10000
-        }
-        
-        card_price = card_prices.get(str(card_id), 1000)
-        
-        # Check if user has enough pearls
-        if user.pearl < card_price:
-            return jsonify({
-                'success': False,
-                'message': f'Insufficient pearls. You need {card_price} pearls but only have {user.pearl}.'
-            }), 400
-        
-        # Simulate successful purchase
-        user.pearl -= card_price
-        
-        # Create transaction record
-        purchase_transaction = Transaction(
-            user_id=user_id,
-            transaction_type='card_purchase',
-            amount=-card_price,
-            description=f'Purchased card ID {card_id}',
-            reference_id=f'CARD-{card_id}-{int(datetime.now().timestamp())}'
-        )
-        
-        db.session.add(purchase_transaction)
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': f'Card purchased successfully! You spent {card_price} pearls.',
-            'new_balance': user.pearl,
-            'transaction_id': purchase_transaction.id
-        }), 200
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"Card purchase error: {str(e)}")
-        return jsonify({
-            'success': False,
-            'message': 'An error occurred while purchasing the card. Please try again.'
-        }), 500
 
 
 def create_tables():

@@ -1,0 +1,178 @@
+/**
+ * Lazy Loading Image Styles
+ * Provides smooth transitions and loading states for data-src images
+ */
+
+/* Base styles for lazy images */
+.lazy-image {
+    transition: opacity 0.3s ease-in-out, filter 0.3s ease-in-out;
+    background-color: #374151;
+    border-radius: 4px;
+}
+
+/* Loading state */
+.lazy-image.loading {
+    opacity: 0.7;
+    filter: blur(1px);
+}
+
+/* Loaded state */
+.lazy-image.loaded {
+    opacity: 1;
+    filter: none;
+}
+
+/* Error state */
+.lazy-image.error {
+    opacity: 0.8;
+    filter: grayscale(0.3);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Specific styles for item cards */
+.item-card .lazy-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.item-card .lazy-image.loading {
+    background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
+    background-size: 200% 100%;
+    animation: loading-shimmer 1.5s infinite;
+}
+
+/* Preview section lazy images */
+#previewBanner .lazy-image,
+#previewAvatar.lazy-image,
+#previewDecoration .lazy-image {
+    border-radius: 6px;
+}
+
+/* Modal lazy images */
+#modalItemImage.lazy-image {
+    background-color: #374151;
+    border-radius: 8px;
+}
+
+/* Loading shimmer animation */
+@keyframes loading-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Hover effects for loaded images */
+.item-card:hover .lazy-image.loaded {
+    transform: scale(1.02);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Focus states for accessibility */
+.lazy-image:focus {
+    outline: 2px solid #06b6d4;
+    outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .lazy-image.loading {
+        filter: blur(0.5px); /* Less blur on mobile */
+    }
+}
+
+/* Print styles */
+@media print {
+    .lazy-image.loading {
+        opacity: 1;
+        filter: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .lazy-image.error {
+        border-color: #ef4444;
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .lazy-image {
+        transition: none;
+    }
+    
+    .item-card:hover .lazy-image.loaded {
+        transform: none;
+    }
+    
+    .lazy-image.loading {
+        animation: none;
+        background: #374151;
+    }
+}
+
+/* Ownership filter dropdown styling */
+.ownership-filter select {
+    min-width: 180px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.ownership-filter select:hover {
+    background-color: #4b5563 !important;
+    border-color: #06b6d4;
+}
+
+.ownership-filter select:focus {
+    background-color: #4b5563 !important;
+    border-color: #06b6d4;
+    box-shadow: 0 0 0 0.2rem rgba(6, 182, 212, 0.25);
+}
+
+.ownership-filter select option {
+    background-color: #374151;
+    color: #f3f4f6;
+    padding: 0.5rem;
+}
+
+.ownership-filter select option:hover,
+.ownership-filter select option:checked {
+    background-color: #06b6d4;
+    color: white;
+}
+
+/* Responsive adjustments for filter */
+@media (max-width: 768px) {
+    .shop-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .ownership-filter {
+        width: 100%;
+    }
+    
+    .ownership-filter select {
+        min-width: 100%;
+        font-size: 0.875rem;
+    }
+}
+
+/* Dark mode specific styles */
+@media (prefers-color-scheme: dark) {
+    .lazy-image {
+        background-color: #1f2937;
+    }
+    
+    .lazy-image.loading {
+        background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+        background-size: 200% 100%;
+    }
+}

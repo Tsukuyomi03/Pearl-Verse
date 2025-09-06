@@ -1,575 +1,1736 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: Aug 30, 2025 at 10:47 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+/*
+SQLyog Community v13.3.0 (64 bit)
+MySQL - 8.0.43 : Database - pearl_verse
+*********************************************************************
+*/
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET time_zone = "+00:00";
+/*!40101 SET NAMES utf8 */;
 
+/*!40101 SET SQL_MODE=''*/;
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`pearl_verse` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
---
--- Database: `pearl_verse`
---
+USE `pearl_verse`;
 
--- --------------------------------------------------------
+/*Table structure for table `avatar_shop_items` */
 
---
--- Table structure for table `comments`
---
+DROP TABLE IF EXISTS `avatar_shop_items`;
 
-CREATE TABLE `comments` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `post_id` int(11) NOT NULL,
-  `content` text NOT NULL,
-  `likes_count` int(11) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `avatar_shop_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category_id` int NOT NULL COMMENT '1=banner, 2=avatar, 3=decoration',
+  `rarity_id` int NOT NULL COMMENT '1=common, 2=rare, 3=epic, 4=legendary, 5=mythic',
+  `file_path` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `file_extension` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` bigint NOT NULL,
+  `currency` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pearls',
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_category_id` (`category_id`),
+  KEY `idx_rarity_id` (`rarity_id`),
+  KEY `idx_price` (`price`),
+  KEY `idx_is_active` (`is_active`),
+  KEY `idx_created_at` (`created_at`)
+) ENGINE=InnoDB AUTO_INCREMENT=973 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
+/*Data for the table `avatar_shop_items` */
 
---
--- Table structure for table `comment_likes`
---
+insert  into `avatar_shop_items`(`id`,`name`,`category_id`,`rarity_id`,`file_path`,`file_name`,`file_extension`,`price`,`currency`,`description`,`is_active`,`created_at`,`updated_at`) values 
+(1,'Aespa',2,1,'images/avatar_shop/avatars/aespa.png','aespa.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(2,'Ander 1',2,1,'images/avatar_shop/avatars/ander_1.png','ander_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(3,'Ander 2',2,1,'images/avatar_shop/avatars/ander_2.png','ander_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(4,'Ander 3',2,1,'images/avatar_shop/avatars/ander_3.png','ander_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(5,'Ander 4',2,1,'images/avatar_shop/avatars/ander_4.png','ander_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(6,'Annabel 1',2,1,'images/avatar_shop/avatars/annabel_1.png','annabel_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(7,'Arcade',2,1,'images/avatar_shop/avatars/arcade.png','arcade.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(8,'Arcane',2,1,'images/avatar_shop/avatars/arcane.png','arcane.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(9,'Automod 1',2,1,'images/avatar_shop/avatars/automod_1.png','automod_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(10,'Autumn Equinox',2,1,'images/avatar_shop/avatars/autumn_equinox.png','autumn_equinox.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(11,'Bartender 1',2,1,'images/avatar_shop/avatars/bartender_1.png','bartender_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(12,'Bento 1',2,1,'images/avatar_shop/avatars/bento_1.png','bento_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(13,'Big Bird 1',2,1,'images/avatar_shop/avatars/big_bird_1.png','big_bird_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(14,'Bill 1',2,1,'images/avatar_shop/avatars/bill_1.png','bill_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(15,'Birb 1',2,1,'images/avatar_shop/avatars/birb_1.png','birb_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(16,'Bling 1',2,1,'images/avatar_shop/avatars/bling_1.png','bling_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(17,'Blink 1',2,1,'images/avatar_shop/avatars/blink_1.png','blink_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(18,'Blip 1',2,1,'images/avatar_shop/avatars/blip_1.png','blip_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(19,'Blip 2',2,1,'images/avatar_shop/avatars/blip_2.png','blip_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(20,'Blue',2,1,'images/avatar_shop/avatars/blue.png','blue.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(21,'Blurple',2,1,'images/avatar_shop/avatars/blurple.png','blurple.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(22,'Blurple Twilight',2,1,'images/avatar_shop/avatars/blurple_twilight.png','blurple_twilight.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(23,'Bonbon 1',2,1,'images/avatar_shop/avatars/bonbon_1.png','bonbon_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(24,'Bonbon 2',2,1,'images/avatar_shop/avatars/bonbon_2.png','bonbon_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(25,'Boomer 1',2,1,'images/avatar_shop/avatars/boomer_1.png','boomer_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(26,'Bopper 1',2,1,'images/avatar_shop/avatars/bopper_1.png','bopper_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(27,'Bopper 2',2,1,'images/avatar_shop/avatars/bopper_2.png','bopper_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(28,'Bouncer 1',2,1,'images/avatar_shop/avatars/bouncer_1.png','bouncer_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(29,'Brainy 1',2,1,'images/avatar_shop/avatars/brainy_1.png','brainy_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(30,'Brib 1',2,1,'images/avatar_shop/avatars/brib_1.png','brib_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(31,'Bunny Man 1',2,1,'images/avatar_shop/avatars/bunny_man_1.png','bunny_man_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(32,'Cacdude 1',2,1,'images/avatar_shop/avatars/cacdude_1.png','cacdude_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(33,'Cambrella 1',2,1,'images/avatar_shop/avatars/cambrella_1.png','cambrella_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(34,'Camie 1',2,1,'images/avatar_shop/avatars/camie_1.png','camie_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(35,'Capper 1',2,1,'images/avatar_shop/avatars/capper_1.png','capper_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(36,'Capper 2',2,1,'images/avatar_shop/avatars/capper_2.png','capper_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(37,'Cap 1',2,1,'images/avatar_shop/avatars/cap_1.png','cap_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(38,'Cap 2',2,1,'images/avatar_shop/avatars/cap_2.png','cap_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(39,'Cap 3',2,1,'images/avatar_shop/avatars/cap_3.png','cap_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(40,'Cap 4',2,1,'images/avatar_shop/avatars/cap_4.png','cap_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(41,'Cap 5',2,1,'images/avatar_shop/avatars/cap_5.png','cap_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(42,'Cap 6',2,1,'images/avatar_shop/avatars/cap_6.png','cap_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(43,'Cap 7',2,1,'images/avatar_shop/avatars/cap_7.png','cap_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(44,'Cap 8',2,1,'images/avatar_shop/avatars/cap_8.png','cap_8.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(45,'Cat 1',2,1,'images/avatar_shop/avatars/cat_1.png','cat_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(46,'Ceramic',2,1,'images/avatar_shop/avatars/ceramic.png','ceramic.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(47,'Chance 1',2,1,'images/avatar_shop/avatars/chance_1.png','chance_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(48,'Charcoal',2,1,'images/avatar_shop/avatars/charcoal.png','charcoal.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(49,'Cherry 1',2,1,'images/avatar_shop/avatars/cherry_1.png','cherry_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(50,'Chibi Cafe',2,1,'images/avatar_shop/avatars/chibi_cafe.png','chibi_cafe.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(51,'Chief 1',2,1,'images/avatar_shop/avatars/chief_1.png','chief_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(52,'Chiller 1',2,1,'images/avatar_shop/avatars/chiller_1.png','chiller_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(53,'Civilization Vii',2,1,'images/avatar_shop/avatars/civilization_vii.png','civilization_vii.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(54,'Classic Blue',2,1,'images/avatar_shop/avatars/classic_blue.png','classic_blue.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(55,'Classic Gray',2,1,'images/avatar_shop/avatars/classic_gray.png','classic_gray.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(56,'Classic Green',2,1,'images/avatar_shop/avatars/classic_green.png','classic_green.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(57,'Classic Red',2,1,'images/avatar_shop/avatars/classic_red.png','classic_red.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(58,'Classic Yellow',2,1,'images/avatar_shop/avatars/classic_yellow.png','classic_yellow.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(59,'Clyde 1',2,1,'images/avatar_shop/avatars/clyde_1.png','clyde_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(60,'Clyde 10',2,1,'images/avatar_shop/avatars/clyde_10.png','clyde_10.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(61,'Clyde 11',2,1,'images/avatar_shop/avatars/clyde_11.png','clyde_11.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(62,'Clyde 2',2,1,'images/avatar_shop/avatars/clyde_2.png','clyde_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(63,'Clyde 3',2,1,'images/avatar_shop/avatars/clyde_3.png','clyde_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(64,'Clyde 4',2,1,'images/avatar_shop/avatars/clyde_4.png','clyde_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(65,'Clyde 6',2,1,'images/avatar_shop/avatars/clyde_6.png','clyde_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(66,'Clyde 7',2,1,'images/avatar_shop/avatars/clyde_7.png','clyde_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(67,'Clyde 8',2,1,'images/avatar_shop/avatars/clyde_8.png','clyde_8.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(68,'Clyde 9',2,1,'images/avatar_shop/avatars/clyde_9.png','clyde_9.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(69,'Clyde Ai 1',2,1,'images/avatar_shop/avatars/clyde_ai_1.gif','clyde_ai_1.gif','gif',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(70,'Color Wave',2,1,'images/avatar_shop/avatars/color_wave.png','color_wave.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(71,'D20 1',2,1,'images/avatar_shop/avatars/d20_1.png','d20_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(72,'D64',2,1,'images/avatar_shop/avatars/d64.png','d64.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(73,'Dee 1',2,1,'images/avatar_shop/avatars/dee_1.png','dee_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(74,'Dojo',2,1,'images/avatar_shop/avatars/dojo.png','dojo.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(75,'Doodie 1',2,1,'images/avatar_shop/avatars/doodie_1.png','doodie_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(76,'Dungeons And Dragons',2,1,'images/avatar_shop/avatars/dungeons_and_dragons.png','dungeons_and_dragons.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(77,'Elmer 1',2,1,'images/avatar_shop/avatars/elmer_1.png','elmer_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(78,'Fairy 1',2,1,'images/avatar_shop/avatars/fairy_1.png','fairy_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(79,'Fang 1',2,1,'images/avatar_shop/avatars/fang_1.png','fang_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(80,'Fantasy V2',2,1,'images/avatar_shop/avatars/fantasy_v2.png','fantasy_v2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(81,'Felippe 1',2,1,'images/avatar_shop/avatars/felippe_1.png','felippe_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(82,'Fighter 1',2,1,'images/avatar_shop/avatars/fighter_1.png','fighter_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(83,'Flipper 1',2,1,'images/avatar_shop/avatars/flipper_1.png','flipper_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(84,'Floop 1',2,1,'images/avatar_shop/avatars/floop_1.png','floop_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(85,'Floop 2',2,1,'images/avatar_shop/avatars/floop_2.png','floop_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(86,'Floop 3',2,1,'images/avatar_shop/avatars/floop_3.png','floop_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(87,'Flynn 1',2,1,'images/avatar_shop/avatars/flynn_1.png','flynn_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(88,'Froge 1',2,1,'images/avatar_shop/avatars/froge_1.png','froge_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(89,'Froge 10',2,1,'images/avatar_shop/avatars/froge_10.png','froge_10.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(90,'Froge 11',2,1,'images/avatar_shop/avatars/froge_11.png','froge_11.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(91,'Froge 2',2,1,'images/avatar_shop/avatars/froge_2.png','froge_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(92,'Froge 3',2,1,'images/avatar_shop/avatars/froge_3.png','froge_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(93,'Froge 4',2,1,'images/avatar_shop/avatars/froge_4.png','froge_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(94,'Froge 5',2,1,'images/avatar_shop/avatars/froge_5.png','froge_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(95,'Froge 6',2,1,'images/avatar_shop/avatars/froge_6.png','froge_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(96,'Froge 7',2,1,'images/avatar_shop/avatars/froge_7.png','froge_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(97,'Froge 8',2,1,'images/avatar_shop/avatars/froge_8.png','froge_8.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(98,'Froge 9',2,1,'images/avatar_shop/avatars/froge_9.png','froge_9.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(99,'Frog Stranger 1',2,1,'images/avatar_shop/avatars/frog_stranger_1.png','frog_stranger_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(100,'Fuming',2,1,'images/avatar_shop/avatars/fuming.png','fuming.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(101,'Galactic Chrome',2,1,'images/avatar_shop/avatars/galactic_chrome.png','galactic_chrome.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(102,'Galaxy',2,1,'images/avatar_shop/avatars/galaxy.png','galaxy.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(103,'Gaming',2,1,'images/avatar_shop/avatars/gaming.png','gaming.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(104,'Gero 1',2,1,'images/avatar_shop/avatars/gero_1.png','gero_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(105,'Ggez',2,1,'images/avatar_shop/avatars/ggez.png','ggez.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(106,'Gill 1',2,1,'images/avatar_shop/avatars/gill_1.png','gill_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(107,'Gnarf 1',2,1,'images/avatar_shop/avatars/gnarf_1.png','gnarf_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(108,'Gobbi 1',2,1,'images/avatar_shop/avatars/gobbi_1.png','gobbi_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(109,'Goth',2,1,'images/avatar_shop/avatars/goth.png','goth.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(110,'Graggle 1',2,1,'images/avatar_shop/avatars/graggle_1.png','graggle_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(111,'Graggle 2',2,1,'images/avatar_shop/avatars/graggle_2.png','graggle_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(112,'Graggle 3',2,1,'images/avatar_shop/avatars/graggle_3.png','graggle_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(113,'Graggle 4',2,1,'images/avatar_shop/avatars/graggle_4.png','graggle_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(114,'Graggle 5',2,1,'images/avatar_shop/avatars/graggle_5.png','graggle_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(115,'Graggle 6',2,1,'images/avatar_shop/avatars/graggle_6.png','graggle_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(116,'Graggle 7',2,1,'images/avatar_shop/avatars/graggle_7.png','graggle_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(117,'Gray',2,1,'images/avatar_shop/avatars/gray.png','gray.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(118,'Green',2,1,'images/avatar_shop/avatars/green.png','green.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(119,'Grimma 1',2,1,'images/avatar_shop/avatars/grimma_1.png','grimma_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(120,'Hand 1',2,1,'images/avatar_shop/avatars/hand_1.png','hand_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(121,'Hark 1',2,1,'images/avatar_shop/avatars/hark_1.png','hark_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(122,'Hello 1',2,1,'images/avatar_shop/avatars/hello_1.png','hello_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(123,'Holo',2,1,'images/avatar_shop/avatars/holo.png','holo.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(124,'House 1',2,1,'images/avatar_shop/avatars/house_1.png','house_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(125,'Insomnia',2,1,'images/avatar_shop/avatars/insomnia.png','insomnia.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(126,'In Rainbows',2,1,'images/avatar_shop/avatars/in_rainbows.png','in_rainbows.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(127,'Kawaii Mode',2,1,'images/avatar_shop/avatars/kawaii_mode.png','kawaii_mode.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(128,'Klayden 1',2,1,'images/avatar_shop/avatars/klayden_1.png','klayden_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(129,'Knight',2,1,'images/avatar_shop/avatars/knight.png','knight.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(130,'Lady 1',2,1,'images/avatar_shop/avatars/lady_1.png','lady_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(131,'Lady 2',2,1,'images/avatar_shop/avatars/lady_2.png','lady_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(132,'Lemon 1',2,1,'images/avatar_shop/avatars/lemon_1.png','lemon_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(133,'Leon 1',2,1,'images/avatar_shop/avatars/leon_1.png','leon_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(134,'Leon 2',2,1,'images/avatar_shop/avatars/leon_2.png','leon_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(135,'Lily',2,1,'images/avatar_shop/avatars/lily.png','lily.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(136,'Lime 1',2,1,'images/avatar_shop/avatars/lime_1.png','lime_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(137,'Linda 1',2,1,'images/avatar_shop/avatars/linda_1.png','linda_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(138,'Locke 1',2,1,'images/avatar_shop/avatars/locke_1.png','locke_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(139,'Locke 2',2,1,'images/avatar_shop/avatars/locke_2.png','locke_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(140,'Locke 3',2,1,'images/avatar_shop/avatars/locke_3.png','locke_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(141,'Lofi',2,1,'images/avatar_shop/avatars/lofi.png','lofi.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(142,'Lofi Girl',2,1,'images/avatar_shop/avatars/lofi_girl.png','lofi_girl.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(143,'Lukid 1',2,1,'images/avatar_shop/avatars/lukid_1.png','lukid_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(144,'Lunar New Year 2025',2,1,'images/avatar_shop/avatars/lunar_new_year_2025.png','lunar_new_year_2025.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(145,'Mage',2,1,'images/avatar_shop/avatars/mage.png','mage.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(146,'Magic The Gathering',2,1,'images/avatar_shop/avatars/magic_the_gathering.png','magic_the_gathering.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(147,'Mainframe',2,1,'images/avatar_shop/avatars/mainframe.png','mainframe.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(148,'Mason 1',2,1,'images/avatar_shop/avatars/mason_1.png','mason_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(149,'Matey',2,1,'images/avatar_shop/avatars/matey.png','matey.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(150,'Megatron 1',2,1,'images/avatar_shop/avatars/megatron_1.png','megatron_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(151,'Midnight Prism',2,1,'images/avatar_shop/avatars/midnight_prism.png','midnight_prism.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(152,'Milo 1',2,1,'images/avatar_shop/avatars/milo_1.png','milo_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(153,'Milo 2',2,1,'images/avatar_shop/avatars/milo_2.png','milo_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(154,'Moe 1',2,1,'images/avatar_shop/avatars/moe_1.png','moe_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(155,'Morf 1',2,1,'images/avatar_shop/avatars/morf_1.png','morf_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(156,'Nelly 1',2,1,'images/avatar_shop/avatars/nelly_1.png','nelly_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(157,'Nelly 2',2,1,'images/avatar_shop/avatars/nelly_2.png','nelly_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(158,'Nelly 3',2,1,'images/avatar_shop/avatars/nelly_3.png','nelly_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(159,'Nelly 4',2,1,'images/avatar_shop/avatars/nelly_4.png','nelly_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(160,'Nelly 5',2,1,'images/avatar_shop/avatars/nelly_5.png','nelly_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(161,'Nelly 6',2,1,'images/avatar_shop/avatars/nelly_6.png','nelly_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(162,'Nerm 1',2,1,'images/avatar_shop/avatars/nerm_1.png','nerm_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(163,'Noah 1',2,1,'images/avatar_shop/avatars/noah_1.png','noah_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(164,'Noodle 1',2,1,'images/avatar_shop/avatars/noodle_1.png','noodle_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(165,'Noodle 2',2,1,'images/avatar_shop/avatars/noodle_2.png','noodle_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(166,'Oiseau 1',2,1,'images/avatar_shop/avatars/oiseau_1.png','oiseau_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(167,'Ono 1',2,1,'images/avatar_shop/avatars/ono_1.png','ono_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(168,'Ono 2',2,1,'images/avatar_shop/avatars/ono_2.png','ono_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(169,'Oslow 1',2,1,'images/avatar_shop/avatars/oslow_1.png','oslow_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(170,'Painter 1',2,1,'images/avatar_shop/avatars/painter_1.png','painter_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(171,'Palworld',2,1,'images/avatar_shop/avatars/palworld.png','palworld.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(172,'Palworld2',2,1,'images/avatar_shop/avatars/palworld2.webp','palworld2.webp','webp',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(173,'Palworld3',2,1,'images/avatar_shop/avatars/palworld3.webp','palworld3.webp','webp',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(174,'Pastel',2,1,'images/avatar_shop/avatars/pastel.png','pastel.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(175,'Pawn 1',2,1,'images/avatar_shop/avatars/pawn_1.png','pawn_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(176,'Peachy 1',2,1,'images/avatar_shop/avatars/peachy_1.png','peachy_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(177,'Pea 1',2,1,'images/avatar_shop/avatars/pea_1.png','pea_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(178,'Peeper 1',2,1,'images/avatar_shop/avatars/peeper_1.png','peeper_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(179,'Peppe 1',2,1,'images/avatar_shop/avatars/peppe_1.png','peppe_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(180,'Peppe 10',2,1,'images/avatar_shop/avatars/peppe_10.png','peppe_10.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(181,'Peppe 2',2,1,'images/avatar_shop/avatars/peppe_2.png','peppe_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(182,'Peppe 3',2,1,'images/avatar_shop/avatars/peppe_3.png','peppe_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(183,'Peppe 4',2,1,'images/avatar_shop/avatars/peppe_4.png','peppe_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(184,'Peppe 5',2,1,'images/avatar_shop/avatars/peppe_5.png','peppe_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(185,'Peppe 6',2,1,'images/avatar_shop/avatars/peppe_6.png','peppe_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(186,'Peppe 7',2,1,'images/avatar_shop/avatars/peppe_7.png','peppe_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(187,'Peppe 8',2,1,'images/avatar_shop/avatars/peppe_8.png','peppe_8.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(188,'Peppe 9',2,1,'images/avatar_shop/avatars/peppe_9.png','peppe_9.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(189,'Petal 1',2,1,'images/avatar_shop/avatars/petal_1.png','petal_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(190,'Phibi 1',2,1,'images/avatar_shop/avatars/phibi_1.png','phibi_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(191,'Pink',2,1,'images/avatar_shop/avatars/pink.png','pink.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(192,'Pinky 1',2,1,'images/avatar_shop/avatars/pinky_1.png','pinky_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(193,'Pinky 2',2,1,'images/avatar_shop/avatars/pinky_2.png','pinky_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(194,'Prismatic Waves',2,1,'images/avatar_shop/avatars/prismatic_waves.png','prismatic_waves.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(195,'Quirk 1',2,1,'images/avatar_shop/avatars/quirk_1.png','quirk_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(196,'Red',2,1,'images/avatar_shop/avatars/red.png','red.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(197,'Retro',2,1,'images/avatar_shop/avatars/retro.gif','retro.gif','gif',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(198,'Rezzy 1',2,1,'images/avatar_shop/avatars/rezzy_1.png','rezzy_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(199,'River 1',2,1,'images/avatar_shop/avatars/river_1.png','river_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(200,'Roach 1',2,1,'images/avatar_shop/avatars/roach_1.png','roach_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(201,'Robot 1',2,1,'images/avatar_shop/avatars/robot_1.png','robot_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(202,'Robot 2',2,1,'images/avatar_shop/avatars/robot_2.png','robot_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(203,'Robot 3',2,1,'images/avatar_shop/avatars/robot_3.png','robot_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(204,'Robot 4',2,1,'images/avatar_shop/avatars/robot_4.png','robot_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(205,'Robot 5',2,1,'images/avatar_shop/avatars/robot_5.png','robot_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(206,'Robot 6',2,1,'images/avatar_shop/avatars/robot_6.png','robot_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(207,'Robot 7',2,1,'images/avatar_shop/avatars/robot_7.png','robot_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(208,'Robot 8',2,1,'images/avatar_shop/avatars/robot_8.png','robot_8.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(209,'Roka 1',2,1,'images/avatar_shop/avatars/roka_1.png','roka_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(210,'Rumi 1',2,1,'images/avatar_shop/avatars/rumi_1.png','rumi_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(211,'Sakura',2,1,'images/avatar_shop/avatars/sakura.png','sakura.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(212,'Sandmich 1',2,1,'images/avatar_shop/avatars/sandmich_1.png','sandmich_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(213,'Scena 1',2,1,'images/avatar_shop/avatars/scena_1.png','scena_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(214,'Scotty 1',2,1,'images/avatar_shop/avatars/scotty_1.png','scotty_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(215,'Shenanigans',2,1,'images/avatar_shop/avatars/shenanigans.png','shenanigans.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(216,'Sherbet Dreamsicle',2,1,'images/avatar_shop/avatars/sherbet_dreamsicle.png','sherbet_dreamsicle.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(217,'Skibidi Toilet',2,1,'images/avatar_shop/avatars/skibidi_toilet.png','skibidi_toilet.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(218,'Skull 1',2,1,'images/avatar_shop/avatars/skull_1.png','skull_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(219,'Sleepy Dragon 1',2,1,'images/avatar_shop/avatars/sleepy_dragon_1.png','sleepy_dragon_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(220,'Slormp 1',2,1,'images/avatar_shop/avatars/slormp_1.png','slormp_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(221,'Smandwitch 1',2,1,'images/avatar_shop/avatars/smandwitch_1.png','smandwitch_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(222,'Smeed 1',2,1,'images/avatar_shop/avatars/smeed_1.png','smeed_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(223,'Smeed 2',2,1,'images/avatar_shop/avatars/smeed_2.png','smeed_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(224,'Snail 1',2,1,'images/avatar_shop/avatars/snail_1.png','snail_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(225,'Snap 1',2,1,'images/avatar_shop/avatars/snap_1.png','snap_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(226,'Snek 1',2,1,'images/avatar_shop/avatars/snek_1.png','snek_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(227,'Snumpus 1',2,1,'images/avatar_shop/avatars/snumpus_1.png','snumpus_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(228,'Space Brain 1',2,1,'images/avatar_shop/avatars/space_brain_1.png','space_brain_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(229,'Speece 1',2,1,'images/avatar_shop/avatars/speece_1.png','speece_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(230,'Speek 1',2,1,'images/avatar_shop/avatars/speek_1.png','speek_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(231,'Spime 1',2,1,'images/avatar_shop/avatars/spime_1.png','spime_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(232,'Spooky Night',2,1,'images/avatar_shop/avatars/spooky_night.png','spooky_night.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(233,'Star Wars',2,1,'images/avatar_shop/avatars/star_wars.png','star_wars.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(234,'Steampunk',2,1,'images/avatar_shop/avatars/steampunk.png','steampunk.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(235,'Steve 1',2,1,'images/avatar_shop/avatars/steve_1.png','steve_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(236,'Stork 1',2,1,'images/avatar_shop/avatars/stork_1.png','stork_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(237,'Stork 2',2,1,'images/avatar_shop/avatars/stork_2.png','stork_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(238,'Strech 1',2,1,'images/avatar_shop/avatars/strech_1.png','strech_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(239,'Street Fighter',2,1,'images/avatar_shop/avatars/street_fighter.png','street_fighter.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(240,'Summer Bliss',2,1,'images/avatar_shop/avatars/summer_bliss.png','summer_bliss.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(241,'Sunset Ave',2,1,'images/avatar_shop/avatars/sunset_ave.png','sunset_ave.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(242,'Swirl 1',2,1,'images/avatar_shop/avatars/swirl_1.png','swirl_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(243,'Tactical',2,1,'images/avatar_shop/avatars/tactical.png','tactical.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(244,'Tan 1',2,1,'images/avatar_shop/avatars/tan_1.png','tan_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(245,'Thawne 1',2,1,'images/avatar_shop/avatars/thawne_1.png','thawne_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(246,'Thonk 1',2,1,'images/avatar_shop/avatars/thonk_1.png','thonk_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(247,'Tipp 1',2,1,'images/avatar_shop/avatars/tipp_1.png','tipp_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(248,'Toad 1',2,1,'images/avatar_shop/avatars/toad_1.png','toad_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(249,'Trom 1',2,1,'images/avatar_shop/avatars/trom_1.png','trom_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(250,'Twoot 1',2,1,'images/avatar_shop/avatars/twoot_1.png','twoot_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(251,'Uwu',2,1,'images/avatar_shop/avatars/uwu.png','uwu.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(252,'Valentines 2025',2,1,'images/avatar_shop/avatars/valentines_2025.png','valentines_2025.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(253,'Valorant',2,1,'images/avatar_shop/avatars/valorant.png','valorant.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(254,'Valorant Champions',2,1,'images/avatar_shop/avatars/valorant_champions.png','valorant_champions.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(255,'Val 1',2,1,'images/avatar_shop/avatars/val_1.png','val_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(256,'Vroom 1',2,1,'images/avatar_shop/avatars/vroom_1.png','vroom_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(257,'Wallp 1',2,1,'images/avatar_shop/avatars/wallp_1.png','wallp_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(258,'Wanderer 1',2,1,'images/avatar_shop/avatars/wanderer_1.png','wanderer_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(259,'Wham',2,1,'images/avatar_shop/avatars/wham.png','wham.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(260,'Willow 1',2,1,'images/avatar_shop/avatars/willow_1.png','willow_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(261,'Winston 1',2,1,'images/avatar_shop/avatars/winston_1.png','winston_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(262,'Winter Wonderland 2024',2,1,'images/avatar_shop/avatars/winter_wonderland_2024.png','winter_wonderland_2024.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(263,'Wizzy 1',2,1,'images/avatar_shop/avatars/wizzy_1.png','wizzy_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(264,'Worf 1',2,1,'images/avatar_shop/avatars/worf_1.png','worf_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(265,'Worm 1',2,1,'images/avatar_shop/avatars/worm_1.png','worm_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(266,'Wumpus 1',2,1,'images/avatar_shop/avatars/wumpus_1.png','wumpus_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(267,'Wumpus 10',2,1,'images/avatar_shop/avatars/wumpus_10.png','wumpus_10.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(268,'Wumpus 11',2,1,'images/avatar_shop/avatars/wumpus_11.png','wumpus_11.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(269,'Wumpus 12',2,1,'images/avatar_shop/avatars/wumpus_12.png','wumpus_12.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(270,'Wumpus 13',2,1,'images/avatar_shop/avatars/wumpus_13.png','wumpus_13.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(271,'Wumpus 14',2,1,'images/avatar_shop/avatars/wumpus_14.png','wumpus_14.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(272,'Wumpus 15',2,1,'images/avatar_shop/avatars/wumpus_15.png','wumpus_15.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(273,'Wumpus 16',2,1,'images/avatar_shop/avatars/wumpus_16.png','wumpus_16.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(274,'Wumpus 17',2,1,'images/avatar_shop/avatars/wumpus_17.png','wumpus_17.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(275,'Wumpus 18',2,1,'images/avatar_shop/avatars/wumpus_18.png','wumpus_18.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(276,'Wumpus 19',2,1,'images/avatar_shop/avatars/wumpus_19.png','wumpus_19.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(277,'Wumpus 2',2,1,'images/avatar_shop/avatars/wumpus_2.png','wumpus_2.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(278,'Wumpus 20',2,1,'images/avatar_shop/avatars/wumpus_20.png','wumpus_20.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(279,'Wumpus 21',2,1,'images/avatar_shop/avatars/wumpus_21.png','wumpus_21.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(280,'Wumpus 22',2,1,'images/avatar_shop/avatars/wumpus_22.png','wumpus_22.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(281,'Wumpus 23',2,1,'images/avatar_shop/avatars/wumpus_23.png','wumpus_23.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(282,'Wumpus 24',2,1,'images/avatar_shop/avatars/wumpus_24.png','wumpus_24.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(283,'Wumpus 25',2,1,'images/avatar_shop/avatars/wumpus_25.png','wumpus_25.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(284,'Wumpus 26',2,1,'images/avatar_shop/avatars/wumpus_26.png','wumpus_26.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(285,'Wumpus 27',2,1,'images/avatar_shop/avatars/wumpus_27.png','wumpus_27.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(286,'Wumpus 28',2,1,'images/avatar_shop/avatars/wumpus_28.png','wumpus_28.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(287,'Wumpus 29',2,1,'images/avatar_shop/avatars/wumpus_29.png','wumpus_29.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(288,'Wumpus 3',2,1,'images/avatar_shop/avatars/wumpus_3.png','wumpus_3.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(289,'Wumpus 30',2,1,'images/avatar_shop/avatars/wumpus_30.png','wumpus_30.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(290,'Wumpus 31',2,1,'images/avatar_shop/avatars/wumpus_31.png','wumpus_31.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(291,'Wumpus 32',2,1,'images/avatar_shop/avatars/wumpus_32.png','wumpus_32.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(292,'Wumpus 33',2,1,'images/avatar_shop/avatars/wumpus_33.png','wumpus_33.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(293,'Wumpus 34',2,1,'images/avatar_shop/avatars/wumpus_34.png','wumpus_34.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(294,'Wumpus 35',2,1,'images/avatar_shop/avatars/wumpus_35.png','wumpus_35.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(295,'Wumpus 36',2,1,'images/avatar_shop/avatars/wumpus_36.png','wumpus_36.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(296,'Wumpus 37',2,1,'images/avatar_shop/avatars/wumpus_37.png','wumpus_37.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(297,'Wumpus 38',2,1,'images/avatar_shop/avatars/wumpus_38.png','wumpus_38.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(298,'Wumpus 39',2,1,'images/avatar_shop/avatars/wumpus_39.png','wumpus_39.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(299,'Wumpus 4',2,1,'images/avatar_shop/avatars/wumpus_4.png','wumpus_4.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(300,'Wumpus 40',2,1,'images/avatar_shop/avatars/wumpus_40.png','wumpus_40.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(301,'Wumpus 41',2,1,'images/avatar_shop/avatars/wumpus_41.png','wumpus_41.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(302,'Wumpus 42',2,1,'images/avatar_shop/avatars/wumpus_42.png','wumpus_42.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(303,'Wumpus 43',2,1,'images/avatar_shop/avatars/wumpus_43.png','wumpus_43.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(304,'Wumpus 44',2,1,'images/avatar_shop/avatars/wumpus_44.png','wumpus_44.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(305,'Wumpus 45',2,1,'images/avatar_shop/avatars/wumpus_45.png','wumpus_45.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(306,'Wumpus 46',2,1,'images/avatar_shop/avatars/wumpus_46.png','wumpus_46.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(307,'Wumpus 5',2,1,'images/avatar_shop/avatars/wumpus_5.png','wumpus_5.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(308,'Wumpus 6',2,1,'images/avatar_shop/avatars/wumpus_6.png','wumpus_6.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(309,'Wumpus 7',2,1,'images/avatar_shop/avatars/wumpus_7.png','wumpus_7.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(310,'Wumpus 8',2,1,'images/avatar_shop/avatars/wumpus_8.png','wumpus_8.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(311,'Wumpus 9',2,1,'images/avatar_shop/avatars/wumpus_9.png','wumpus_9.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(312,'Wump Bot 1',2,1,'images/avatar_shop/avatars/wump_bot_1.png','wump_bot_1.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(313,'Yellow',2,1,'images/avatar_shop/avatars/yellow.png','yellow.png','png',500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(314,'Aespa',1,1,'images/avatar_shop/banners/aespa.webp','aespa.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(315,'Anime V1',1,1,'images/avatar_shop/banners/anime_v1.webp','anime_v1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(316,'Anime V2',1,1,'images/avatar_shop/banners/anime_v2.webp','anime_v2.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(317,'Anime V3',1,1,'images/avatar_shop/banners/anime_v3.webp','anime_v3.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(318,'Arcade',1,1,'images/avatar_shop/banners/arcade.webp','arcade.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(319,'Arcane',1,1,'images/avatar_shop/banners/arcane.webp','arcane.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(320,'Arcane1',1,1,'images/avatar_shop/banners/arcane1.webp','arcane1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(321,'Autumn Equinox',1,1,'images/avatar_shop/banners/autumn_equinox.webp','autumn_equinox.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(322,'Breakfast',1,1,'images/avatar_shop/banners/breakfast.webp','breakfast.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(323,'Chibi Cafe',1,1,'images/avatar_shop/banners/chibi_cafe.webp','chibi_cafe.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(324,'Civilization Vii',1,1,'images/avatar_shop/banners/civilization_vii.webp','civilization_vii.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(325,'Cozy Valley',1,1,'images/avatar_shop/banners/cozy_valley.webp','cozy_valley.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(326,'Cyberpunk',1,1,'images/avatar_shop/banners/cyberpunk.webp','cyberpunk.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(327,'Dark Fantasy',1,1,'images/avatar_shop/banners/dark_fantasy.webp','dark_fantasy.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(328,'Disxcore',1,1,'images/avatar_shop/banners/disxcore.webp','disxcore.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(329,'Dojo',1,1,'images/avatar_shop/banners/dojo.webp','dojo.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(330,'Dragon Ball Daima',1,1,'images/avatar_shop/banners/dragon_ball_daima.webp','dragon_ball_daima.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(331,'Dungeons And Dragons',1,1,'images/avatar_shop/banners/dungeons_and_dragons.webp','dungeons_and_dragons.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(332,'Dungeons And Dragons1',1,1,'images/avatar_shop/banners/dungeons_and_dragons1.webp','dungeons_and_dragons1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(333,'Elements',1,1,'images/avatar_shop/banners/elements.webp','elements.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(334,'Fall V1',1,1,'images/avatar_shop/banners/fall_v1.webp','fall_v1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(335,'Fall V2',1,1,'images/avatar_shop/banners/fall_v2.webp','fall_v2.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(336,'Fantastic 4',1,1,'images/avatar_shop/banners/fantastic_4.webp','fantastic_4.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(337,'Fantasy V1',1,1,'images/avatar_shop/banners/fantasy_v1.webp','fantasy_v1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(338,'Fantasy V2',1,1,'images/avatar_shop/banners/fantasy_v2.webp','fantasy_v2.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(339,'Feelin Retro',1,1,'images/avatar_shop/banners/feelin_retro.webp','feelin_retro.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(340,'Galaxy',1,1,'images/avatar_shop/banners/galaxy.webp','galaxy.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(341,'Ggez',1,1,'images/avatar_shop/banners/ggez.webp','ggez.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(342,'Halloween',1,1,'images/avatar_shop/banners/halloween.webp','halloween.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(343,'Insomnia',1,1,'images/avatar_shop/banners/insomnia.webp','insomnia.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(344,'Jennie',1,1,'images/avatar_shop/banners/jennie.webp','jennie.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(345,'Kawaii Mode',1,1,'images/avatar_shop/banners/kawaii_mode.webp','kawaii_mode.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(346,'Lofi Girl',1,1,'images/avatar_shop/banners/lofi_girl.webp','lofi_girl.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(347,'Lofi Vibes',1,1,'images/avatar_shop/banners/lofi_vibes.webp','lofi_vibes.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(348,'Lunar New Year 2024',1,1,'images/avatar_shop/banners/lunar_new_year_2024.webp','lunar_new_year_2024.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(349,'Lunar New Year 2025',1,1,'images/avatar_shop/banners/lunar_new_year_2025.webp','lunar_new_year_2025.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(350,'Magic The Gathering',1,1,'images/avatar_shop/banners/magic_the_gathering.webp','magic_the_gathering.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(351,'Monsters',1,1,'images/avatar_shop/banners/monsters.webp','monsters.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(352,'Mythical Creatures',1,1,'images/avatar_shop/banners/mythical_creatures.webp','mythical_creatures.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(353,'My Hero Academia',1,1,'images/avatar_shop/banners/my_hero_academia.webp','my_hero_academia.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(354,'Orbs Exclusive',1,1,'images/avatar_shop/banners/orbs_exclusive.webp','orbs_exclusive.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(355,'Palworld',1,1,'images/avatar_shop/banners/palworld.webp','palworld.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(356,'Palworld1',1,1,'images/avatar_shop/banners/palworld1.webp','palworld1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(357,'Pirates',1,1,'images/avatar_shop/banners/pirates.webp','pirates.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(358,'Rawr Xd',1,1,'images/avatar_shop/banners/rawr_xd.webp','rawr_xd.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(359,'Secret Garden',1,1,'images/avatar_shop/banners/secret_garden.webp','secret_garden.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(360,'Shenanigans',1,1,'images/avatar_shop/banners/shenanigans.webp','shenanigans.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(361,'Skibidi Toilet',1,1,'images/avatar_shop/banners/skibidi_toilet.webp','skibidi_toilet.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(362,'Snowsgiving',1,1,'images/avatar_shop/banners/snowsgiving.webp','snowsgiving.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(363,'Spirit Blossom Beyond',1,1,'images/avatar_shop/banners/spirit_blossom_beyond.webp','spirit_blossom_beyond.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(364,'Spongebob',1,1,'images/avatar_shop/banners/spongebob.webp','spongebob.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(365,'Spooky Night',1,1,'images/avatar_shop/banners/spooky_night.webp','spooky_night.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(366,'Springtoon',1,1,'images/avatar_shop/banners/springtoon.webp','springtoon.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(367,'Star Wars',1,1,'images/avatar_shop/banners/star_wars.webp','star_wars.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(368,'Steampunk',1,1,'images/avatar_shop/banners/steampunk.webp','steampunk.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(369,'Street Fighter',1,1,'images/avatar_shop/banners/street_fighter.webp','street_fighter.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(370,'Street Fighter1',1,1,'images/avatar_shop/banners/street_fighter1.webp','street_fighter1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(371,'Summer Bliss',1,1,'images/avatar_shop/banners/summer_bliss.webp','summer_bliss.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(372,'The Vault',1,1,'images/avatar_shop/banners/the_vault.webp','the_vault.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(373,'Valentines 2025',1,1,'images/avatar_shop/banners/valentines_2025.webp','valentines_2025.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(374,'Valorant1',1,1,'images/avatar_shop/banners/valorant1.webp','valorant1.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(375,'Valorant2',1,1,'images/avatar_shop/banners/valorant2.webp','valorant2.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(376,'Valorant3',1,1,'images/avatar_shop/banners/valorant3.webp','valorant3.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(377,'Valorant Champions',1,1,'images/avatar_shop/banners/valorant_champions.webp','valorant_champions.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(378,'Winter Wonderland 2023',1,1,'images/avatar_shop/banners/winter_wonderland_2023.webp','winter_wonderland_2023.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(379,'Winter Wonderland 2024',1,1,'images/avatar_shop/banners/winter_wonderland_2024.webp','winter_wonderland_2024.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(380,'Zen Protocol',1,1,'images/avatar_shop/banners/zen_protocol.webp','zen_protocol.webp','webp',1000,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(381,'28 Years Later',3,1,'images/avatar_shop/decorations/28_years_later.png','28_years_later.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(382,'Aespa Fanlight',3,1,'images/avatar_shop/decorations/aespa_fanlight.png','aespa_fanlight.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(383,'Afternoon Breeze',3,1,'images/avatar_shop/decorations/afternoon_breeze.png','afternoon_breeze.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(384,'Aim For Love',3,1,'images/avatar_shop/decorations/aim_for_love.png','aim_for_love.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(385,'Air',3,1,'images/avatar_shop/decorations/air.png','air.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(386,'Akuma',3,1,'images/avatar_shop/decorations/akuma.png','akuma.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(387,'All Might',3,1,'images/avatar_shop/decorations/all_might.png','all_might.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(388,'Angel',3,1,'images/avatar_shop/decorations/angel.png','angel.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(389,'Angry',3,1,'images/avatar_shop/decorations/angry.png','angry.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(390,'Angry Pink',3,1,'images/avatar_shop/decorations/angry_pink.png','angry_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(391,'Angry Yellow',3,1,'images/avatar_shop/decorations/angry_yellow.png','angry_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(392,'Arcane Sigil',3,1,'images/avatar_shop/decorations/arcane_sigil.png','arcane_sigil.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(393,'Armamenter',3,1,'images/avatar_shop/decorations/armamenter.png','armamenter.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(394,'Astronaut Helmet',3,1,'images/avatar_shop/decorations/astronaut_helmet.png','astronaut_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(395,'Aurora',3,1,'images/avatar_shop/decorations/aurora.png','aurora.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(396,'Autumns Arbor',3,1,'images/avatar_shop/decorations/autumns_arbor.png','autumns_arbor.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(397,'Autumns Arbor Aurora',3,1,'images/avatar_shop/decorations/autumns_arbor_aurora.png','autumns_arbor_aurora.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(398,'Autumn Crown',3,1,'images/avatar_shop/decorations/autumn_crown.png','autumn_crown.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(399,'A Duck',3,1,'images/avatar_shop/decorations/a_duck.png','a_duck.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(400,'A Hint Of Clove',3,1,'images/avatar_shop/decorations/a_hint_of_clove.png','a_hint_of_clove.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(401,'Baby Displacer Beast',3,1,'images/avatar_shop/decorations/baby_displacer_beast.png','baby_displacer_beast.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(402,'Bad Guys 2',3,1,'images/avatar_shop/decorations/bad_guys_2.png','bad_guys_2.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(403,'Baker Bear',3,1,'images/avatar_shop/decorations/baker_bear.png','baker_bear.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(404,'Balance',3,1,'images/avatar_shop/decorations/balance.png','balance.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(405,'Ballerina',3,1,'images/avatar_shop/decorations/ballerina.png','ballerina.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(406,'Batarang',3,1,'images/avatar_shop/decorations/batarang.png','batarang.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(407,'Beach Hat',3,1,'images/avatar_shop/decorations/beach_hat.png','beach_hat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(408,'Beamchop',3,1,'images/avatar_shop/decorations/beamchop.png','beamchop.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(409,'Berry Bunny',3,1,'images/avatar_shop/decorations/berry_bunny.png','berry_bunny.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(410,'Bf Soldier Helmet',3,1,'images/avatar_shop/decorations/bf_soldier_helmet.png','bf_soldier_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(411,'Big Dill Chain',3,1,'images/avatar_shop/decorations/big_dill_chain.png','big_dill_chain.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(412,'Bing Bong',3,1,'images/avatar_shop/decorations/bing_bong.png','bing_bong.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(413,'Black Hole',3,1,'images/avatar_shop/decorations/black_hole.png','black_hole.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(414,'Black Mana',3,1,'images/avatar_shop/decorations/black_mana.png','black_mana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(415,'Blade Storm',3,1,'images/avatar_shop/decorations/blade_storm.png','blade_storm.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(416,'Blanket Green',3,1,'images/avatar_shop/decorations/blanket_green.png','blanket_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(417,'Blanket Orange',3,1,'images/avatar_shop/decorations/blanket_orange.png','blanket_orange.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(418,'Blanket Pink',3,1,'images/avatar_shop/decorations/blanket_pink.png','blanket_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(419,'Blanket Purple',3,1,'images/avatar_shop/decorations/blanket_purple.png','blanket_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(420,'Bloodthirsty',3,1,'images/avatar_shop/decorations/bloodthirsty.png','bloodthirsty.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(421,'Bloodthirsty Gold',3,1,'images/avatar_shop/decorations/bloodthirsty_gold.png','bloodthirsty_gold.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(422,'Bloodthirsty Green',3,1,'images/avatar_shop/decorations/bloodthirsty_green.png','bloodthirsty_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(423,'Bloomling',3,1,'images/avatar_shop/decorations/bloomling.png','bloomling.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(424,'Blossomburst',3,1,'images/avatar_shop/decorations/blossomburst.png','blossomburst.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(425,'Blueberry Jam',3,1,'images/avatar_shop/decorations/blueberry_jam.png','blueberry_jam.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(426,'Blue Futuristic Ui',3,1,'images/avatar_shop/decorations/blue_futuristic_ui.png','blue_futuristic_ui.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(427,'Blue Gyroscope',3,1,'images/avatar_shop/decorations/blue_gyroscope.png','blue_gyroscope.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(428,'Blue Hyper Helmet',3,1,'images/avatar_shop/decorations/blue_hyper_helmet.png','blue_hyper_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(429,'Blue Mana',3,1,'images/avatar_shop/decorations/blue_mana.png','blue_mana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(430,'Blue Shine Helmet',3,1,'images/avatar_shop/decorations/blue_shine_helmet.png','blue_shine_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(431,'Blue Smoke',3,1,'images/avatar_shop/decorations/blue_smoke.png','blue_smoke.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(432,'Bonsai',3,1,'images/avatar_shop/decorations/bonsai.png','bonsai.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(433,'Bowler Hat',3,1,'images/avatar_shop/decorations/bowler_hat.png','bowler_hat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(434,'Box Blue Yellow',3,1,'images/avatar_shop/decorations/box_blue_yellow.png','box_blue_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(435,'Box Green Red',3,1,'images/avatar_shop/decorations/box_green_red.png','box_green_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(436,'Box Red White',3,1,'images/avatar_shop/decorations/box_red_white.png','box_red_white.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(437,'Box Red White Blue',3,1,'images/avatar_shop/decorations/box_red_white_blue.png','box_red_white_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(438,'Box White Blue',3,1,'images/avatar_shop/decorations/box_white_blue.png','box_white_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(439,'Brass Beats',3,1,'images/avatar_shop/decorations/brass_beats.png','brass_beats.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(440,'Bread Doggy',3,1,'images/avatar_shop/decorations/bread_doggy.png','bread_doggy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(441,'Bubble',3,1,'images/avatar_shop/decorations/bubble.png','bubble.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(442,'Bubble Tea',3,1,'images/avatar_shop/decorations/bubble_tea.png','bubble_tea.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(443,'Buffering',3,1,'images/avatar_shop/decorations/buffering.png','buffering.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(444,'Bunny',3,1,'images/avatar_shop/decorations/bunny.png','bunny.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(445,'Bunny Zzzs',3,1,'images/avatar_shop/decorations/bunny_zzzs.png','bunny_zzzs.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(446,'Burnt Toast',3,1,'images/avatar_shop/decorations/burnt_toast.png','burnt_toast.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(447,'Bush Camper',3,1,'images/avatar_shop/decorations/bush_camper.png','bush_camper.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(448,'Butterflies',3,1,'images/avatar_shop/decorations/butterflies.png','butterflies.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(449,'Call Of Duty Mobile',3,1,'images/avatar_shop/decorations/call_of_duty_mobile.png','call_of_duty_mobile.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(450,'Cameraman Glitch',3,1,'images/avatar_shop/decorations/cameraman_glitch.png','cameraman_glitch.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(451,'Cammy',3,1,'images/avatar_shop/decorations/cammy.png','cammy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(452,'Candlelight',3,1,'images/avatar_shop/decorations/candlelight.png','candlelight.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(453,'Candlelight Crimson',3,1,'images/avatar_shop/decorations/candlelight_crimson.png','candlelight_crimson.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(454,'Candlelight Dark',3,1,'images/avatar_shop/decorations/candlelight_dark.png','candlelight_dark.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(455,'Cannon Fire',3,1,'images/avatar_shop/decorations/cannon_fire.png','cannon_fire.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(456,'Cattiva',3,1,'images/avatar_shop/decorations/cattiva.png','cattiva.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(457,'Cat 1',3,1,'images/avatar_shop/decorations/cat_1.png','cat_1.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(458,'Cat 2',3,1,'images/avatar_shop/decorations/cat_2.png','cat_2.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(459,'Cat 3',3,1,'images/avatar_shop/decorations/cat_3.png','cat_3.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(460,'Cat 4',3,1,'images/avatar_shop/decorations/cat_4.png','cat_4.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(461,'Cat Ears',3,1,'images/avatar_shop/decorations/cat_ears.png','cat_ears.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(462,'Cat Ears Blue',3,1,'images/avatar_shop/decorations/cat_ears_blue.png','cat_ears_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(463,'Cat Ears Green',3,1,'images/avatar_shop/decorations/cat_ears_green.png','cat_ears_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(464,'Cat Ears Purple',3,1,'images/avatar_shop/decorations/cat_ears_purple.png','cat_ears_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(465,'Cat Ears Yellow',3,1,'images/avatar_shop/decorations/cat_ears_yellow.png','cat_ears_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(466,'Cat Ear Headset',3,1,'images/avatar_shop/decorations/cat_ear_headset.png','cat_ear_headset.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(467,'Cat Onesie',3,1,'images/avatar_shop/decorations/cat_onesie.png','cat_onesie.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(468,'Cat Onesie Black',3,1,'images/avatar_shop/decorations/cat_onesie_black.png','cat_onesie_black.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(469,'Cat Onesie Pink',3,1,'images/avatar_shop/decorations/cat_onesie_pink.png','cat_onesie_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(470,'Chewbert',3,1,'images/avatar_shop/decorations/chewbert.png','chewbert.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(471,'Chicken Nugget',3,1,'images/avatar_shop/decorations/chicken_nugget.png','chicken_nugget.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(472,'Chillet',3,1,'images/avatar_shop/decorations/chillet.png','chillet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(473,'Chomp Chomp',3,1,'images/avatar_shop/decorations/chomp_chomp.png','chomp_chomp.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(474,'Chromawave',3,1,'images/avatar_shop/decorations/chromawave.png','chromawave.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(475,'Chrysanthemums Morning',3,1,'images/avatar_shop/decorations/chrysanthemums_morning.png','chrysanthemums_morning.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(476,'Chrysanthemums Twilight',3,1,'images/avatar_shop/decorations/chrysanthemums_twilight.png','chrysanthemums_twilight.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(477,'Chuck',3,1,'images/avatar_shop/decorations/chuck.png','chuck.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(478,'Chun Li',3,1,'images/avatar_shop/decorations/chun_li.png','chun_li.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(479,'City Walls',3,1,'images/avatar_shop/decorations/city_walls.png','city_walls.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(480,'Clicker',3,1,'images/avatar_shop/decorations/clicker.png','clicker.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(481,'Clyde Invaders',3,1,'images/avatar_shop/decorations/clyde_invaders.png','clyde_invaders.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(482,'Confetti Festive',3,1,'images/avatar_shop/decorations/confetti_festive.png','confetti_festive.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(483,'Confetti Fire',3,1,'images/avatar_shop/decorations/confetti_fire.png','confetti_fire.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(484,'Confetti Ice',3,1,'images/avatar_shop/decorations/confetti_ice.png','confetti_ice.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(485,'Confetti Mint',3,1,'images/avatar_shop/decorations/confetti_mint.png','confetti_mint.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(486,'Confetti Star',3,1,'images/avatar_shop/decorations/confetti_star.png','confetti_star.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(487,'Confetti Vaporwave',3,1,'images/avatar_shop/decorations/confetti_vaporwave.png','confetti_vaporwave.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(488,'Constellations',3,1,'images/avatar_shop/decorations/constellations.png','constellations.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(489,'Copium',3,1,'images/avatar_shop/decorations/copium.png','copium.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(490,'Cottage Home',3,1,'images/avatar_shop/decorations/cottage_home.png','cottage_home.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(491,'Cow Glider',3,1,'images/avatar_shop/decorations/cow_glider.png','cow_glider.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(492,'Cozy Cat',3,1,'images/avatar_shop/decorations/cozy_cat.png','cozy_cat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(493,'Cozy Headphones',3,1,'images/avatar_shop/decorations/cozy_headphones.png','cozy_headphones.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(494,'Cozy Post It',3,1,'images/avatar_shop/decorations/cozy_post_it.png','cozy_post_it.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(495,'Cozy Post It Festive',3,1,'images/avatar_shop/decorations/cozy_post_it_festive.png','cozy_post_it_festive.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(496,'Crossbones',3,1,'images/avatar_shop/decorations/crossbones.png','crossbones.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(497,'Crystal Ball Blue',3,1,'images/avatar_shop/decorations/crystal_ball_blue.png','crystal_ball_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(498,'Crystal Ball Purple',3,1,'images/avatar_shop/decorations/crystal_ball_purple.png','crystal_ball_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(499,'Crystal Elk',3,1,'images/avatar_shop/decorations/crystal_elk.png','crystal_elk.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(500,'Curious Bb 8',3,1,'images/avatar_shop/decorations/curious_bb_8.png','curious_bb_8.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(501,'Cybernetic',3,1,'images/avatar_shop/decorations/cybernetic.png','cybernetic.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(502,'Cyber Katana',3,1,'images/avatar_shop/decorations/cyber_katana.png','cyber_katana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(503,'Cypher Neural Theft',3,1,'images/avatar_shop/decorations/cypher_neural_theft.png','cypher_neural_theft.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(504,'Dancing Fairies',3,1,'images/avatar_shop/decorations/dancing_fairies.png','dancing_fairies.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(505,'Dandelion Duo',3,1,'images/avatar_shop/decorations/dandelion_duo.png','dandelion_duo.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(506,'Deaths Edge',3,1,'images/avatar_shop/decorations/deaths_edge.png','deaths_edge.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(507,'Defensive Shield',3,1,'images/avatar_shop/decorations/defensive_shield.png','defensive_shield.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(508,'Depresso',3,1,'images/avatar_shop/decorations/depresso.png','depresso.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(509,'Descendant',3,1,'images/avatar_shop/decorations/descendant.png','descendant.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(510,'Devil',3,1,'images/avatar_shop/decorations/devil.png','devil.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(511,'Dewdrop',3,1,'images/avatar_shop/decorations/dewdrop.png','dewdrop.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(512,'Dice Azure',3,1,'images/avatar_shop/decorations/dice_azure.png','dice_azure.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(513,'Dice Violet',3,1,'images/avatar_shop/decorations/dice_violet.png','dice_violet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(514,'Digital Sunrise',3,1,'images/avatar_shop/decorations/digital_sunrise.png','digital_sunrise.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(515,'Dismay',3,1,'images/avatar_shop/decorations/dismay.png','dismay.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(516,'Dismay Green',3,1,'images/avatar_shop/decorations/dismay_green.png','dismay_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(517,'Dismay Pink',3,1,'images/avatar_shop/decorations/dismay_pink.png','dismay_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(518,'Dismay Purple',3,1,'images/avatar_shop/decorations/dismay_purple.png','dismay_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(519,'Dismay Yellow',3,1,'images/avatar_shop/decorations/dismay_yellow.png','dismay_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(520,'Disxcore Headset',3,1,'images/avatar_shop/decorations/disxcore_headset.png','disxcore_headset.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(521,'Dog 1',3,1,'images/avatar_shop/decorations/dog_1.png','dog_1.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(522,'Dog 2',3,1,'images/avatar_shop/decorations/dog_2.png','dog_2.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(523,'Dog 3',3,1,'images/avatar_shop/decorations/dog_3.png','dog_3.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(524,'Donut',3,1,'images/avatar_shop/decorations/donut.png','donut.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(525,'Donut Bear',3,1,'images/avatar_shop/decorations/donut_bear.png','donut_bear.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(526,'Donut Cat',3,1,'images/avatar_shop/decorations/donut_cat.png','donut_cat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(527,'Donut Cow',3,1,'images/avatar_shop/decorations/donut_cow.png','donut_cow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(528,'Doodlezard',3,1,'images/avatar_shop/decorations/doodlezard.png','doodlezard.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(529,'Doodling',3,1,'images/avatar_shop/decorations/doodling.png','doodling.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(530,'Dragons Smile',3,1,'images/avatar_shop/decorations/dragons_smile.png','dragons_smile.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(531,'Dragon Balls',3,1,'images/avatar_shop/decorations/dragon_balls.png','dragon_balls.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(532,'Dusk And Dawn',3,1,'images/avatar_shop/decorations/dusk_and_dawn.png','dusk_and_dawn.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(533,'Earth',3,1,'images/avatar_shop/decorations/earth.png','earth.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(534,'Egg',3,1,'images/avatar_shop/decorations/egg.png','egg.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(535,'Eldritch Ring',3,1,'images/avatar_shop/decorations/eldritch_ring.png','eldritch_ring.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(536,'Emma Frost',3,1,'images/avatar_shop/decorations/emma_frost.png','emma_frost.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(537,'Endeavor',3,1,'images/avatar_shop/decorations/endeavor.png','endeavor.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(538,'Espn',3,1,'images/avatar_shop/decorations/espn.png','espn.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(539,'Exoborne',3,1,'images/avatar_shop/decorations/exoborne.png','exoborne.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(540,'Eye Of Prophesy',3,1,'images/avatar_shop/decorations/eye_of_prophesy.png','eye_of_prophesy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(541,'E D Hacker',3,1,'images/avatar_shop/decorations/e_d_hacker.png','e_d_hacker.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(542,'Faces Of The Moon',3,1,'images/avatar_shop/decorations/faces_of_the_moon.png','faces_of_the_moon.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(543,'Face Of Corruption',3,1,'images/avatar_shop/decorations/face_of_corruption.png','face_of_corruption.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(544,'Fairy Sprites',3,1,'images/avatar_shop/decorations/fairy_sprites.png','fairy_sprites.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(545,'Fairy Sprites Blue',3,1,'images/avatar_shop/decorations/fairy_sprites_blue.png','fairy_sprites_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(546,'Fairy Sprites Pink',3,1,'images/avatar_shop/decorations/fairy_sprites_pink.png','fairy_sprites_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(547,'Fall Leaves',3,1,'images/avatar_shop/decorations/fall_leaves.png','fall_leaves.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(548,'Fall Leaves Scarlet',3,1,'images/avatar_shop/decorations/fall_leaves_scarlet.png','fall_leaves_scarlet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(549,'Fall Leaves Woodland',3,1,'images/avatar_shop/decorations/fall_leaves_woodland.png','fall_leaves_woodland.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(550,'Fan Flourish',3,1,'images/avatar_shop/decorations/fan_flourish.png','fan_flourish.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(551,'Feeling Cute',3,1,'images/avatar_shop/decorations/feeling_cute.png','feeling_cute.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(552,'Feelin Awe',3,1,'images/avatar_shop/decorations/feelin_awe.png','feelin_awe.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(553,'Feelin Nervous',3,1,'images/avatar_shop/decorations/feelin_nervous.png','feelin_nervous.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(554,'Feelin Panic',3,1,'images/avatar_shop/decorations/feelin_panic.png','feelin_panic.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(555,'Feelin Scrumptious',3,1,'images/avatar_shop/decorations/feelin_scrumptious.png','feelin_scrumptious.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(556,'Fire',3,1,'images/avatar_shop/decorations/fire.png','fire.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(557,'Firecrackers',3,1,'images/avatar_shop/decorations/firecrackers.png','firecrackers.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(558,'Fireflies',3,1,'images/avatar_shop/decorations/fireflies.png','fireflies.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(559,'Fishbones',3,1,'images/avatar_shop/decorations/fishbones.png','fishbones.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(560,'Flame Chompers',3,1,'images/avatar_shop/decorations/flame_chompers.png','flame_chompers.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(561,'Flaming Sword',3,1,'images/avatar_shop/decorations/flaming_sword.png','flaming_sword.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(562,'Floral Harmony',3,1,'images/avatar_shop/decorations/floral_harmony.png','floral_harmony.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(563,'Floral Harmony Sunburst',3,1,'images/avatar_shop/decorations/floral_harmony_sunburst.png','floral_harmony_sunburst.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(564,'Flower Clouds',3,1,'images/avatar_shop/decorations/flower_clouds.png','flower_clouds.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(565,'Flux Alchemy',3,1,'images/avatar_shop/decorations/flux_alchemy.png','flux_alchemy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(566,'Forest',3,1,'images/avatar_shop/decorations/forest.png','forest.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(567,'Fortnite Boogie Bomb',3,1,'images/avatar_shop/decorations/fortnite_boogie_bomb.png','fortnite_boogie_bomb.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(568,'Fortnite Galactic Battle',3,1,'images/avatar_shop/decorations/fortnite_galactic_battle.png','fortnite_galactic_battle.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(569,'Fox Hat',3,1,'images/avatar_shop/decorations/fox_hat.png','fox_hat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(570,'Fox Hat Chestnut',3,1,'images/avatar_shop/decorations/fox_hat_chestnut.png','fox_hat_chestnut.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(571,'Fox Hat Snow',3,1,'images/avatar_shop/decorations/fox_hat_snow.png','fox_hat_snow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(572,'Frag Out',3,1,'images/avatar_shop/decorations/frag_out.png','frag_out.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(573,'Freezer Bunny Lovebug',3,1,'images/avatar_shop/decorations/freezer_bunny_lovebug.png','freezer_bunny_lovebug.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(574,'Freshly Picked',3,1,'images/avatar_shop/decorations/freshly_picked.png','freshly_picked.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(575,'Fresh Pine',3,1,'images/avatar_shop/decorations/fresh_pine.png','fresh_pine.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(576,'Fresh Pine Cinnamon',3,1,'images/avatar_shop/decorations/fresh_pine_cinnamon.png','fresh_pine_cinnamon.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(577,'Fresh Pine Ribbon',3,1,'images/avatar_shop/decorations/fresh_pine_ribbon.png','fresh_pine_ribbon.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(578,'Fried Egg',3,1,'images/avatar_shop/decorations/fried_egg.png','fried_egg.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(579,'Friend Of Dex',3,1,'images/avatar_shop/decorations/friend_of_dex.png','friend_of_dex.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(580,'Frog 1',3,1,'images/avatar_shop/decorations/frog_1.png','frog_1.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(581,'Frog 3',3,1,'images/avatar_shop/decorations/frog_3.png','frog_3.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(582,'Frog Angry',3,1,'images/avatar_shop/decorations/frog_angry.png','frog_angry.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(583,'Frog Derpy',3,1,'images/avatar_shop/decorations/frog_derpy.png','frog_derpy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(584,'Frog Hat',3,1,'images/avatar_shop/decorations/frog_hat.png','frog_hat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(585,'Fuchsia Agent',3,1,'images/avatar_shop/decorations/fuchsia_agent.png','fuchsia_agent.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(586,'Gallica',3,1,'images/avatar_shop/decorations/gallica.png','gallica.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(587,'Gary The Snail',3,1,'images/avatar_shop/decorations/gary_the_snail.png','gary_the_snail.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(588,'Gawblehop',3,1,'images/avatar_shop/decorations/gawblehop.png','gawblehop.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(589,'Gelatinous Cube Blue',3,1,'images/avatar_shop/decorations/gelatinous_cube_blue.png','gelatinous_cube_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(590,'Gelatinous Cube Green',3,1,'images/avatar_shop/decorations/gelatinous_cube_green.png','gelatinous_cube_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(591,'Ggez',3,1,'images/avatar_shop/decorations/ggez.png','ggez.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(592,'Ghosts',3,1,'images/avatar_shop/decorations/ghosts.png','ghosts.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(593,'Git Gud',3,1,'images/avatar_shop/decorations/git_gud.png','git_gud.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(594,'Glitch',3,1,'images/avatar_shop/decorations/glitch.png','glitch.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(595,'Glop',3,1,'images/avatar_shop/decorations/glop.png','glop.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(596,'Glorio',3,1,'images/avatar_shop/decorations/glorio.png','glorio.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(597,'Glowing Runes',3,1,'images/avatar_shop/decorations/glowing_runes.png','glowing_runes.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(598,'Goblin Stinkums',3,1,'images/avatar_shop/decorations/goblin_stinkums.png','goblin_stinkums.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(599,'Golden Hex',3,1,'images/avatar_shop/decorations/golden_hex.png','golden_hex.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(600,'Gold Laurel Wreath',3,1,'images/avatar_shop/decorations/gold_laurel_wreath.png','gold_laurel_wreath.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(601,'Gomah',3,1,'images/avatar_shop/decorations/gomah.png','gomah.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(602,'Gone Fishin',3,1,'images/avatar_shop/decorations/gone_fishin.png','gone_fishin.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(603,'Good Ol Pepper',3,1,'images/avatar_shop/decorations/good_ol_pepper.png','good_ol_pepper.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(604,'Got Xenoglossy',3,1,'images/avatar_shop/decorations/got_xenoglossy.png','got_xenoglossy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(605,'Grass Toucher',3,1,'images/avatar_shop/decorations/grass_toucher.png','grass_toucher.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(606,'Graveyard Cat',3,1,'images/avatar_shop/decorations/graveyard_cat.png','graveyard_cat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(607,'Greenhouse Cat',3,1,'images/avatar_shop/decorations/greenhouse_cat.png','greenhouse_cat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(608,'Green Fried Egg',3,1,'images/avatar_shop/decorations/green_fried_egg.png','green_fried_egg.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(609,'Green Futuristic Ui',3,1,'images/avatar_shop/decorations/green_futuristic_ui.png','green_futuristic_ui.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(610,'Green Gyroscope',3,1,'images/avatar_shop/decorations/green_gyroscope.png','green_gyroscope.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(611,'Green Headset',3,1,'images/avatar_shop/decorations/green_headset.png','green_headset.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(612,'Green Hyper Helmet',3,1,'images/avatar_shop/decorations/green_hyper_helmet.png','green_hyper_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(613,'Green Mana',3,1,'images/avatar_shop/decorations/green_mana.png','green_mana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(614,'Green Shine Helmet',3,1,'images/avatar_shop/decorations/green_shine_helmet.png','green_shine_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(615,'Green Smoke',3,1,'images/avatar_shop/decorations/green_smoke.png','green_smoke.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(616,'Group Hug',3,1,'images/avatar_shop/decorations/group_hug.png','group_hug.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(617,'Guile',3,1,'images/avatar_shop/decorations/guile.png','guile.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(618,'G Toilet',3,1,'images/avatar_shop/decorations/g_toilet.png','g_toilet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(619,'Hackclaw',3,1,'images/avatar_shop/decorations/hackclaw.png','hackclaw.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(620,'Hailey',3,1,'images/avatar_shop/decorations/hailey.png','hailey.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(621,'Hammy',3,1,'images/avatar_shop/decorations/hammy.png','hammy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(622,'Hammy Blue',3,1,'images/avatar_shop/decorations/hammy_blue.png','hammy_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(623,'Hammy Green',3,1,'images/avatar_shop/decorations/hammy_green.png','hammy_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(624,'Hammy Pink',3,1,'images/avatar_shop/decorations/hammy_pink.png','hammy_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(625,'Hank Hill',3,1,'images/avatar_shop/decorations/hank_hill.png','hank_hill.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(626,'Happy Harvest',3,1,'images/avatar_shop/decorations/happy_harvest.png','happy_harvest.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(627,'Hawks',3,1,'images/avatar_shop/decorations/hawks.png','hawks.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(628,'Head In The Clouds',3,1,'images/avatar_shop/decorations/head_in_the_clouds.png','head_in_the_clouds.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(629,'Head In The Clouds Sunset',3,1,'images/avatar_shop/decorations/head_in_the_clouds_sunset.png','head_in_the_clouds_sunset.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(630,'Heartbloom',3,1,'images/avatar_shop/decorations/heartbloom.png','heartbloom.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(631,'Heartbloom Blue',3,1,'images/avatar_shop/decorations/heartbloom_blue.png','heartbloom_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(632,'Heartbloom Green',3,1,'images/avatar_shop/decorations/heartbloom_green.png','heartbloom_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(633,'Heartbloom Purple',3,1,'images/avatar_shop/decorations/heartbloom_purple.png','heartbloom_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(634,'Heartbloom Yellow',3,1,'images/avatar_shop/decorations/heartbloom_yellow.png','heartbloom_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(635,'Heartstrings Blue',3,1,'images/avatar_shop/decorations/heartstrings_blue.png','heartstrings_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(636,'Heartstrings Red',3,1,'images/avatar_shop/decorations/heartstrings_red.png','heartstrings_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(637,'Heart To Heart',3,1,'images/avatar_shop/decorations/heart_to_heart.png','heart_to_heart.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(638,'Helmsman',3,1,'images/avatar_shop/decorations/helmsman.png','helmsman.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(639,'Hex Lights',3,1,'images/avatar_shop/decorations/hex_lights.png','hex_lights.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(640,'Hex Tiles',3,1,'images/avatar_shop/decorations/hex_tiles.png','hex_tiles.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(641,'Hologram Dragon',3,1,'images/avatar_shop/decorations/hologram_dragon.png','hologram_dragon.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(642,'Honeyblossom',3,1,'images/avatar_shop/decorations/honeyblossom.png','honeyblossom.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(643,'Hood Crimson',3,1,'images/avatar_shop/decorations/hood_crimson.png','hood_crimson.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(644,'Hood Dark',3,1,'images/avatar_shop/decorations/hood_dark.png','hood_dark.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(645,'Hoppy Day',3,1,'images/avatar_shop/decorations/hoppy_day.png','hoppy_day.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(646,'Hot Shot',3,1,'images/avatar_shop/decorations/hot_shot.png','hot_shot.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(647,'How To Train Your Dragon',3,1,'images/avatar_shop/decorations/how_to_train_your_dragon.png','how_to_train_your_dragon.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(648,'Hugh The Rainbow',3,1,'images/avatar_shop/decorations/hugh_the_rainbow.png','hugh_the_rainbow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(649,'Human Torch',3,1,'images/avatar_shop/decorations/human_torch.png','human_torch.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(650,'Ice Cream Frog',3,1,'images/avatar_shop/decorations/ice_cream_frog.png','ice_cream_frog.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(651,'Ice Cube',3,1,'images/avatar_shop/decorations/ice_cube.png','ice_cube.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(652,'Icicle Gleaming',3,1,'images/avatar_shop/decorations/icicle_gleaming.png','icicle_gleaming.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(653,'Icicle Snowing',3,1,'images/avatar_shop/decorations/icicle_snowing.png','icicle_snowing.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(654,'Imagination',3,1,'images/avatar_shop/decorations/imagination.png','imagination.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(655,'Implant',3,1,'images/avatar_shop/decorations/implant.png','implant.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(656,'Im A Clown',3,1,'images/avatar_shop/decorations/im_a_clown.png','im_a_clown.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(657,'Invisible Woman',3,1,'images/avatar_shop/decorations/invisible_woman.png','invisible_woman.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(658,'Inzoi Psycat',3,1,'images/avatar_shop/decorations/inzoi_psycat.png','inzoi_psycat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(659,'In Love',3,1,'images/avatar_shop/decorations/in_love.png','in_love.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(660,'In Love Blue',3,1,'images/avatar_shop/decorations/in_love_blue.png','in_love_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(661,'In Love Green',3,1,'images/avatar_shop/decorations/in_love_green.png','in_love_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(662,'In Tears',3,1,'images/avatar_shop/decorations/in_tears.png','in_tears.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(663,'In Tears Green',3,1,'images/avatar_shop/decorations/in_tears_green.png','in_tears_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(664,'In Tears Pink',3,1,'images/avatar_shop/decorations/in_tears_pink.png','in_tears_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(665,'In Tears Purple',3,1,'images/avatar_shop/decorations/in_tears_purple.png','in_tears_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(666,'In Tears Yellow',3,1,'images/avatar_shop/decorations/in_tears_yellow.png','in_tears_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(667,'Izuku Midoriya',3,1,'images/avatar_shop/decorations/izuku_midoriya.png','izuku_midoriya.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(668,'I Love Repo',3,1,'images/avatar_shop/decorations/i_love_repo.png','i_love_repo.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(669,'Jack O Lantern',3,1,'images/avatar_shop/decorations/jack_o_lantern.png','jack_o_lantern.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(670,'Jean Grey Phoenix',3,1,'images/avatar_shop/decorations/jean_grey_phoenix.png','jean_grey_phoenix.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(671,'Jeff The Land Shark',3,1,'images/avatar_shop/decorations/jeff_the_land_shark.png','jeff_the_land_shark.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(672,'Jelly Bear',3,1,'images/avatar_shop/decorations/jelly_bear.png','jelly_bear.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(673,'Jingasa',3,1,'images/avatar_shop/decorations/jingasa.png','jingasa.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(674,'Joystick',3,1,'images/avatar_shop/decorations/joystick.png','joystick.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(675,'Juggernaut Astro',3,1,'images/avatar_shop/decorations/juggernaut_astro.png','juggernaut_astro.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(676,'Jurassic World Rebirth',3,1,'images/avatar_shop/decorations/jurassic_world_rebirth.png','jurassic_world_rebirth.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(677,'Juri',3,1,'images/avatar_shop/decorations/juri.png','juri.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(678,'Kabuto',3,1,'images/avatar_shop/decorations/kabuto.png','kabuto.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(679,'Katsuki Bakugo',3,1,'images/avatar_shop/decorations/katsuki_bakugo.png','katsuki_bakugo.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(680,'Ken',3,1,'images/avatar_shop/decorations/ken.png','ken.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(681,'Khazan',3,1,'images/avatar_shop/decorations/khazan.png','khazan.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(682,'Kitsune',3,1,'images/avatar_shop/decorations/kitsune.png','kitsune.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(683,'Ki Energy',3,1,'images/avatar_shop/decorations/ki_energy.png','ki_energy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(684,'Ki Energy Blue',3,1,'images/avatar_shop/decorations/ki_energy_blue.png','ki_energy_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(685,'Ki Energy Cyan',3,1,'images/avatar_shop/decorations/ki_energy_cyan.png','ki_energy_cyan.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(686,'Ki Energy Fuchsia',3,1,'images/avatar_shop/decorations/ki_energy_fuchsia.png','ki_energy_fuchsia.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(687,'Ki Energy Green',3,1,'images/avatar_shop/decorations/ki_energy_green.png','ki_energy_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(688,'Koi Pond',3,1,'images/avatar_shop/decorations/koi_pond.png','koi_pond.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(689,'Lamball',3,1,'images/avatar_shop/decorations/lamball.png','lamball.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(690,'Lava Blobs',3,1,'images/avatar_shop/decorations/lava_blobs.png','lava_blobs.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(691,'Lava Blobs Blue',3,1,'images/avatar_shop/decorations/lava_blobs_blue.png','lava_blobs_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(692,'Lava Blobs Pink',3,1,'images/avatar_shop/decorations/lava_blobs_pink.png','lava_blobs_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(693,'Lava Blobs Slime',3,1,'images/avatar_shop/decorations/lava_blobs_slime.png','lava_blobs_slime.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(694,'Lego Fortnite',3,1,'images/avatar_shop/decorations/lego_fortnite.png','lego_fortnite.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(695,'Lightning',3,1,'images/avatar_shop/decorations/lightning.png','lightning.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(696,'Lightning Aura',3,1,'images/avatar_shop/decorations/lightning_aura.png','lightning_aura.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(697,'Lightsabers Blue And Red',3,1,'images/avatar_shop/decorations/lightsabers_blue_and_red.png','lightsabers_blue_and_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(698,'Lightsabers Green And Red',3,1,'images/avatar_shop/decorations/lightsabers_green_and_red.png','lightsabers_green_and_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(699,'Lofi Girl Outfit',3,1,'images/avatar_shop/decorations/lofi_girl_outfit.png','lofi_girl_outfit.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(700,'Los Santos',3,1,'images/avatar_shop/decorations/los_santos.png','los_santos.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(701,'Lotus Flower',3,1,'images/avatar_shop/decorations/lotus_flower.png','lotus_flower.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(702,'Lovestruck',3,1,'images/avatar_shop/decorations/lovestruck.png','lovestruck.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(703,'Lucky Envelopes',3,1,'images/avatar_shop/decorations/lucky_envelopes.png','lucky_envelopes.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(704,'Luminescent Lotus',3,1,'images/avatar_shop/decorations/luminescent_lotus.png','luminescent_lotus.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(705,'Lunar Lanterns',3,1,'images/avatar_shop/decorations/lunar_lanterns.png','lunar_lanterns.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(706,'M3gan 2 0',3,1,'images/avatar_shop/decorations/m3gan_2_0.png','m3gan_2_0.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(707,'Magical Girl',3,1,'images/avatar_shop/decorations/magical_girl.png','magical_girl.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(708,'Magical Potion',3,1,'images/avatar_shop/decorations/magical_potion.png','magical_potion.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(709,'Magical Wand Green',3,1,'images/avatar_shop/decorations/magical_wand_green.png','magical_wand_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(710,'Magical Wand Purple',3,1,'images/avatar_shop/decorations/magical_wand_purple.png','magical_wand_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(711,'Magic Portal Blue',3,1,'images/avatar_shop/decorations/magic_portal_blue.png','magic_portal_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(712,'Magic Portal Purple',3,1,'images/avatar_shop/decorations/magic_portal_purple.png','magic_portal_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(713,'Malefic Crown',3,1,'images/avatar_shop/decorations/malefic_crown.png','malefic_crown.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(714,'Mallow Jump',3,1,'images/avatar_shop/decorations/mallow_jump.png','mallow_jump.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(715,'Marvel Snap Venom',3,1,'images/avatar_shop/decorations/marvel_snap_venom.png','marvel_snap_venom.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(716,'Mecha Break',3,1,'images/avatar_shop/decorations/mecha_break.png','mecha_break.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(717,'Mech Flora',3,1,'images/avatar_shop/decorations/mech_flora.png','mech_flora.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(718,'Mermaid Serenade',3,1,'images/avatar_shop/decorations/mermaid_serenade.png','mermaid_serenade.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(719,'Midnight Sorceress',3,1,'images/avatar_shop/decorations/midnight_sorceress.png','midnight_sorceress.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(720,'Millennium Falcon Hyperdrive',3,1,'images/avatar_shop/decorations/millennium_falcon_hyperdrive.png','millennium_falcon_hyperdrive.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(721,'Minions',3,1,'images/avatar_shop/decorations/minions.png','minions.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(722,'Mini Goku',3,1,'images/avatar_shop/decorations/mini_goku.png','mini_goku.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(723,'Mini Piccolo',3,1,'images/avatar_shop/decorations/mini_piccolo.png','mini_piccolo.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(724,'Mini Supreme Kai',3,1,'images/avatar_shop/decorations/mini_supreme_kai.png','mini_supreme_kai.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(725,'Mini Vegeta',3,1,'images/avatar_shop/decorations/mini_vegeta.png','mini_vegeta.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(726,'Mirage',3,1,'images/avatar_shop/decorations/mirage.png','mirage.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(727,'Mirage Nightshade',3,1,'images/avatar_shop/decorations/mirage_nightshade.png','mirage_nightshade.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(728,'Mirage Twilight',3,1,'images/avatar_shop/decorations/mirage_twilight.png','mirage_twilight.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(729,'Mirage Void',3,1,'images/avatar_shop/decorations/mirage_void.png','mirage_void.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(730,'Mischievous Kitties',3,1,'images/avatar_shop/decorations/mischievous_kitties.png','mischievous_kitties.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(731,'Mischievous Kitties Blue',3,1,'images/avatar_shop/decorations/mischievous_kitties_blue.png','mischievous_kitties_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(732,'Mischievous Kitties Hearts',3,1,'images/avatar_shop/decorations/mischievous_kitties_hearts.png','mischievous_kitties_hearts.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(733,'Mission Impossible',3,1,'images/avatar_shop/decorations/mission_impossible.png','mission_impossible.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(734,'Mister Fantastic',3,1,'images/avatar_shop/decorations/mister_fantastic.png','mister_fantastic.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(735,'Mochi Bunny Blue',3,1,'images/avatar_shop/decorations/mochi_bunny_blue.png','mochi_bunny_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(736,'Mochi Bunny Pink',3,1,'images/avatar_shop/decorations/mochi_bunny_pink.png','mochi_bunny_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(737,'Mokoko',3,1,'images/avatar_shop/decorations/mokoko.png','mokoko.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(738,'Moomoo Hood',3,1,'images/avatar_shop/decorations/moomoo_hood.png','moomoo_hood.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(739,'Mooncaps Blue',3,1,'images/avatar_shop/decorations/mooncaps_blue.png','mooncaps_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(740,'Mooncaps Pink',3,1,'images/avatar_shop/decorations/mooncaps_pink.png','mooncaps_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(741,'Morning Coffee',3,1,'images/avatar_shop/decorations/morning_coffee.png','morning_coffee.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(742,'Musclebob',3,1,'images/avatar_shop/decorations/musclebob.png','musclebob.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(743,'Mushcaps',3,1,'images/avatar_shop/decorations/mushcaps.png','mushcaps.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(744,'Mushroom 1',3,1,'images/avatar_shop/decorations/mushroom_1.png','mushroom_1.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(745,'Mushroom 2',3,1,'images/avatar_shop/decorations/mushroom_2.png','mushroom_2.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(746,'Mushroom 3',3,1,'images/avatar_shop/decorations/mushroom_3.png','mushroom_3.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(747,'Mushroom 4',3,1,'images/avatar_shop/decorations/mushroom_4.png','mushroom_4.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(748,'M Bison',3,1,'images/avatar_shop/decorations/m_bison.png','m_bison.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(749,'Nba 2k26',3,1,'images/avatar_shop/decorations/nba_2k26.png','nba_2k26.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(750,'Neon Cat Hoodie',3,1,'images/avatar_shop/decorations/neon_cat_hoodie.png','neon_cat_hoodie.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(751,'Neon Cat Hoodie Black',3,1,'images/avatar_shop/decorations/neon_cat_hoodie_black.png','neon_cat_hoodie_black.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(752,'Neon Cat Hoodie Blue',3,1,'images/avatar_shop/decorations/neon_cat_hoodie_blue.png','neon_cat_hoodie_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(753,'Neon Cat Hoodie Pink',3,1,'images/avatar_shop/decorations/neon_cat_hoodie_pink.png','neon_cat_hoodie_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(754,'Neon Decora Hair',3,1,'images/avatar_shop/decorations/neon_decora_hair.png','neon_decora_hair.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(755,'Neon Nibbles',3,1,'images/avatar_shop/decorations/neon_nibbles.png','neon_nibbles.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(756,'Neon Spike Choker',3,1,'images/avatar_shop/decorations/neon_spike_choker.png','neon_spike_choker.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(757,'Neon Spike Choker Black',3,1,'images/avatar_shop/decorations/neon_spike_choker_black.png','neon_spike_choker_black.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(758,'New Year 2024',3,1,'images/avatar_shop/decorations/new_year_2024.png','new_year_2024.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(759,'New Year 2025',3,1,'images/avatar_shop/decorations/new_year_2025.png','new_year_2025.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(760,'Next Turn Button',3,1,'images/avatar_shop/decorations/next_turn_button.png','next_turn_button.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(761,'Nibbles',3,1,'images/avatar_shop/decorations/nibbles.png','nibbles.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(762,'Nom Kitty',3,1,'images/avatar_shop/decorations/nom_kitty.png','nom_kitty.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(763,'Oasis',3,1,'images/avatar_shop/decorations/oasis.png','oasis.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(764,'Ochaco Uraraka',3,1,'images/avatar_shop/decorations/ochaco_uraraka.png','ochaco_uraraka.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(765,'Omens Cowl',3,1,'images/avatar_shop/decorations/omens_cowl.png','omens_cowl.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(766,'Oni Mask',3,1,'images/avatar_shop/decorations/oni_mask.png','oni_mask.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(767,'Open Beta',3,1,'images/avatar_shop/decorations/open_beta.png','open_beta.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(768,'Owlbear Cub',3,1,'images/avatar_shop/decorations/owlbear_cub.png','owlbear_cub.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(769,'Owlbear Cub Snowy',3,1,'images/avatar_shop/decorations/owlbear_cub_snowy.png','owlbear_cub_snowy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(770,'O N I',3,1,'images/avatar_shop/decorations/o_n_i.png','o_n_i.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(771,'Palia',3,1,'images/avatar_shop/decorations/palia.png','palia.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(772,'Pal Sphere',3,1,'images/avatar_shop/decorations/pal_sphere.png','pal_sphere.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(773,'Pancakes',3,1,'images/avatar_shop/decorations/pancakes.png','pancakes.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(774,'Panzy',3,1,'images/avatar_shop/decorations/panzy.png','panzy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(775,'Pathojen',3,1,'images/avatar_shop/decorations/pathojen.png','pathojen.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(776,'Patrick Star',3,1,'images/avatar_shop/decorations/patrick_star.png','patrick_star.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(777,'Phoenix',3,1,'images/avatar_shop/decorations/phoenix.png','phoenix.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(778,'Pink Futuristic Ui',3,1,'images/avatar_shop/decorations/pink_futuristic_ui.png','pink_futuristic_ui.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(779,'Pink Gyroscope',3,1,'images/avatar_shop/decorations/pink_gyroscope.png','pink_gyroscope.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(780,'Pink Headset',3,1,'images/avatar_shop/decorations/pink_headset.png','pink_headset.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(781,'Pink Hyper Helmet',3,1,'images/avatar_shop/decorations/pink_hyper_helmet.png','pink_hyper_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(782,'Pink Shine Helmet',3,1,'images/avatar_shop/decorations/pink_shine_helmet.png','pink_shine_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(783,'Pink Smoke',3,1,'images/avatar_shop/decorations/pink_smoke.png','pink_smoke.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(784,'Pipedream',3,1,'images/avatar_shop/decorations/pipedream.png','pipedream.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(785,'Pirate Captain',3,1,'images/avatar_shop/decorations/pirate_captain.png','pirate_captain.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(786,'Playful Lofi Cat',3,1,'images/avatar_shop/decorations/playful_lofi_cat.png','playful_lofi_cat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(787,'Polar Bear Hat',3,1,'images/avatar_shop/decorations/polar_bear_hat.png','polar_bear_hat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(788,'Pondering Portal',3,1,'images/avatar_shop/decorations/pondering_portal.png','pondering_portal.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(789,'Port Of Soul',3,1,'images/avatar_shop/decorations/port_of_soul.png','port_of_soul.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(790,'Powered By Shimmer',3,1,'images/avatar_shop/decorations/powered_by_shimmer.png','powered_by_shimmer.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(791,'Press F Black',3,1,'images/avatar_shop/decorations/press_f_black.png','press_f_black.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(792,'Press F White',3,1,'images/avatar_shop/decorations/press_f_white.png','press_f_white.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(793,'Pumpkin Spice',3,1,'images/avatar_shop/decorations/pumpkin_spice.png','pumpkin_spice.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(794,'Questionable',3,1,'images/avatar_shop/decorations/questionable.png','questionable.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(795,'R2 D2 On Tatooine',3,1,'images/avatar_shop/decorations/r2_d2_on_tatooine.png','r2_d2_on_tatooine.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(796,'R6 Siege X Avatar',3,1,'images/avatar_shop/decorations/r6_siege_x_avatar.png','r6_siege_x_avatar.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(797,'Radiating Energy',3,1,'images/avatar_shop/decorations/radiating_energy.png','radiating_energy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(798,'Radiating Energy Blue',3,1,'images/avatar_shop/decorations/radiating_energy_blue.png','radiating_energy_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(799,'Radiating Energy Yellow',3,1,'images/avatar_shop/decorations/radiating_energy_yellow.png','radiating_energy_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(800,'Rage',3,1,'images/avatar_shop/decorations/rage.png','rage.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(801,'Rage Blue',3,1,'images/avatar_shop/decorations/rage_blue.png','rage_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(802,'Rage Green',3,1,'images/avatar_shop/decorations/rage_green.png','rage_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(803,'Rage Purple',3,1,'images/avatar_shop/decorations/rage_purple.png','rage_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(804,'Rage Red',3,1,'images/avatar_shop/decorations/rage_red.png','rage_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(805,'Rainy Canopy',3,1,'images/avatar_shop/decorations/rainy_canopy.png','rainy_canopy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(806,'Rainy Mood',3,1,'images/avatar_shop/decorations/rainy_mood.png','rainy_mood.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(807,'Ramen Bowl',3,1,'images/avatar_shop/decorations/ramen_bowl.png','ramen_bowl.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(808,'Ramen Bowl Toppings',3,1,'images/avatar_shop/decorations/ramen_bowl_toppings.png','ramen_bowl_toppings.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(809,'Rawr Xd',3,1,'images/avatar_shop/decorations/rawr_xd.png','rawr_xd.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(810,'Rec Room Lightning',3,1,'images/avatar_shop/decorations/rec_room_lightning.png','rec_room_lightning.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(811,'Red Lantern',3,1,'images/avatar_shop/decorations/red_lantern.png','red_lantern.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(812,'Red Mana',3,1,'images/avatar_shop/decorations/red_mana.png','red_mana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(813,'Reynas Leer',3,1,'images/avatar_shop/decorations/reynas_leer.png','reynas_leer.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(814,'Rift Butterfly',3,1,'images/avatar_shop/decorations/rift_butterfly.png','rift_butterfly.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(815,'Ring Of Roses Blue',3,1,'images/avatar_shop/decorations/ring_of_roses_blue.png','ring_of_roses_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(816,'Ring Of Roses Red',3,1,'images/avatar_shop/decorations/ring_of_roses_red.png','ring_of_roses_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(817,'Rocket Puncher',3,1,'images/avatar_shop/decorations/rocket_puncher.png','rocket_puncher.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(818,'Rose Bearer Blue',3,1,'images/avatar_shop/decorations/rose_bearer_blue.png','rose_bearer_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(819,'Rose Bearer Pink',3,1,'images/avatar_shop/decorations/rose_bearer_pink.png','rose_bearer_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(820,'Ruby Hearts',3,1,'images/avatar_shop/decorations/ruby_hearts.png','ruby_hearts.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(821,'Rumbling',3,1,'images/avatar_shop/decorations/rumbling.png','rumbling.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(822,'Ryu',3,1,'images/avatar_shop/decorations/ryu.png','ryu.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(823,'Sakura',3,1,'images/avatar_shop/decorations/sakura.png','sakura.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(824,'Sakura 1',3,1,'images/avatar_shop/decorations/sakura_1.png','sakura_1.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(825,'Sakura 2',3,1,'images/avatar_shop/decorations/sakura_2.png','sakura_2.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(826,'Sakura 3',3,1,'images/avatar_shop/decorations/sakura_3.png','sakura_3.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(827,'Sakura City',3,1,'images/avatar_shop/decorations/sakura_city.png','sakura_city.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(828,'Sakura Gyoiko',3,1,'images/avatar_shop/decorations/sakura_gyoiko.png','sakura_gyoiko.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(829,'Sakura Ink',3,1,'images/avatar_shop/decorations/sakura_ink.png','sakura_ink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(830,'Sakura Pink',3,1,'images/avatar_shop/decorations/sakura_pink.png','sakura_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(831,'Sakura Scholar',3,1,'images/avatar_shop/decorations/sakura_scholar.png','sakura_scholar.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(832,'Sakura Ukon',3,1,'images/avatar_shop/decorations/sakura_ukon.png','sakura_ukon.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(833,'Sakura Warrior',3,1,'images/avatar_shop/decorations/sakura_warrior.png','sakura_warrior.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(834,'Sandy Cheeks',3,1,'images/avatar_shop/decorations/sandy_cheeks.png','sandy_cheeks.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(835,'Santa Cat Ears',3,1,'images/avatar_shop/decorations/santa_cat_ears.png','santa_cat_ears.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(836,'Saw',3,1,'images/avatar_shop/decorations/saw.png','saw.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(837,'Scallywag',3,1,'images/avatar_shop/decorations/scallywag.png','scallywag.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(838,'Scout',3,1,'images/avatar_shop/decorations/scout.png','scout.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(839,'Selyne',3,1,'images/avatar_shop/decorations/selyne.png','selyne.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(840,'Shadow',3,1,'images/avatar_shop/decorations/shadow.png','shadow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(841,'Shenron',3,1,'images/avatar_shop/decorations/shenron.png','shenron.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(842,'Shield Potion',3,1,'images/avatar_shop/decorations/shield_potion.png','shield_potion.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(843,'Shield Saw',3,1,'images/avatar_shop/decorations/shield_saw.png','shield_saw.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(844,'Shocked',3,1,'images/avatar_shop/decorations/shocked.png','shocked.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(845,'Shocked Green',3,1,'images/avatar_shop/decorations/shocked_green.png','shocked_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(846,'Shocked Yellow',3,1,'images/avatar_shop/decorations/shocked_yellow.png','shocked_yellow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(847,'Shoto Todoroki',3,1,'images/avatar_shop/decorations/shoto_todoroki.png','shoto_todoroki.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(848,'Shower Stroll',3,1,'images/avatar_shop/decorations/shower_stroll.png','shower_stroll.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(849,'Shroomling',3,1,'images/avatar_shop/decorations/shroomling.png','shroomling.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(850,'Shroomling Blue',3,1,'images/avatar_shop/decorations/shroomling_blue.png','shroomling_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(851,'Shroomling Brown',3,1,'images/avatar_shop/decorations/shroomling_brown.png','shroomling_brown.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(852,'Shroomling Pink',3,1,'images/avatar_shop/decorations/shroomling_pink.png','shroomling_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(853,'Shroomling Purple',3,1,'images/avatar_shop/decorations/shroomling_purple.png','shroomling_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(854,'Shurikens Mask',3,1,'images/avatar_shop/decorations/shurikens_mask.png','shurikens_mask.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(855,'Shy',3,1,'images/avatar_shop/decorations/shy.png','shy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(856,'Shy In Love',3,1,'images/avatar_shop/decorations/shy_in_love.png','shy_in_love.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(857,'Signal From Tau Ceti',3,1,'images/avatar_shop/decorations/signal_from_tau_ceti.png','signal_from_tau_ceti.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(858,'Silver Surfer',3,1,'images/avatar_shop/decorations/silver_surfer.png','silver_surfer.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(859,'Sippy Juice',3,1,'images/avatar_shop/decorations/sippy_juice.png','sippy_juice.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(860,'Skibidi Toilet',3,1,'images/avatar_shop/decorations/skibidi_toilet.png','skibidi_toilet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(861,'Skully Charms',3,1,'images/avatar_shop/decorations/skully_charms.png','skully_charms.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(862,'Skull Medallion',3,1,'images/avatar_shop/decorations/skull_medallion.png','skull_medallion.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(863,'Sleepy Bee',3,1,'images/avatar_shop/decorations/sleepy_bee.png','sleepy_bee.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(864,'Sleepy Chilledcow',3,1,'images/avatar_shop/decorations/sleepy_chilledcow.png','sleepy_chilledcow.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(865,'Slither N Snack',3,1,'images/avatar_shop/decorations/slither_n_snack.png','slither_n_snack.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(866,'Slurp Barrel',3,1,'images/avatar_shop/decorations/slurp_barrel.png','slurp_barrel.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(867,'Snakes Hug',3,1,'images/avatar_shop/decorations/snakes_hug.png','snakes_hug.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(868,'Snowdrops',3,1,'images/avatar_shop/decorations/snowdrops.png','snowdrops.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(869,'Snowfall',3,1,'images/avatar_shop/decorations/snowfall.png','snowfall.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(870,'Snowglobe',3,1,'images/avatar_shop/decorations/snowglobe.png','snowglobe.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(871,'Snowglobe Blue',3,1,'images/avatar_shop/decorations/snowglobe_blue.png','snowglobe_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(872,'Snowglobe Green',3,1,'images/avatar_shop/decorations/snowglobe_green.png','snowglobe_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(873,'Snowglobe Pink',3,1,'images/avatar_shop/decorations/snowglobe_pink.png','snowglobe_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(874,'Snowglobe Wood',3,1,'images/avatar_shop/decorations/snowglobe_wood.png','snowglobe_wood.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(875,'Solar Orbit',3,1,'images/avatar_shop/decorations/solar_orbit.png','solar_orbit.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(876,'Soul Leaving Body',3,1,'images/avatar_shop/decorations/soul_leaving_body.png','soul_leaving_body.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(877,'Soul Leaving Body Blue',3,1,'images/avatar_shop/decorations/soul_leaving_body_blue.png','soul_leaving_body_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(878,'Space Battle',3,1,'images/avatar_shop/decorations/space_battle.png','space_battle.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(879,'Speakerwoman',3,1,'images/avatar_shop/decorations/speakerwoman.png','speakerwoman.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(880,'Spirit Blossom Karma',3,1,'images/avatar_shop/decorations/spirit_blossom_karma.png','spirit_blossom_karma.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(881,'Spirit Blossom Morgana',3,1,'images/avatar_shop/decorations/spirit_blossom_morgana.png','spirit_blossom_morgana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(882,'Spirit Blossom Springs',3,1,'images/avatar_shop/decorations/spirit_blossom_springs.png','spirit_blossom_springs.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(883,'Spirit Blossom Springs Ahri',3,1,'images/avatar_shop/decorations/spirit_blossom_springs_ahri.png','spirit_blossom_springs_ahri.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(884,'Spirit Blossom Springs Sett',3,1,'images/avatar_shop/decorations/spirit_blossom_springs_sett.png','spirit_blossom_springs_sett.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(885,'Spirit Blossom Zed',3,1,'images/avatar_shop/decorations/spirit_blossom_zed.png','spirit_blossom_zed.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(886,'Spirit Embers',3,1,'images/avatar_shop/decorations/spirit_embers.png','spirit_embers.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(887,'Split',3,1,'images/avatar_shop/decorations/split.png','split.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(888,'Spongebob',3,1,'images/avatar_shop/decorations/spongebob.png','spongebob.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(889,'Spooky Cat Ears',3,1,'images/avatar_shop/decorations/spooky_cat_ears.png','spooky_cat_ears.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(890,'Spooky Cat Ears Midnight',3,1,'images/avatar_shop/decorations/spooky_cat_ears_midnight.png','spooky_cat_ears_midnight.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(891,'Sproutling',3,1,'images/avatar_shop/decorations/sproutling.png','sproutling.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(892,'Stardust',3,1,'images/avatar_shop/decorations/stardust.png','stardust.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(893,'Starlight Revolver',3,1,'images/avatar_shop/decorations/starlight_revolver.png','starlight_revolver.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(894,'Starlight Whales',3,1,'images/avatar_shop/decorations/starlight_whales.png','starlight_whales.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(895,'Starry Eyed',3,1,'images/avatar_shop/decorations/starry_eyed.png','starry_eyed.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(896,'Starry Eyed Green',3,1,'images/avatar_shop/decorations/starry_eyed_green.png','starry_eyed_green.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(897,'Starry Eyed Pink',3,1,'images/avatar_shop/decorations/starry_eyed_pink.png','starry_eyed_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(898,'Steampunk Cat Ears',3,1,'images/avatar_shop/decorations/steampunk_cat_ears.png','steampunk_cat_ears.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(899,'Stinkums',3,1,'images/avatar_shop/decorations/stinkums.png','stinkums.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(900,'Strawberry Vine',3,1,'images/avatar_shop/decorations/strawberry_vine.png','strawberry_vine.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(901,'Straw Hat',3,1,'images/avatar_shop/decorations/straw_hat.png','straw_hat.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(902,'Street Fighter 6 Battle Field',3,1,'images/avatar_shop/decorations/street_fighter_6_battle_field.png','street_fighter_6_battle_field.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(903,'String Lights',3,1,'images/avatar_shop/decorations/string_lights.png','string_lights.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(904,'String Lights Aurora',3,1,'images/avatar_shop/decorations/string_lights_aurora.png','string_lights_aurora.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(905,'String Lights Dusk',3,1,'images/avatar_shop/decorations/string_lights_dusk.png','string_lights_dusk.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(906,'String Lights Ember',3,1,'images/avatar_shop/decorations/string_lights_ember.png','string_lights_ember.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(907,'String Lights Mix',3,1,'images/avatar_shop/decorations/string_lights_mix.png','string_lights_mix.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(908,'Study Session',3,1,'images/avatar_shop/decorations/study_session.png','study_session.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(909,'Sunflowers',3,1,'images/avatar_shop/decorations/sunflowers.png','sunflowers.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(910,'Supercell',3,1,'images/avatar_shop/decorations/supercell.png','supercell.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(911,'Supply Llama',3,1,'images/avatar_shop/decorations/supply_llama.png','supply_llama.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(912,'Sushi Roll',3,1,'images/avatar_shop/decorations/sushi_roll.png','sushi_roll.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(913,'Sweat Drops',3,1,'images/avatar_shop/decorations/sweat_drops.png','sweat_drops.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(914,'Sweat Drops Cyan',3,1,'images/avatar_shop/decorations/sweat_drops_cyan.png','sweat_drops_cyan.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(915,'Sweat Drops Pink',3,1,'images/avatar_shop/decorations/sweat_drops_pink.png','sweat_drops_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(916,'Sweet Tooth',3,1,'images/avatar_shop/decorations/sweet_tooth.png','sweet_tooth.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(917,'Teacup Blue',3,1,'images/avatar_shop/decorations/teacup_blue.png','teacup_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(918,'Teacup Orange',3,1,'images/avatar_shop/decorations/teacup_orange.png','teacup_orange.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(919,'Teacup Pink',3,1,'images/avatar_shop/decorations/teacup_pink.png','teacup_pink.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(920,'Teacup Red',3,1,'images/avatar_shop/decorations/teacup_red.png','teacup_red.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(921,'Terrain Tiles',3,1,'images/avatar_shop/decorations/terrain_tiles.png','terrain_tiles.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(922,'Terrarium',3,1,'images/avatar_shop/decorations/terrarium.png','terrarium.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(923,'Tga Controller',3,1,'images/avatar_shop/decorations/tga_controller.png','tga_controller.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(924,'The Anomaly',3,1,'images/avatar_shop/decorations/the_anomaly.png','the_anomaly.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(925,'The Atlas Gauntlets',3,1,'images/avatar_shop/decorations/the_atlas_gauntlets.png','the_atlas_gauntlets.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(926,'The Conjuring Last Rites',3,1,'images/avatar_shop/decorations/the_conjuring_last_rites.png','the_conjuring_last_rites.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(927,'The Entity',3,1,'images/avatar_shop/decorations/the_entity.png','the_entity.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(928,'The Fantastic Four',3,1,'images/avatar_shop/decorations/the_fantastic_four.png','the_fantastic_four.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(929,'The Hexcore',3,1,'images/avatar_shop/decorations/the_hexcore.png','the_hexcore.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(930,'The Mark',3,1,'images/avatar_shop/decorations/the_mark.png','the_mark.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(931,'The Monster You Created',3,1,'images/avatar_shop/decorations/the_monster_you_created.png','the_monster_you_created.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(932,'The Petal Pack',3,1,'images/avatar_shop/decorations/the_petal_pack.png','the_petal_pack.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(933,'The Thing',3,1,'images/avatar_shop/decorations/the_thing.png','the_thing.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(934,'Thps Half Pipe',3,1,'images/avatar_shop/decorations/thps_half_pipe.png','thps_half_pipe.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(935,'Timekeepers Clock',3,1,'images/avatar_shop/decorations/timekeepers_clock.png','timekeepers_clock.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(936,'Toast',3,1,'images/avatar_shop/decorations/toast.png','toast.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(937,'Toilet Lid',3,1,'images/avatar_shop/decorations/toilet_lid.png','toilet_lid.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(938,'Tomura Shigaraki',3,1,'images/avatar_shop/decorations/tomura_shigaraki.png','tomura_shigaraki.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(939,'Torgal Puppy',3,1,'images/avatar_shop/decorations/torgal_puppy.png','torgal_puppy.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(940,'Touch Grass',3,1,'images/avatar_shop/decorations/touch_grass.png','touch_grass.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(941,'Towerborne Play',3,1,'images/avatar_shop/decorations/towerborne_play.png','towerborne_play.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(942,'Trash',3,1,'images/avatar_shop/decorations/trash.png','trash.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(943,'Treasure And Key',3,1,'images/avatar_shop/decorations/treasure_and_key.png','treasure_and_key.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(944,'Tv Woman',3,1,'images/avatar_shop/decorations/tv_woman.png','tv_woman.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(945,'Ufo',3,1,'images/avatar_shop/decorations/ufo.png','ufo.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(946,'Ultron',3,1,'images/avatar_shop/decorations/ultron.png','ultron.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(947,'Unicorn',3,1,'images/avatar_shop/decorations/unicorn.png','unicorn.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(948,'Uwu Xp',3,1,'images/avatar_shop/decorations/uwu_xp.png','uwu_xp.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(949,'Valorant Champions 2024',3,1,'images/avatar_shop/decorations/valorant_champions_2024.png','valorant_champions_2024.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(950,'Valorant Summer Kickoff',3,1,'images/avatar_shop/decorations/valorant_summer_kickoff.png','valorant_summer_kickoff.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(951,'Victory Crown',3,1,'images/avatar_shop/decorations/victory_crown.png','victory_crown.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(952,'Viper Poison Cloud',3,1,'images/avatar_shop/decorations/viper_poison_cloud.png','viper_poison_cloud.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(953,'Wallach Spaceport',3,1,'images/avatar_shop/decorations/wallach_spaceport.png','wallach_spaceport.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(954,'Warp Helmet',3,1,'images/avatar_shop/decorations/warp_helmet.png','warp_helmet.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(955,'Water',3,1,'images/avatar_shop/decorations/water.png','water.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(956,'Wendys X Wednesday',3,1,'images/avatar_shop/decorations/wendys_x_wednesday.png','wendys_x_wednesday.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(957,'White Mana',3,1,'images/avatar_shop/decorations/white_mana.png','white_mana.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(958,'Wingmans Got It',3,1,'images/avatar_shop/decorations/wingmans_got_it.png','wingmans_got_it.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(959,'Wingman Boba',3,1,'images/avatar_shop/decorations/wingman_boba.png','wingman_boba.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(960,'Winkle',3,1,'images/avatar_shop/decorations/winkle.png','winkle.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(961,'Witch Hat Midnight',3,1,'images/avatar_shop/decorations/witch_hat_midnight.png','witch_hat_midnight.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(962,'Witch Hat Plum',3,1,'images/avatar_shop/decorations/witch_hat_plum.png','witch_hat_plum.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(963,'Wizards Staff',3,1,'images/avatar_shop/decorations/wizards_staff.png','wizards_staff.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(964,'Wizard Hat Blue',3,1,'images/avatar_shop/decorations/wizard_hat_blue.png','wizard_hat_blue.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(965,'Wizard Hat Purple',3,1,'images/avatar_shop/decorations/wizard_hat_purple.png','wizard_hat_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(966,'Wolf Morph',3,1,'images/avatar_shop/decorations/wolf_morph.png','wolf_morph.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(967,'Woolgathering',3,1,'images/avatar_shop/decorations/woolgathering.png','woolgathering.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(968,'Yoda On Dagobah',3,1,'images/avatar_shop/decorations/yoda_on_dagobah.png','yoda_on_dagobah.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(969,'Yoru Dimensional Drift',3,1,'images/avatar_shop/decorations/yoru_dimensional_drift.png','yoru_dimensional_drift.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(970,'Yunara',3,1,'images/avatar_shop/decorations/yunara.png','yunara.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(971,'Zombie Food',3,1,'images/avatar_shop/decorations/zombie_food.png','zombie_food.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34'),
+(972,'Zombie Food Purple',3,1,'images/avatar_shop/decorations/zombie_food_purple.png','zombie_food_purple.png','png',2500,'pearls',NULL,1,'2025-09-03 11:22:34','2025-09-03 11:22:34');
 
-CREATE TABLE `comment_likes` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `comment_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*Table structure for table `battle_pass_claims` */
 
--- --------------------------------------------------------
+DROP TABLE IF EXISTS `battle_pass_claims`;
 
---
--- Table structure for table `daily_claims`
---
+CREATE TABLE `battle_pass_claims` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `level` int NOT NULL,
+  `reward_type` varchar(50) NOT NULL,
+  `reward_data` json DEFAULT NULL,
+  `pearls_awarded` int DEFAULT NULL,
+  `claimed_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_level_claim` (`user_id`,`level`),
+  CONSTRAINT `battle_pass_claims_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Data for the table `battle_pass_claims` */
+
+insert  into `battle_pass_claims`(`id`,`user_id`,`level`,`reward_type`,`reward_data`,`pearls_awarded`,`claimed_at`) values 
+(1,1,1,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"100 Pearls\"}',100,'2025-09-03 03:24:52'),
+(2,1,2,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"200 Pearls\"}',200,'2025-09-03 04:14:31'),
+(3,1,3,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"300 Pearls\"}',300,'2025-09-03 04:14:31'),
+(4,1,4,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"400 Pearls\"}',400,'2025-09-03 05:07:14'),
+(5,2,1,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"100 Pearls\"}',100,'2025-09-03 14:21:05'),
+(6,2,2,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"200 Pearls\"}',200,'2025-09-03 14:28:11'),
+(7,2,3,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"300 Pearls\"}',300,'2025-09-03 14:38:26'),
+(8,2,4,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"400 Pearls\"}',400,'2025-09-03 14:38:27'),
+(9,2,5,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"500 Pearls\"}',500,'2025-09-03 14:38:28'),
+(10,2,6,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"600 Pearls\"}',600,'2025-09-03 14:38:31'),
+(11,2,7,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"700 Pearls\"}',700,'2025-09-03 14:38:32'),
+(12,2,8,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"800 Pearls\"}',800,'2025-09-03 14:38:32'),
+(13,2,9,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"900 Pearls\"}',900,'2025-09-03 14:38:33'),
+(14,2,10,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"1000 Pearls\"}',1000,'2025-09-03 14:38:34'),
+(15,2,11,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"1100 Pearls\"}',1100,'2025-09-03 14:38:36'),
+(16,2,12,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"1200 Pearls\"}',1200,'2025-09-03 14:44:41'),
+(17,2,13,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"1300 Pearls\"}',1300,'2025-09-03 14:44:42'),
+(18,2,14,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"1400 Pearls\"}',1400,'2025-09-03 14:44:42'),
+(19,2,15,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"Pearl Bonus\", \"value\": \"1500 Pearls\"}',1500,'2025-09-03 14:44:43'),
+(20,1,5,'pearls','{\"icon\": \"fa-gem\", \"type\": \"pearls\", \"title\": \"\", \"value\": \"<i class=\\\"fas fa-gem\\\" style=\\\"color: #f59e0b; margin-right: 4px;\\\"></i>500\"}',500,'2025-09-05 10:03:16');
+
+/*Table structure for table `daily_claims` */
+
+DROP TABLE IF EXISTS `daily_claims`;
 
 CREATE TABLE `daily_claims` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
   `claim_date` date NOT NULL,
-  `day_number` int(11) NOT NULL,
-  `pearl_amount` int(11) NOT NULL,
-  `streak_count` int(11) DEFAULT NULL,
-  `claimed_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `day_number` int NOT NULL,
+  `pearl_amount` int NOT NULL,
+  `exp_amount` int NOT NULL,
+  `streak_count` int DEFAULT NULL,
+  `claimed_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_claim_date` (`user_id`,`claim_date`),
+  CONSTRAINT `daily_claims_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `daily_claims`
---
+/*Data for the table `daily_claims` */
 
-INSERT INTO `daily_claims` (`id`, `user_id`, `claim_date`, `day_number`, `pearl_amount`, `streak_count`, `claimed_at`) VALUES
-(5, 7, '2025-08-29', 1, 500, 1, '2025-08-29 15:18:18'),
-(6, 7, '2025-08-30', 2, 750, 2, '2025-08-29 16:30:50');
+insert  into `daily_claims`(`id`,`user_id`,`claim_date`,`day_number`,`pearl_amount`,`exp_amount`,`streak_count`,`claimed_at`) values 
+(1,1,'2025-09-03',1,500,100,1,'2025-09-03 11:24:55'),
+(2,2,'2025-09-03',1,500,100,1,'2025-09-03 22:20:51'),
+(4,1,'2025-09-05',1,500,100,1,'2025-09-05 16:43:01'),
+(5,1,'2025-09-06',2,750,100,2,'2025-09-06 01:58:34');
 
--- --------------------------------------------------------
+/*Table structure for table `follows` */
 
---
--- Table structure for table `follows`
---
+DROP TABLE IF EXISTS `follows`;
 
 CREATE TABLE `follows` (
-  `id` int(11) NOT NULL,
-  `follower_id` int(11) NOT NULL,
-  `following_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ;
+  `id` int NOT NULL AUTO_INCREMENT,
+  `follower_id` int NOT NULL,
+  `following_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_follow` (`follower_id`,`following_id`),
+  KEY `following_id` (`following_id`),
+  CONSTRAINT `follows_ibfk_1` FOREIGN KEY (`follower_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `follows_ibfk_2` FOREIGN KEY (`following_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `no_self_follow` CHECK ((`follower_id` <> `following_id`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
+/*Data for the table `follows` */
 
---
--- Table structure for table `posts`
---
+/*Table structure for table `marketplace_favorites` */
 
-CREATE TABLE `posts` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `content` text NOT NULL,
-  `image_url` varchar(255) DEFAULT NULL,
-  `likes_count` int(11) DEFAULT NULL,
-  `comments_count` int(11) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp(),
-  `feeling` varchar(100) DEFAULT NULL COMMENT 'Optional feeling/mood for the post',
-  `location` varchar(255) DEFAULT NULL COMMENT 'Optional location for the post'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `marketplace_favorites`;
 
---
--- Dumping data for table `posts`
---
+CREATE TABLE `marketplace_favorites` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `marketplace_item_id` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_item_favorite` (`user_id`,`marketplace_item_id`),
+  KEY `marketplace_item_id` (`marketplace_item_id`),
+  CONSTRAINT `marketplace_favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `marketplace_favorites_ibfk_2` FOREIGN KEY (`marketplace_item_id`) REFERENCES `marketplace_items` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `posts` (`id`, `user_id`, `content`, `image_url`, `likes_count`, `comments_count`, `created_at`, `updated_at`, `feeling`, `location`) VALUES
-(11, 7, 'FEMFI', '/uploads/7_b2638f55.jpg', 1, 0, '2025-08-30 07:57:12', '2025-08-30 08:01:04', NULL, NULL),
-(12, 7, 'FEMFI', '/uploads/7_8a3dace8.jpg', 0, 0, '2025-08-30 07:57:27', '2025-08-30 07:57:27', NULL, NULL),
-(13, 7, 'FEMFI', '/uploads/7_9ac6acc7.jpg', 0, 0, '2025-08-30 07:57:52', '2025-08-30 07:57:52', NULL, NULL),
-(14, 7, 'FEMFI', '/uploads/7_d6ae35c3.jpg', 0, 0, '2025-08-30 07:58:13', '2025-08-30 07:58:13', NULL, NULL);
+/*Data for the table `marketplace_favorites` */
 
--- --------------------------------------------------------
+insert  into `marketplace_favorites`(`id`,`user_id`,`marketplace_item_id`,`created_at`) values 
+(20,1,51,'2025-09-05 07:08:11'),
+(21,1,52,'2025-09-05 07:25:04');
 
---
--- Table structure for table `post_images`
---
+/*Table structure for table `marketplace_items` */
 
-CREATE TABLE `post_images` (
-  `id` int(11) NOT NULL,
-  `post_id` int(11) NOT NULL,
-  `image_url` varchar(255) NOT NULL,
-  `image_order` int(11) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+DROP TABLE IF EXISTS `marketplace_items`;
 
---
--- Dumping data for table `post_images`
---
+CREATE TABLE `marketplace_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `card_name` varchar(100) NOT NULL,
+  `card_series` varchar(50) NOT NULL,
+  `card_description` text,
+  `card_price` int NOT NULL,
+  `image_path` varchar(200) DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL,
+  `rarity` varchar(20) DEFAULT NULL,
+  `category` varchar(30) DEFAULT NULL,
+  `rating` float DEFAULT NULL,
+  `is_popular` tinyint(1) DEFAULT NULL,
+  `is_new` tinyint(1) DEFAULT NULL,
+  `original_price` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO `post_images` (`id`, `post_id`, `image_url`, `image_order`, `created_at`) VALUES
-(3, 11, '/uploads/7_b2638f55.jpg', 0, '2025-08-30 07:57:12'),
-(4, 12, '/uploads/7_8a3dace8.jpg', 0, '2025-08-30 07:57:27'),
-(5, 12, '/uploads/7_6abf773f.jpg', 1, '2025-08-30 07:57:27'),
-(6, 13, '/uploads/7_9ac6acc7.jpg', 0, '2025-08-30 07:57:52'),
-(7, 13, '/uploads/7_327d2ed7.jpg', 1, '2025-08-30 07:57:52'),
-(8, 13, '/uploads/7_23d23f2e.jpg', 2, '2025-08-30 07:57:52'),
-(9, 14, '/uploads/7_d6ae35c3.jpg', 0, '2025-08-30 07:58:13'),
-(10, 14, '/uploads/7_41a1da06.jpg', 1, '2025-08-30 07:58:13'),
-(11, 14, '/uploads/7_45730001.jpg', 2, '2025-08-30 07:58:13'),
-(12, 14, '/uploads/7_eaca9ff3.jpg', 3, '2025-08-30 07:58:13');
+/*Data for the table `marketplace_items` */
 
--- --------------------------------------------------------
+insert  into `marketplace_items`(`id`,`card_name`,`card_series`,`card_description`,`card_price`,`image_path`,`is_active`,`created_at`,`updated_at`,`rarity`,`category`,`rating`,`is_popular`,`is_new`,`original_price`) values 
+(49,'Naruto','T1W1','Contains 10 random cards from the T1W1 series',3000,'images/Naruto/T1W1.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(50,'Goddess Story','NS-01','Contains 10 random cards from the NS-01 series',3000,'images/Goddess Story/NS-01.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(51,'Goddess Story','NS-02','Contains 10 random cards from the NS-02 series',3000,'images/Goddess Story/NS-02.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(52,'Goddess Story','NS-03','Contains 10 random cards from the NS-03 series',3000,'images/Goddess Story/NS-03.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(53,'Goddess Story','NS-04','Contains 10 random cards from the NS-04 series',3000,'images/Goddess Story/NS-04.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(54,'Goddess Story','NS-05','Contains 10 random cards from the NS-05 series',3000,'images/Goddess Story/NS-05.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(55,'Goddess Story','NS-06','Contains 10 random cards from the NS-06 series',3000,'images/Goddess Story/NS-06.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(56,'Goddess Story','NS-07','Contains 10 random cards from the NS-07 series',3000,'images/Goddess Story/NS-07.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(57,'Goddess Story','NS-08','Contains 10 random cards from the NS-08 series',3000,'images/Goddess Story/NS-08.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL),
+(58,'Goddess Story','NS-09','Contains 10 random cards from the NS-04 series',3000,'images/Goddess Story/NS-09.jpg',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
 
---
--- Table structure for table `post_likes`
---
+/*Table structure for table `referrals` */
 
-CREATE TABLE `post_likes` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `post_id` int(11) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `post_reactions`
---
-
-CREATE TABLE `post_reactions` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `post_id` int(11) NOT NULL,
-  `reaction` varchar(20) NOT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `post_reactions`
---
-
-INSERT INTO `post_reactions` (`id`, `user_id`, `post_id`, `reaction`, `created_at`, `updated_at`) VALUES
-(6, 7, 11, 'like', '2025-08-30 08:01:04', '2025-08-30 08:01:04');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `referrals`
---
+DROP TABLE IF EXISTS `referrals`;
 
 CREATE TABLE `referrals` (
-  `id` int(11) NOT NULL,
-  `referrer_id` int(11) NOT NULL,
-  `referee_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `referrer_id` int NOT NULL,
+  `referee_id` int NOT NULL,
   `referral_code_used` varchar(20) NOT NULL,
   `bonus_awarded` tinyint(1) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_referee` (`referee_id`),
+  KEY `referrer_id` (`referrer_id`),
+  CONSTRAINT `referrals_ibfk_1` FOREIGN KEY (`referrer_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `referrals_ibfk_2` FOREIGN KEY (`referee_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
+/*Data for the table `referrals` */
 
---
--- Table structure for table `social_media_links`
---
+insert  into `referrals`(`id`,`referrer_id`,`referee_id`,`referral_code_used`,`bonus_awarded`,`created_at`) values 
+(1,1,2,'F3J4IP91',1,'2025-09-03 22:19:08');
+
+/*Table structure for table `social_media_links` */
+
+DROP TABLE IF EXISTS `social_media_links`;
 
 CREATE TABLE `social_media_links` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
   `platform` varchar(50) NOT NULL,
   `url` varchar(500) NOT NULL,
   `display_name` varchar(100) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_platform` (`user_id`,`platform`),
+  CONSTRAINT `social_media_links_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `social_media_links`
---
+/*Data for the table `social_media_links` */
 
-INSERT INTO `social_media_links` (`id`, `user_id`, `platform`, `url`, `display_name`, `is_active`, `created_at`, `updated_at`) VALUES
-(6, 7, 'facebook', 'https://www.facebook.com/sub01XD', NULL, 1, '2025-08-29 10:36:36', '2025-08-29 14:55:10');
+insert  into `social_media_links`(`id`,`user_id`,`platform`,`url`,`display_name`,`is_active`,`created_at`,`updated_at`) values 
+(1,2,'discord','https://discord.gg/XM4rNnms',NULL,1,'2025-09-03 22:29:52','2025-09-03 22:29:52');
 
--- --------------------------------------------------------
+/*Table structure for table `transactions` */
 
---
--- Table structure for table `transactions`
---
+DROP TABLE IF EXISTS `transactions`;
 
 CREATE TABLE `transactions` (
-  `id` int(11) NOT NULL,
-  `user_id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
   `transaction_type` varchar(50) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `amount` int NOT NULL,
   `description` varchar(255) DEFAULT NULL,
-  `related_user_id` int(11) DEFAULT NULL,
+  `related_user_id` int DEFAULT NULL,
   `reference_id` varchar(100) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `related_user_id` (`related_user_id`),
+  CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`related_user_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=209 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `transactions`
---
+/*Data for the table `transactions` */
 
-INSERT INTO `transactions` (`id`, `user_id`, `transaction_type`, `amount`, `description`, `related_user_id`, `reference_id`, `created_at`) VALUES
-(20, 7, 'daily_claim', 500, 'Daily claim reward - Day 1 (500 pearls)', NULL, 'CLAIM-20250829-7', '2025-08-29 15:18:18'),
-(21, 7, 'daily_claim', 750, 'Daily claim reward - Day 2 (750 pearls)', NULL, 'CLAIM-20250830-7', '2025-08-29 16:30:50');
+insert  into `transactions`(`id`,`user_id`,`transaction_type`,`amount`,`description`,`related_user_id`,`reference_id`,`created_at`) values 
+(1,1,'battle_pass_reward',100,'Battle Pass Level 1 reward (100 pearls)',NULL,'BP-1-1-1756869891','2025-09-03 11:24:52'),
+(2,1,'daily_claim',500,'Daily claim reward - Day 1 (500 pearls, 100 EXP)',NULL,'CLAIM-20250903-1','2025-09-03 11:24:56'),
+(3,1,'avatar_purchase',-1000,'Purchased Dungeons And Dragons1 (banner) - Bonus: +300 XP',NULL,'AVATAR-332-1-1756871474','2025-09-03 11:51:14'),
+(4,1,'avatar_purchase',-1000,'Purchased Aespa (banner) - Bonus: +300 XP',NULL,'AVATAR-314-1-1756871902','2025-09-03 11:58:22'),
+(5,1,'avatar_purchase',-1000,'Purchased Anime V1 (banner) - Bonus: +300 XP',NULL,'AVATAR-315-1-1756872083','2025-09-03 12:01:23'),
+(6,1,'avatar_purchase',-1000,'Purchased Anime V2 (banner) - Bonus: +300 XP',NULL,'AVATAR-316-1-1756872096','2025-09-03 12:01:36'),
+(7,1,'avatar_purchase',-1000,'Purchased Dragon Ball Daima (banner) - Bonus: +300 XP',NULL,'AVATAR-330-1-1756872108','2025-09-03 12:01:48'),
+(8,1,'avatar_purchase',-500,'Purchased Blue (avatar) - Bonus: +150 XP',NULL,'AVATAR-20-1-1756872120','2025-09-03 12:02:00'),
+(9,1,'avatar_purchase',-2500,'Purchased Frag Out (decoration) - Bonus: +750 XP',NULL,'AVATAR-572-1-1756872213','2025-09-03 12:03:33'),
+(10,1,'avatar_purchase',-1000,'Purchased Anime V3 (banner) - Bonus: +300 XP',NULL,'AVATAR-317-1-1756872223','2025-09-03 12:03:43'),
+(11,1,'avatar_purchase',-2500,'Purchased Akuma (decoration) - Bonus: +750 XP',NULL,'AVATAR-386-1-1756872240','2025-09-03 12:04:00'),
+(12,1,'battle_pass_reward',200,'Battle Pass Level 2 reward (200 pearls)',NULL,'BP-2-1-1756872870','2025-09-03 12:14:31'),
+(13,1,'battle_pass_reward',300,'Battle Pass Level 3 reward (300 pearls)',NULL,'BP-3-1-1756872871','2025-09-03 12:14:31'),
+(14,1,'avatar_purchase',-1000,'Purchased My Hero Academia (banner) - Bonus: +300 XP',NULL,'AVATAR-353-1-1756875926','2025-09-03 13:05:26'),
+(15,1,'avatar_purchase',-2500,'Purchased All Might (decoration) - Bonus: +750 XP',NULL,'AVATAR-387-1-1756875958','2025-09-03 13:05:58'),
+(16,1,'battle_pass_reward',400,'Battle Pass Level 4 reward (400 pearls)',NULL,'BP-4-1-1756876034','2025-09-03 13:07:14'),
+(17,1,'avatar_purchase',-2500,'Purchased 28 Years Later (decoration) - Bonus: +750 XP',NULL,'AVATAR-381-1-1756876097','2025-09-03 13:08:17'),
+(18,1,'referral_bonus',1000,'Referral bonus for referring ringo (+1000 pearls, +500 EXP)',2,'REF-1756909148-1','2025-09-03 22:19:08'),
+(19,2,'referral_bonus',1000,'Referral bonus for using y0mi referral code (+1000 pearls)',1,'REF-1756909148-2','2025-09-03 22:19:08'),
+(20,2,'daily_claim',500,'Daily claim reward - Day 1 (500 pearls, 100 EXP)',NULL,'CLAIM-20250903-2','2025-09-03 22:20:51'),
+(21,2,'battle_pass_reward',100,'Battle Pass Level 1 reward (100 pearls)',NULL,'BP-1-2-1756909264','2025-09-03 22:21:05'),
+(22,2,'avatar_purchase',-1000,'Purchased Insomnia (banner) - Bonus: +300 XP',NULL,'AVATAR-343-2-1756909347','2025-09-03 22:22:27'),
+(23,2,'avatar_purchase',-500,'Purchased Nelly 6 (avatar) - Bonus: +150 XP',NULL,'AVATAR-161-2-1756909455','2025-09-03 22:24:15'),
+(24,2,'avatar_purchase',-1000,'Purchased Autumn Equinox (banner) - Bonus: +300 XP',NULL,'AVATAR-321-2-1756909590','2025-09-03 22:26:30'),
+(25,2,'avatar_purchase',-2500,'Purchased Angry Yellow (decoration) - Bonus: +750 XP',NULL,'AVATAR-391-2-1756909634','2025-09-03 22:27:14'),
+(26,2,'battle_pass_reward',200,'Battle Pass Level 2 reward (200 pearls)',NULL,'BP-2-2-1756909690','2025-09-03 22:28:11'),
+(27,2,'avatar_purchase',-1000,'Purchased Aespa (banner) - Bonus: +300 XP',NULL,'AVATAR-314-2-1756909704','2025-09-03 22:28:24'),
+(28,2,'avatar_purchase',-1000,'Purchased Anime V1 (banner) - Bonus: +300 XP',NULL,'AVATAR-315-2-1756909714','2025-09-03 22:28:34'),
+(29,2,'avatar_purchase',-1000,'Purchased Chibi Cafe (banner) - Bonus: +300 XP',NULL,'AVATAR-323-2-1756909993','2025-09-03 22:33:13'),
+(30,2,'avatar_purchase',-1000,'Purchased Anime V2 (banner) - Bonus: +300 XP',NULL,'AVATAR-316-2-1756910000','2025-09-03 22:33:20'),
+(31,2,'avatar_purchase',-1000,'Purchased Anime V3 (banner) - Bonus: +300 XP',NULL,'AVATAR-317-2-1756910005','2025-09-03 22:33:25'),
+(32,2,'avatar_purchase',-1000,'Purchased Arcane (banner) - Bonus: +300 XP',NULL,'AVATAR-319-2-1756910011','2025-09-03 22:33:31'),
+(33,2,'avatar_purchase',-1000,'Purchased Arcade (banner) - Bonus: +300 XP',NULL,'AVATAR-318-2-1756910016','2025-09-03 22:33:36'),
+(34,2,'avatar_purchase',-1000,'Purchased Arcane1 (banner) - Bonus: +300 XP',NULL,'AVATAR-320-2-1756910022','2025-09-03 22:33:42'),
+(35,2,'avatar_purchase',-1000,'Purchased Breakfast (banner) - Bonus: +300 XP',NULL,'AVATAR-322-2-1756910029','2025-09-03 22:33:49'),
+(36,2,'avatar_purchase',-2500,'Purchased 28 Years Later (decoration) - Bonus: +750 XP',NULL,'AVATAR-381-2-1756910035','2025-09-03 22:33:55'),
+(37,2,'avatar_purchase',-2500,'Purchased A Duck (decoration) - Bonus: +750 XP',NULL,'AVATAR-399-2-1756910039','2025-09-03 22:33:59'),
+(38,2,'avatar_purchase',-2500,'Purchased Aespa Fanlight (decoration) - Bonus: +750 XP',NULL,'AVATAR-382-2-1756910045','2025-09-03 22:34:05'),
+(39,2,'avatar_purchase',-2500,'Purchased A Hint Of Clove (decoration) - Bonus: +750 XP',NULL,'AVATAR-400-2-1756910053','2025-09-03 22:34:13'),
+(40,2,'avatar_purchase',-2500,'Purchased Afternoon Breeze (decoration) - Bonus: +750 XP',NULL,'AVATAR-383-2-1756910064','2025-09-03 22:34:24'),
+(41,2,'avatar_purchase',-2500,'Purchased Aim For Love (decoration) - Bonus: +750 XP',NULL,'AVATAR-384-2-1756910069','2025-09-03 22:34:29'),
+(42,2,'avatar_purchase',-2500,'Purchased Air (decoration) - Bonus: +750 XP',NULL,'AVATAR-385-2-1756910076','2025-09-03 22:34:36'),
+(43,2,'avatar_purchase',-2500,'Purchased Akuma (decoration) - Bonus: +750 XP',NULL,'AVATAR-386-2-1756910081','2025-09-03 22:34:41'),
+(44,2,'avatar_purchase',-2500,'Purchased All Might (decoration) - Bonus: +750 XP',NULL,'AVATAR-387-2-1756910087','2025-09-03 22:34:47'),
+(45,2,'avatar_purchase',-2500,'Purchased Angel (decoration) - Bonus: +750 XP',NULL,'AVATAR-388-2-1756910107','2025-09-03 22:35:07'),
+(46,2,'avatar_purchase',-2500,'Purchased Angry (decoration) - Bonus: +750 XP',NULL,'AVATAR-389-2-1756910112','2025-09-03 22:35:12'),
+(47,2,'avatar_purchase',-2500,'Purchased Angry Pink (decoration) - Bonus: +750 XP',NULL,'AVATAR-390-2-1756910120','2025-09-03 22:35:20'),
+(48,2,'avatar_purchase',-2500,'Purchased Arcane Sigil (decoration) - Bonus: +750 XP',NULL,'AVATAR-392-2-1756910132','2025-09-03 22:35:32'),
+(49,2,'avatar_purchase',-2500,'Purchased Aurora (decoration) - Bonus: +750 XP',NULL,'AVATAR-395-2-1756910140','2025-09-03 22:35:40'),
+(50,2,'avatar_purchase',-2500,'Purchased Astronaut Helmet (decoration) - Bonus: +750 XP',NULL,'AVATAR-394-2-1756910152','2025-09-03 22:35:52'),
+(51,2,'avatar_purchase',-2500,'Purchased Armamenter (decoration) - Bonus: +750 XP',NULL,'AVATAR-393-2-1756910172','2025-09-03 22:36:12'),
+(52,2,'avatar_purchase',-2500,'Purchased Autumn Crown (decoration) - Bonus: +750 XP',NULL,'AVATAR-398-2-1756910203','2025-09-03 22:36:43'),
+(53,2,'avatar_purchase',-2500,'Purchased Autumns Arbor (decoration) - Bonus: +750 XP',NULL,'AVATAR-396-2-1756910207','2025-09-03 22:36:47'),
+(54,2,'avatar_purchase',-2500,'Purchased Autumns Arbor Aurora (decoration) - Bonus: +750 XP',NULL,'AVATAR-397-2-1756910211','2025-09-03 22:36:51'),
+(55,2,'avatar_purchase',-2500,'Purchased Baby Displacer Beast (decoration) - Bonus: +750 XP',NULL,'AVATAR-401-2-1756910215','2025-09-03 22:36:55'),
+(56,2,'avatar_purchase',-2500,'Purchased Bad Guys 2 (decoration) - Bonus: +750 XP',NULL,'AVATAR-402-2-1756910218','2025-09-03 22:36:58'),
+(57,2,'avatar_purchase',-2500,'Purchased Baker Bear (decoration) - Bonus: +750 XP',NULL,'AVATAR-403-2-1756910222','2025-09-03 22:37:02'),
+(58,2,'avatar_purchase',-2500,'Purchased Balance (decoration) - Bonus: +750 XP',NULL,'AVATAR-404-2-1756910227','2025-09-03 22:37:07'),
+(59,2,'avatar_purchase',-2500,'Purchased Ballerina (decoration) - Bonus: +750 XP',NULL,'AVATAR-405-2-1756910231','2025-09-03 22:37:11'),
+(60,2,'avatar_purchase',-2500,'Purchased Batarang (decoration) - Bonus: +750 XP',NULL,'AVATAR-406-2-1756910238','2025-09-03 22:37:18'),
+(61,2,'avatar_purchase',-2500,'Purchased Beach Hat (decoration) - Bonus: +750 XP',NULL,'AVATAR-407-2-1756910242','2025-09-03 22:37:22'),
+(62,2,'avatar_purchase',-2500,'Purchased Beamchop (decoration) - Bonus: +750 XP',NULL,'AVATAR-408-2-1756910246','2025-09-03 22:37:26'),
+(63,2,'avatar_purchase',-2500,'Purchased Berry Bunny (decoration) - Bonus: +750 XP',NULL,'AVATAR-409-2-1756910249','2025-09-03 22:37:29'),
+(64,2,'avatar_purchase',-2500,'Purchased Bf Soldier Helmet (decoration) - Bonus: +750 XP',NULL,'AVATAR-410-2-1756910253','2025-09-03 22:37:33'),
+(65,2,'avatar_purchase',-2500,'Purchased Big Dill Chain (decoration) - Bonus: +750 XP',NULL,'AVATAR-411-2-1756910257','2025-09-03 22:37:37'),
+(66,2,'avatar_purchase',-2500,'Purchased Bing Bong (decoration) - Bonus: +750 XP',NULL,'AVATAR-412-2-1756910261','2025-09-03 22:37:41'),
+(67,2,'avatar_purchase',-2500,'Purchased Black Hole (decoration) - Bonus: +750 XP',NULL,'AVATAR-413-2-1756910266','2025-09-03 22:37:46'),
+(68,2,'avatar_purchase',-2500,'Purchased Black Mana (decoration) - Bonus: +750 XP',NULL,'AVATAR-414-2-1756910270','2025-09-03 22:37:50'),
+(69,2,'avatar_purchase',-2500,'Purchased Blade Storm (decoration) - Bonus: +750 XP',NULL,'AVATAR-415-2-1756910273','2025-09-03 22:37:53'),
+(70,2,'avatar_purchase',-2500,'Purchased Blanket Green (decoration) - Bonus: +750 XP',NULL,'AVATAR-416-2-1756910277','2025-09-03 22:37:57'),
+(71,2,'avatar_purchase',-2500,'Purchased Blanket Orange (decoration) - Bonus: +750 XP',NULL,'AVATAR-417-2-1756910280','2025-09-03 22:38:00'),
+(72,2,'avatar_purchase',-2500,'Purchased Blanket Pink (decoration) - Bonus: +750 XP',NULL,'AVATAR-418-2-1756910284','2025-09-03 22:38:04'),
+(73,2,'avatar_purchase',-2500,'Purchased Blanket Purple (decoration) - Bonus: +750 XP',NULL,'AVATAR-419-2-1756910287','2025-09-03 22:38:07'),
+(74,2,'battle_pass_reward',300,'Battle Pass Level 3 reward (300 pearls)',NULL,'BP-3-2-1756910306','2025-09-03 22:38:26'),
+(75,2,'battle_pass_reward',400,'Battle Pass Level 4 reward (400 pearls)',NULL,'BP-4-2-1756910307','2025-09-03 22:38:27'),
+(76,2,'battle_pass_reward',500,'Battle Pass Level 5 reward (500 pearls)',NULL,'BP-5-2-1756910307','2025-09-03 22:38:28'),
+(77,2,'battle_pass_reward',600,'Battle Pass Level 6 reward (600 pearls)',NULL,'BP-6-2-1756910311','2025-09-03 22:38:31'),
+(78,2,'battle_pass_reward',700,'Battle Pass Level 7 reward (700 pearls)',NULL,'BP-7-2-1756910311','2025-09-03 22:38:32'),
+(79,2,'battle_pass_reward',800,'Battle Pass Level 8 reward (800 pearls)',NULL,'BP-8-2-1756910312','2025-09-03 22:38:32'),
+(80,2,'battle_pass_reward',900,'Battle Pass Level 9 reward (900 pearls)',NULL,'BP-9-2-1756910312','2025-09-03 22:38:33'),
+(81,2,'battle_pass_reward',1000,'Battle Pass Level 10 reward (1000 pearls)',NULL,'BP-10-2-1756910313','2025-09-03 22:38:34'),
+(82,2,'battle_pass_reward',1100,'Battle Pass Level 11 reward (1100 pearls)',NULL,'BP-11-2-1756910315','2025-09-03 22:38:36'),
+(83,2,'avatar_purchase',-1000,'Purchased Civilization Vii (banner) - Bonus: +300 XP',NULL,'AVATAR-324-2-1756910361','2025-09-03 22:39:21'),
+(84,2,'avatar_purchase',-1000,'Purchased Cozy Valley (banner) - Bonus: +300 XP',NULL,'AVATAR-325-2-1756910366','2025-09-03 22:39:26'),
+(85,2,'avatar_purchase',-1000,'Purchased Cyberpunk (banner) - Bonus: +300 XP',NULL,'AVATAR-326-2-1756910370','2025-09-03 22:39:30'),
+(86,2,'avatar_purchase',-1000,'Purchased Dark Fantasy (banner) - Bonus: +300 XP',NULL,'AVATAR-327-2-1756910374','2025-09-03 22:39:34'),
+(87,2,'avatar_purchase',-2500,'Purchased Bloodthirsty (decoration) - Bonus: +750 XP',NULL,'AVATAR-420-2-1756910382','2025-09-03 22:39:42'),
+(88,2,'avatar_purchase',-2500,'Purchased Bloodthirsty Gold (decoration) - Bonus: +750 XP',NULL,'AVATAR-421-2-1756910389','2025-09-03 22:39:49'),
+(89,2,'avatar_purchase',-2500,'Purchased Bloodthirsty Green (decoration) - Bonus: +750 XP',NULL,'AVATAR-422-2-1756910392','2025-09-03 22:39:52'),
+(90,2,'avatar_purchase',-2500,'Purchased Bloomling (decoration) - Bonus: +750 XP',NULL,'AVATAR-423-2-1756910396','2025-09-03 22:39:56'),
+(91,2,'avatar_purchase',-2500,'Purchased Blossomburst (decoration) - Bonus: +750 XP',NULL,'AVATAR-424-2-1756910399','2025-09-03 22:39:59'),
+(92,2,'avatar_purchase',-2500,'Purchased Blue Futuristic Ui (decoration) - Bonus: +750 XP',NULL,'AVATAR-426-2-1756910403','2025-09-03 22:40:03'),
+(93,2,'avatar_purchase',-2500,'Purchased Blue Gyroscope (decoration) - Bonus: +750 XP',NULL,'AVATAR-427-2-1756910407','2025-09-03 22:40:07'),
+(94,2,'avatar_purchase',-2500,'Purchased Blue Hyper Helmet (decoration) - Bonus: +750 XP',NULL,'AVATAR-428-2-1756910410','2025-09-03 22:40:10'),
+(95,2,'avatar_purchase',-2500,'Purchased Blue Mana (decoration) - Bonus: +750 XP',NULL,'AVATAR-429-2-1756910425','2025-09-03 22:40:25'),
+(96,2,'avatar_purchase',-2500,'Purchased Blue Shine Helmet (decoration) - Bonus: +750 XP',NULL,'AVATAR-430-2-1756910430','2025-09-03 22:40:30'),
+(97,2,'avatar_purchase',-2500,'Purchased Blue Smoke (decoration) - Bonus: +750 XP',NULL,'AVATAR-431-2-1756910434','2025-09-03 22:40:34'),
+(98,2,'avatar_purchase',-2500,'Purchased Blueberry Jam (decoration) - Bonus: +750 XP',NULL,'AVATAR-425-2-1756910438','2025-09-03 22:40:38'),
+(99,2,'avatar_purchase',-2500,'Purchased Bonsai (decoration) - Bonus: +750 XP',NULL,'AVATAR-432-2-1756910443','2025-09-03 22:40:43'),
+(100,2,'avatar_purchase',-2500,'Purchased Bowler Hat (decoration) - Bonus: +750 XP',NULL,'AVATAR-433-2-1756910448','2025-09-03 22:40:48'),
+(101,2,'avatar_purchase',-2500,'Purchased Box Blue Yellow (decoration) - Bonus: +750 XP',NULL,'AVATAR-434-2-1756910452','2025-09-03 22:40:52'),
+(102,2,'avatar_purchase',-2500,'Purchased Box Green Red (decoration) - Bonus: +750 XP',NULL,'AVATAR-435-2-1756910589','2025-09-03 22:43:09'),
+(103,2,'avatar_purchase',-2500,'Purchased Box Red White (decoration) - Bonus: +750 XP',NULL,'AVATAR-436-2-1756910592','2025-09-03 22:43:12'),
+(104,2,'avatar_purchase',-2500,'Purchased Box Red White Blue (decoration) - Bonus: +750 XP',NULL,'AVATAR-437-2-1756910596','2025-09-03 22:43:16'),
+(105,2,'avatar_purchase',-2500,'Purchased Box White Blue (decoration) - Bonus: +750 XP',NULL,'AVATAR-438-2-1756910600','2025-09-03 22:43:20'),
+(106,2,'avatar_purchase',-2500,'Purchased Brass Beats (decoration) - Bonus: +750 XP',NULL,'AVATAR-439-2-1756910603','2025-09-03 22:43:23'),
+(107,2,'avatar_purchase',-2500,'Purchased Bread Doggy (decoration) - Bonus: +750 XP',NULL,'AVATAR-440-2-1756910608','2025-09-03 22:43:28'),
+(108,2,'avatar_purchase',-2500,'Purchased Bubble (decoration) - Bonus: +750 XP',NULL,'AVATAR-441-2-1756910612','2025-09-03 22:43:32'),
+(109,2,'avatar_purchase',-2500,'Purchased Bubble Tea (decoration) - Bonus: +750 XP',NULL,'AVATAR-442-2-1756910618','2025-09-03 22:43:38'),
+(110,2,'avatar_purchase',-2500,'Purchased Buffering (decoration) - Bonus: +750 XP',NULL,'AVATAR-443-2-1756910624','2025-09-03 22:43:44'),
+(111,2,'avatar_purchase',-2500,'Purchased Bunny (decoration) - Bonus: +750 XP',NULL,'AVATAR-444-2-1756910629','2025-09-03 22:43:49'),
+(112,2,'avatar_purchase',-2500,'Purchased Bunny Zzzs (decoration) - Bonus: +750 XP',NULL,'AVATAR-445-2-1756910633','2025-09-03 22:43:53'),
+(113,2,'avatar_purchase',-2500,'Purchased Burnt Toast (decoration) - Bonus: +750 XP',NULL,'AVATAR-446-2-1756910638','2025-09-03 22:43:58'),
+(114,2,'avatar_purchase',-2500,'Purchased Bush Camper (decoration) - Bonus: +750 XP',NULL,'AVATAR-447-2-1756910643','2025-09-03 22:44:03'),
+(115,2,'avatar_purchase',-2500,'Purchased Butterflies (decoration) - Bonus: +750 XP',NULL,'AVATAR-448-2-1756910646','2025-09-03 22:44:06'),
+(116,2,'avatar_purchase',-2500,'Purchased Call Of Duty Mobile (decoration) - Bonus: +750 XP',NULL,'AVATAR-449-2-1756910650','2025-09-03 22:44:10'),
+(117,2,'avatar_purchase',-2500,'Purchased Cameraman Glitch (decoration) - Bonus: +750 XP',NULL,'AVATAR-450-2-1756910654','2025-09-03 22:44:14'),
+(118,2,'avatar_purchase',-2500,'Purchased Cammy (decoration) - Bonus: +750 XP',NULL,'AVATAR-451-2-1756910658','2025-09-03 22:44:18'),
+(119,2,'avatar_purchase',-2500,'Purchased Candlelight (decoration) - Bonus: +750 XP',NULL,'AVATAR-452-2-1756910662','2025-09-03 22:44:22'),
+(120,2,'avatar_purchase',-2500,'Purchased Candlelight Crimson (decoration) - Bonus: +750 XP',NULL,'AVATAR-453-2-1756910666','2025-09-03 22:44:26'),
+(121,2,'battle_pass_reward',1200,'Battle Pass Level 12 reward (1200 pearls)',NULL,'BP-12-2-1756910681','2025-09-03 22:44:41'),
+(122,2,'battle_pass_reward',1300,'Battle Pass Level 13 reward (1300 pearls)',NULL,'BP-13-2-1756910681','2025-09-03 22:44:42'),
+(123,2,'battle_pass_reward',1400,'Battle Pass Level 14 reward (1400 pearls)',NULL,'BP-14-2-1756910682','2025-09-03 22:44:42'),
+(124,2,'battle_pass_reward',1500,'Battle Pass Level 15 reward (1500 pearls)',NULL,'BP-15-2-1756910682','2025-09-03 22:44:43'),
+(125,2,'avatar_purchase',-2500,'Purchased Candlelight Dark (decoration) - Bonus: +750 XP',NULL,'AVATAR-454-2-1756911160','2025-09-03 22:52:40'),
+(126,2,'avatar_purchase',-2500,'Purchased Cannon Fire (decoration) - Bonus: +750 XP',NULL,'AVATAR-455-2-1756911164','2025-09-03 22:52:44'),
+(127,2,'avatar_purchase',-2500,'Purchased Cat 1 (decoration) - Bonus: +750 XP',NULL,'AVATAR-457-2-1756911168','2025-09-03 22:52:48'),
+(128,2,'avatar_purchase',-2500,'Purchased Cat 2 (decoration) - Bonus: +750 XP',NULL,'AVATAR-458-2-1756911172','2025-09-03 22:52:52'),
+(129,2,'avatar_purchase',-2500,'Purchased Cat 3 (decoration) - Bonus: +750 XP',NULL,'AVATAR-459-2-1756911175','2025-09-03 22:52:55'),
+(130,2,'avatar_purchase',-2500,'Purchased Cat 4 (decoration) - Bonus: +750 XP',NULL,'AVATAR-460-2-1756911179','2025-09-03 22:52:59'),
+(131,2,'avatar_purchase',-2500,'Purchased Cat Ear Headset (decoration) - Bonus: +750 XP',NULL,'AVATAR-466-2-1756911182','2025-09-03 22:53:02'),
+(132,2,'avatar_purchase',-2500,'Purchased Cat Ears (decoration) - Bonus: +750 XP',NULL,'AVATAR-461-2-1756911187','2025-09-03 22:53:07'),
+(133,2,'avatar_purchase',-2500,'Purchased Cat Ears Blue (decoration) - Bonus: +750 XP',NULL,'AVATAR-462-2-1756911190','2025-09-03 22:53:10'),
+(134,2,'avatar_purchase',-2500,'Purchased Cat Ears Green (decoration) - Bonus: +750 XP',NULL,'AVATAR-463-2-1756911194','2025-09-03 22:53:14'),
+(135,2,'avatar_purchase',-2500,'Purchased Cat Ears Purple (decoration) - Bonus: +750 XP',NULL,'AVATAR-464-2-1756911198','2025-09-03 22:53:18'),
+(136,2,'avatar_purchase',-2500,'Purchased Cat Ears Yellow (decoration) - Bonus: +750 XP',NULL,'AVATAR-465-2-1756911202','2025-09-03 22:53:22'),
+(137,2,'avatar_purchase',-2500,'Purchased Cat Onesie (decoration) - Bonus: +750 XP',NULL,'AVATAR-467-2-1756911207','2025-09-03 22:53:27'),
+(138,2,'avatar_purchase',-2500,'Purchased Cat Onesie Black (decoration) - Bonus: +750 XP',NULL,'AVATAR-468-2-1756911214','2025-09-03 22:53:34'),
+(139,2,'avatar_purchase',-2500,'Purchased Cat Onesie Pink (decoration) - Bonus: +750 XP',NULL,'AVATAR-469-2-1756911217','2025-09-03 22:53:37'),
+(140,2,'avatar_purchase',-2500,'Purchased Cattiva (decoration) - Bonus: +750 XP',NULL,'AVATAR-456-2-1756911222','2025-09-03 22:53:42'),
+(141,2,'avatar_purchase',-2500,'Purchased Chewbert (decoration) - Bonus: +750 XP',NULL,'AVATAR-470-2-1756911226','2025-09-03 22:53:46'),
+(142,2,'avatar_purchase',-2500,'Purchased Chicken Nugget (decoration) - Bonus: +750 XP',NULL,'AVATAR-471-2-1756911230','2025-09-03 22:53:50'),
+(143,2,'avatar_purchase',-2500,'Purchased Chillet (decoration) - Bonus: +750 XP',NULL,'AVATAR-472-2-1756911233','2025-09-03 22:53:53'),
+(144,2,'avatar_purchase',-2500,'Purchased Chomp Chomp (decoration) - Bonus: +750 XP',NULL,'AVATAR-473-2-1756911236','2025-09-03 22:53:56'),
+(145,2,'avatar_purchase',-2500,'Purchased Chromawave (decoration) - Bonus: +750 XP',NULL,'AVATAR-474-2-1756911242','2025-09-03 22:54:03'),
+(146,2,'avatar_purchase',-2500,'Purchased Chrysanthemums Morning (decoration) - Bonus: +750 XP',NULL,'AVATAR-475-2-1756911250','2025-09-03 22:54:10'),
+(147,2,'avatar_purchase',-2500,'Purchased Chrysanthemums Twilight (decoration) - Bonus: +750 XP',NULL,'AVATAR-476-2-1756911380','2025-09-03 22:56:20'),
+(148,2,'avatar_purchase',-2500,'Purchased Chuck (decoration) - Bonus: +750 XP',NULL,'AVATAR-477-2-1756911384','2025-09-03 22:56:24'),
+(149,2,'avatar_purchase',-2500,'Purchased Chun Li (decoration) - Bonus: +750 XP',NULL,'AVATAR-478-2-1756911388','2025-09-03 22:56:28'),
+(150,2,'avatar_purchase',-2500,'Purchased City Walls (decoration) - Bonus: +750 XP',NULL,'AVATAR-479-2-1756911392','2025-09-03 22:56:32'),
+(151,2,'avatar_purchase',-2500,'Purchased Clicker (decoration) - Bonus: +750 XP',NULL,'AVATAR-480-2-1756911396','2025-09-03 22:56:36'),
+(152,2,'avatar_purchase',-2500,'Purchased Clyde Invaders (decoration) - Bonus: +750 XP',NULL,'AVATAR-481-2-1756911400','2025-09-03 22:56:40'),
+(153,2,'avatar_purchase',-2500,'Purchased Confetti Festive (decoration) - Bonus: +750 XP',NULL,'AVATAR-482-2-1756911408','2025-09-03 22:56:48'),
+(154,2,'avatar_purchase',-2500,'Purchased Confetti Fire (decoration) - Bonus: +750 XP',NULL,'AVATAR-483-2-1756911412','2025-09-03 22:56:52'),
+(155,2,'avatar_purchase',-2500,'Purchased Confetti Ice (decoration) - Bonus: +750 XP',NULL,'AVATAR-484-2-1756911416','2025-09-03 22:56:56'),
+(156,2,'avatar_purchase',-2500,'Purchased Confetti Mint (decoration) - Bonus: +750 XP',NULL,'AVATAR-485-2-1756911419','2025-09-03 22:56:59'),
+(157,2,'avatar_purchase',-2500,'Purchased Confetti Star (decoration) - Bonus: +750 XP',NULL,'AVATAR-486-2-1756911424','2025-09-03 22:57:04'),
+(158,2,'avatar_purchase',-2500,'Purchased Confetti Vaporwave (decoration) - Bonus: +750 XP',NULL,'AVATAR-487-2-1756911429','2025-09-03 22:57:09'),
+(159,2,'avatar_purchase',-2500,'Purchased Constellations (decoration) - Bonus: +750 XP',NULL,'AVATAR-488-2-1756911438','2025-09-03 22:57:18'),
+(160,2,'avatar_purchase',-2500,'Purchased Copium (decoration) - Bonus: +750 XP',NULL,'AVATAR-489-2-1756911441','2025-09-03 22:57:21'),
+(161,2,'avatar_purchase',-2500,'Purchased Cottage Home (decoration) - Bonus: +750 XP',NULL,'AVATAR-490-2-1756911445','2025-09-03 22:57:25'),
+(162,2,'avatar_purchase',-2500,'Purchased Cow Glider (decoration) - Bonus: +750 XP',NULL,'AVATAR-491-2-1756911448','2025-09-03 22:57:28'),
+(163,2,'avatar_purchase',-2500,'Purchased Cozy Cat (decoration) - Bonus: +750 XP',NULL,'AVATAR-492-2-1756911454','2025-09-03 22:57:34'),
+(164,2,'avatar_purchase',-2500,'Purchased Cozy Headphones (decoration) - Bonus: +750 XP',NULL,'AVATAR-493-2-1756911457','2025-09-03 22:57:37'),
+(165,2,'avatar_purchase',-2500,'Purchased Cozy Post It (decoration) - Bonus: +750 XP',NULL,'AVATAR-494-2-1756911461','2025-09-03 22:57:41'),
+(166,1,'avatar_purchase',-1000,'Purchased Arcade (banner) - Bonus: +300 XP',NULL,'AVATAR-318-1-1756911466','2025-09-03 22:57:46'),
+(167,2,'avatar_purchase',-2500,'Purchased Cozy Post It Festive (decoration) - Bonus: +750 XP',NULL,'AVATAR-495-2-1756911466','2025-09-03 22:57:46'),
+(168,2,'avatar_purchase',-2500,'Purchased Crossbones (decoration) - Bonus: +750 XP',NULL,'AVATAR-496-2-1756911470','2025-09-03 22:57:50'),
+(169,2,'avatar_purchase',-2500,'Purchased Crystal Ball Blue (decoration) - Bonus: +750 XP',NULL,'AVATAR-497-2-1756911481','2025-09-03 22:58:01'),
+(170,2,'avatar_purchase',-2500,'Purchased Face Of Corruption (decoration) - Bonus: +750 XP',NULL,'AVATAR-543-2-1756911863','2025-09-03 23:04:23'),
+(171,2,'avatar_purchase',-2500,'Purchased Crystal Ball Purple (decoration) - Bonus: +750 XP',NULL,'AVATAR-498-2-1756911867','2025-09-03 23:04:27'),
+(172,2,'avatar_purchase',-2500,'Purchased Crystal Elk (decoration) - Bonus: +750 XP',NULL,'AVATAR-499-2-1756911871','2025-09-03 23:04:31'),
+(173,2,'avatar_purchase',-2500,'Purchased Curious Bb 8 (decoration) - Bonus: +750 XP',NULL,'AVATAR-500-2-1756911881','2025-09-03 23:04:41'),
+(174,2,'avatar_purchase',-2500,'Purchased Cyber Katana (decoration) - Bonus: +750 XP',NULL,'AVATAR-502-2-1756911885','2025-09-03 23:04:45'),
+(175,2,'avatar_purchase',-2500,'Purchased Cybernetic (decoration) - Bonus: +750 XP',NULL,'AVATAR-501-2-1756911889','2025-09-03 23:04:49'),
+(176,2,'avatar_purchase',-2500,'Purchased Cypher Neural Theft (decoration) - Bonus: +750 XP',NULL,'AVATAR-503-2-1756911896','2025-09-03 23:04:56'),
+(177,2,'avatar_purchase',-2500,'Purchased Dancing Fairies (decoration) - Bonus: +750 XP',NULL,'AVATAR-504-2-1756911901','2025-09-03 23:05:01'),
+(178,2,'avatar_purchase',-2500,'Purchased Dandelion Duo (decoration) - Bonus: +750 XP',NULL,'AVATAR-505-2-1756911905','2025-09-03 23:05:05'),
+(179,2,'avatar_purchase',-2500,'Purchased Deaths Edge (decoration) - Bonus: +750 XP',NULL,'AVATAR-506-2-1756911917','2025-09-03 23:05:17'),
+(180,2,'avatar_purchase',-2500,'Purchased Defensive Shield (decoration) - Bonus: +750 XP',NULL,'AVATAR-507-2-1756911921','2025-09-03 23:05:21'),
+(181,2,'avatar_purchase',-2500,'Purchased Depresso (decoration) - Bonus: +750 XP',NULL,'AVATAR-508-2-1756911924','2025-09-03 23:05:24'),
+(182,2,'avatar_purchase',-2500,'Purchased Descendant (decoration) - Bonus: +750 XP',NULL,'AVATAR-509-2-1756911928','2025-09-03 23:05:28'),
+(183,2,'avatar_purchase',-2500,'Purchased Devil (decoration) - Bonus: +750 XP',NULL,'AVATAR-510-2-1756911932','2025-09-03 23:05:32'),
+(184,2,'avatar_purchase',-2500,'Purchased Dewdrop (decoration) - Bonus: +750 XP',NULL,'AVATAR-511-2-1756911937','2025-09-03 23:05:37'),
+(185,2,'avatar_purchase',-2500,'Purchased Dice Azure (decoration) - Bonus: +750 XP',NULL,'AVATAR-512-2-1756911942','2025-09-03 23:05:42'),
+(186,2,'avatar_purchase',-2500,'Purchased Dice Violet (decoration) - Bonus: +750 XP',NULL,'AVATAR-513-2-1756911946','2025-09-03 23:05:46'),
+(187,2,'avatar_purchase',-2500,'Purchased Digital Sunrise (decoration) - Bonus: +750 XP',NULL,'AVATAR-514-2-1756911957','2025-09-03 23:05:57'),
+(188,2,'avatar_purchase',-2500,'Purchased Dismay (decoration) - Bonus: +750 XP',NULL,'AVATAR-515-2-1756911960','2025-09-03 23:06:00'),
+(189,2,'avatar_purchase',-2500,'Purchased Dismay Green (decoration) - Bonus: +750 XP',NULL,'AVATAR-516-2-1756911965','2025-09-03 23:06:05'),
+(190,2,'avatar_purchase',-2500,'Purchased Dismay Pink (decoration) - Bonus: +750 XP',NULL,'AVATAR-517-2-1756911968','2025-09-03 23:06:08'),
+(191,2,'avatar_purchase',-2500,'Purchased Dismay Purple (decoration) - Bonus: +750 XP',NULL,'AVATAR-518-2-1756911972','2025-09-03 23:06:12'),
+(192,2,'avatar_purchase',-2500,'Purchased Dismay Yellow (decoration) - Bonus: +750 XP',NULL,'AVATAR-519-2-1756911976','2025-09-03 23:06:16'),
+(193,2,'avatar_purchase',-2500,'Purchased Disxcore Headset (decoration) - Bonus: +750 XP',NULL,'AVATAR-520-2-1756912367','2025-09-03 23:12:47'),
+(194,2,'avatar_purchase',-2500,'Purchased Dog 1 (decoration) - Bonus: +750 XP',NULL,'AVATAR-521-2-1756912371','2025-09-03 23:12:51'),
+(195,1,'avatar_purchase',-500,'Purchased Aespa (avatar) - Bonus: +150 XP',NULL,'AVATAR-1-1-1756912719','2025-09-03 23:18:39'),
+(196,1,'avatar_purchase',-1000,'Purchased Arcane1 (banner) - Bonus: +300 XP',NULL,'AVATAR-320-1-1757060869','2025-09-05 16:27:49'),
+(197,1,'avatar_purchase',-1000,'Purchased Arcane (banner) - Bonus: +300 XP',NULL,'AVATAR-319-1-1757061131','2025-09-05 16:32:11'),
+(198,1,'avatar_purchase',-1000,'Purchased Autumn Equinox (banner) - Bonus: +300 XP',NULL,'AVATAR-321-1-1757061137','2025-09-05 16:32:17'),
+(199,1,'avatar_purchase',-1000,'Purchased Breakfast (banner) - Bonus: +300 XP',NULL,'AVATAR-322-1-1757061140','2025-09-05 16:32:20'),
+(200,1,'transfer_sent',-123,'Sent 123 pearls to ringo',2,NULL,'2025-09-05 16:37:44'),
+(201,2,'transfer_received',123,'Received 123 pearls from y0mi',1,NULL,'2025-09-05 16:37:44'),
+(202,1,'daily_claim',500,'Daily claim reward - Day 1 (500 pearls, 100 EXP)',NULL,'CLAIM-20250905-1','2025-09-05 16:38:00'),
+(203,1,'daily_claim',500,'Daily claim reward - Day 1 (500 pearls, 100 EXP)',NULL,'CLAIM-20250905-1','2025-09-05 16:43:01'),
+(204,1,'battle_pass_reward',500,'Battle Pass Level 5 reward (500 pearls)',NULL,'BP-5-1-1757066596','2025-09-05 18:03:16'),
+(205,1,'avatar_purchase',-1000,'Purchased Street Fighter1 (banner) - Bonus: +300 XP',NULL,'AVATAR-370-1-1757086217','2025-09-05 23:30:17'),
+(206,1,'avatar_purchase',-500,'Purchased Charcoal (avatar) - Bonus: +150 XP',NULL,'AVATAR-48-1-1757086248','2025-09-05 23:30:48'),
+(207,1,'avatar_purchase',-2500,'Purchased Chun Li (decoration) - Bonus: +750 XP',NULL,'AVATAR-478-1-1757086366','2025-09-05 23:32:46'),
+(208,1,'daily_claim',750,'Daily claim reward - Day 2 (750 pearls, 100 EXP)',NULL,'CLAIM-20250906-1','2025-09-06 01:58:34');
 
--- --------------------------------------------------------
+/*Table structure for table `transfers` */
 
---
--- Table structure for table `transfers`
---
+DROP TABLE IF EXISTS `transfers`;
 
 CREATE TABLE `transfers` (
-  `id` int(11) NOT NULL,
-  `sender_id` int(11) NOT NULL,
-  `receiver_id` int(11) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `sender_id` int NOT NULL,
+  `receiver_id` int NOT NULL,
+  `amount` int NOT NULL,
   `message` varchar(255) DEFAULT NULL,
   `status` varchar(20) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `sender_id` (`sender_id`),
+  KEY `receiver_id` (`receiver_id`),
+  CONSTRAINT `transfers_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `transfers_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
+/*Data for the table `transfers` */
 
---
--- Table structure for table `users`
---
+/*Table structure for table `user_avatar_configurations` */
+
+DROP TABLE IF EXISTS `user_avatar_configurations`;
+
+CREATE TABLE `user_avatar_configurations` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `banner_item_id` int DEFAULT NULL,
+  `avatar_item_id` int DEFAULT NULL,
+  `decoration_item_id` int DEFAULT NULL,
+  `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_banner_item_id` (`banner_item_id`),
+  KEY `idx_avatar_item_id` (`avatar_item_id`),
+  KEY `idx_decoration_item_id` (`decoration_item_id`),
+  CONSTRAINT `user_avatar_configurations_ibfk_1` FOREIGN KEY (`banner_item_id`) REFERENCES `avatar_shop_items` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `user_avatar_configurations_ibfk_2` FOREIGN KEY (`avatar_item_id`) REFERENCES `avatar_shop_items` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `user_avatar_configurations_ibfk_3` FOREIGN KEY (`decoration_item_id`) REFERENCES `avatar_shop_items` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `user_avatar_configurations` */
+
+insert  into `user_avatar_configurations`(`id`,`user_id`,`banner_item_id`,`avatar_item_id`,`decoration_item_id`,`updated_at`) values 
+(1,1,353,48,478,'2025-09-06 02:39:33'),
+(2,2,327,161,521,'2025-09-03 15:12:52');
+
+/*Table structure for table `user_avatar_items` */
+
+DROP TABLE IF EXISTS `user_avatar_items`;
+
+CREATE TABLE `user_avatar_items` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `avatar_item_id` int NOT NULL,
+  `is_equipped` tinyint(1) NOT NULL DEFAULT '0',
+  `purchased_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `purchased_price` bigint NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique_user_avatar_item` (`user_id`,`avatar_item_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_avatar_item_id` (`avatar_item_id`),
+  KEY `idx_is_equipped` (`is_equipped`),
+  KEY `idx_purchased_at` (`purchased_at`),
+  CONSTRAINT `user_avatar_items_ibfk_1` FOREIGN KEY (`avatar_item_id`) REFERENCES `avatar_shop_items` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=180 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+/*Data for the table `user_avatar_items` */
+
+insert  into `user_avatar_items`(`id`,`user_id`,`avatar_item_id`,`is_equipped`,`purchased_at`,`purchased_price`) values 
+(1,1,332,0,'2025-09-03 03:51:15',1000),
+(2,1,314,0,'2025-09-03 03:58:23',1000),
+(3,1,315,0,'2025-09-03 04:01:23',1000),
+(4,1,316,0,'2025-09-03 04:01:36',1000),
+(5,1,330,0,'2025-09-03 04:01:49',1000),
+(6,1,20,0,'2025-09-03 04:02:00',500),
+(7,1,572,0,'2025-09-03 04:03:33',2500),
+(8,1,317,0,'2025-09-03 04:03:43',1000),
+(9,1,386,0,'2025-09-03 04:04:01',2500),
+(10,1,353,0,'2025-09-03 05:05:26',1000),
+(11,1,387,0,'2025-09-03 05:05:58',2500),
+(12,1,381,0,'2025-09-03 05:08:18',2500),
+(13,2,343,0,'2025-09-03 14:22:28',1000),
+(14,2,161,0,'2025-09-03 14:24:16',500),
+(15,2,321,0,'2025-09-03 14:26:30',1000),
+(16,2,391,0,'2025-09-03 14:27:15',2500),
+(17,2,314,0,'2025-09-03 14:28:24',1000),
+(18,2,315,0,'2025-09-03 14:28:35',1000),
+(19,2,323,0,'2025-09-03 14:33:14',1000),
+(20,2,316,0,'2025-09-03 14:33:20',1000),
+(21,2,317,0,'2025-09-03 14:33:25',1000),
+(22,2,319,0,'2025-09-03 14:33:32',1000),
+(23,2,318,0,'2025-09-03 14:33:37',1000),
+(24,2,320,0,'2025-09-03 14:33:42',1000),
+(25,2,322,0,'2025-09-03 14:33:49',1000),
+(26,2,381,0,'2025-09-03 14:33:55',2500),
+(27,2,399,0,'2025-09-03 14:33:59',2500),
+(28,2,382,0,'2025-09-03 14:34:05',2500),
+(29,2,400,0,'2025-09-03 14:34:14',2500),
+(30,2,383,0,'2025-09-03 14:34:24',2500),
+(31,2,384,0,'2025-09-03 14:34:30',2500),
+(32,2,385,0,'2025-09-03 14:34:37',2500),
+(33,2,386,0,'2025-09-03 14:34:42',2500),
+(34,2,387,0,'2025-09-03 14:34:48',2500),
+(35,2,388,0,'2025-09-03 14:35:08',2500),
+(36,2,389,0,'2025-09-03 14:35:13',2500),
+(37,2,390,0,'2025-09-03 14:35:21',2500),
+(38,2,392,0,'2025-09-03 14:35:33',2500),
+(39,2,395,0,'2025-09-03 14:35:41',2500),
+(40,2,394,0,'2025-09-03 14:35:52',2500),
+(41,2,393,0,'2025-09-03 14:36:12',2500),
+(42,2,398,0,'2025-09-03 14:36:44',2500),
+(43,2,396,0,'2025-09-03 14:36:47',2500),
+(44,2,397,0,'2025-09-03 14:36:51',2500),
+(45,2,401,0,'2025-09-03 14:36:55',2500),
+(46,2,402,0,'2025-09-03 14:36:59',2500),
+(47,2,403,0,'2025-09-03 14:37:03',2500),
+(48,2,404,0,'2025-09-03 14:37:08',2500),
+(49,2,405,0,'2025-09-03 14:37:12',2500),
+(50,2,406,0,'2025-09-03 14:37:19',2500),
+(51,2,407,0,'2025-09-03 14:37:23',2500),
+(52,2,408,0,'2025-09-03 14:37:26',2500),
+(53,2,409,0,'2025-09-03 14:37:30',2500),
+(54,2,410,0,'2025-09-03 14:37:34',2500),
+(55,2,411,0,'2025-09-03 14:37:37',2500),
+(56,2,412,0,'2025-09-03 14:37:41',2500),
+(57,2,413,0,'2025-09-03 14:37:47',2500),
+(58,2,414,0,'2025-09-03 14:37:50',2500),
+(59,2,415,0,'2025-09-03 14:37:54',2500),
+(60,2,416,0,'2025-09-03 14:37:57',2500),
+(61,2,417,0,'2025-09-03 14:38:01',2500),
+(62,2,418,0,'2025-09-03 14:38:04',2500),
+(63,2,419,0,'2025-09-03 14:38:08',2500),
+(64,2,324,0,'2025-09-03 14:39:22',1000),
+(65,2,325,0,'2025-09-03 14:39:27',1000),
+(66,2,326,0,'2025-09-03 14:39:31',1000),
+(67,2,327,0,'2025-09-03 14:39:34',1000),
+(68,2,420,0,'2025-09-03 14:39:43',2500),
+(69,2,421,0,'2025-09-03 14:39:49',2500),
+(70,2,422,0,'2025-09-03 14:39:53',2500),
+(71,2,423,0,'2025-09-03 14:39:56',2500),
+(72,2,424,0,'2025-09-03 14:40:00',2500),
+(73,2,426,0,'2025-09-03 14:40:03',2500),
+(74,2,427,0,'2025-09-03 14:40:07',2500),
+(75,2,428,0,'2025-09-03 14:40:11',2500),
+(76,2,429,0,'2025-09-03 14:40:26',2500),
+(77,2,430,0,'2025-09-03 14:40:30',2500),
+(78,2,431,0,'2025-09-03 14:40:35',2500),
+(79,2,425,0,'2025-09-03 14:40:39',2500),
+(80,2,432,0,'2025-09-03 14:40:43',2500),
+(81,2,433,0,'2025-09-03 14:40:48',2500),
+(82,2,434,0,'2025-09-03 14:40:53',2500),
+(83,2,435,0,'2025-09-03 14:43:09',2500),
+(84,2,436,0,'2025-09-03 14:43:13',2500),
+(85,2,437,0,'2025-09-03 14:43:17',2500),
+(86,2,438,0,'2025-09-03 14:43:20',2500),
+(87,2,439,0,'2025-09-03 14:43:24',2500),
+(88,2,440,0,'2025-09-03 14:43:28',2500),
+(89,2,441,0,'2025-09-03 14:43:32',2500),
+(90,2,442,0,'2025-09-03 14:43:39',2500),
+(91,2,443,0,'2025-09-03 14:43:45',2500),
+(92,2,444,0,'2025-09-03 14:43:50',2500),
+(93,2,445,0,'2025-09-03 14:43:54',2500),
+(94,2,446,0,'2025-09-03 14:43:59',2500),
+(95,2,447,0,'2025-09-03 14:44:03',2500),
+(96,2,448,0,'2025-09-03 14:44:07',2500),
+(97,2,449,0,'2025-09-03 14:44:11',2500),
+(98,2,450,0,'2025-09-03 14:44:14',2500),
+(99,2,451,0,'2025-09-03 14:44:18',2500),
+(100,2,452,0,'2025-09-03 14:44:23',2500),
+(101,2,453,0,'2025-09-03 14:44:27',2500),
+(102,2,454,0,'2025-09-03 14:52:40',2500),
+(103,2,455,0,'2025-09-03 14:52:45',2500),
+(104,2,457,0,'2025-09-03 14:52:49',2500),
+(105,2,458,0,'2025-09-03 14:52:53',2500),
+(106,2,459,0,'2025-09-03 14:52:56',2500),
+(107,2,460,0,'2025-09-03 14:52:59',2500),
+(108,2,466,0,'2025-09-03 14:53:03',2500),
+(109,2,461,0,'2025-09-03 14:53:07',2500),
+(110,2,462,0,'2025-09-03 14:53:11',2500),
+(111,2,463,0,'2025-09-03 14:53:14',2500),
+(112,2,464,0,'2025-09-03 14:53:18',2500),
+(113,2,465,0,'2025-09-03 14:53:22',2500),
+(114,2,467,0,'2025-09-03 14:53:28',2500),
+(115,2,468,0,'2025-09-03 14:53:34',2500),
+(116,2,469,0,'2025-09-03 14:53:38',2500),
+(117,2,456,0,'2025-09-03 14:53:42',2500),
+(118,2,470,0,'2025-09-03 14:53:46',2500),
+(119,2,471,0,'2025-09-03 14:53:50',2500),
+(120,2,472,0,'2025-09-03 14:53:53',2500),
+(121,2,473,0,'2025-09-03 14:53:57',2500),
+(122,2,474,0,'2025-09-03 14:54:03',2500),
+(123,2,475,0,'2025-09-03 14:54:10',2500),
+(124,2,476,0,'2025-09-03 14:56:21',2500),
+(125,2,477,0,'2025-09-03 14:56:25',2500),
+(126,2,478,0,'2025-09-03 14:56:28',2500),
+(127,2,479,0,'2025-09-03 14:56:32',2500),
+(128,2,480,0,'2025-09-03 14:56:37',2500),
+(129,2,481,0,'2025-09-03 14:56:40',2500),
+(130,2,482,0,'2025-09-03 14:56:49',2500),
+(131,2,483,0,'2025-09-03 14:56:52',2500),
+(132,2,484,0,'2025-09-03 14:56:56',2500),
+(133,2,485,0,'2025-09-03 14:57:00',2500),
+(134,2,486,0,'2025-09-03 14:57:04',2500),
+(135,2,487,0,'2025-09-03 14:57:10',2500),
+(136,2,488,0,'2025-09-03 14:57:18',2500),
+(137,2,489,0,'2025-09-03 14:57:22',2500),
+(138,2,490,0,'2025-09-03 14:57:25',2500),
+(139,2,491,0,'2025-09-03 14:57:28',2500),
+(140,2,492,0,'2025-09-03 14:57:35',2500),
+(141,2,493,0,'2025-09-03 14:57:38',2500),
+(142,2,494,0,'2025-09-03 14:57:41',2500),
+(143,1,318,0,'2025-09-03 14:57:46',1000),
+(144,2,495,0,'2025-09-03 14:57:47',2500),
+(145,2,496,0,'2025-09-03 14:57:50',2500),
+(146,2,497,0,'2025-09-03 14:58:01',2500),
+(147,2,543,0,'2025-09-03 15:04:23',2500),
+(148,2,498,0,'2025-09-03 15:04:27',2500),
+(149,2,499,0,'2025-09-03 15:04:31',2500),
+(150,2,500,0,'2025-09-03 15:04:41',2500),
+(151,2,502,0,'2025-09-03 15:04:46',2500),
+(152,2,501,0,'2025-09-03 15:04:50',2500),
+(153,2,503,0,'2025-09-03 15:04:57',2500),
+(154,2,504,0,'2025-09-03 15:05:01',2500),
+(155,2,505,0,'2025-09-03 15:05:05',2500),
+(156,2,506,0,'2025-09-03 15:05:18',2500),
+(157,2,507,0,'2025-09-03 15:05:21',2500),
+(158,2,508,0,'2025-09-03 15:05:25',2500),
+(159,2,509,0,'2025-09-03 15:05:28',2500),
+(160,2,510,0,'2025-09-03 15:05:33',2500),
+(161,2,511,0,'2025-09-03 15:05:38',2500),
+(162,2,512,0,'2025-09-03 15:05:42',2500),
+(163,2,513,0,'2025-09-03 15:05:47',2500),
+(164,2,514,0,'2025-09-03 15:05:57',2500),
+(165,2,515,0,'2025-09-03 15:06:00',2500),
+(166,2,516,0,'2025-09-03 15:06:05',2500),
+(167,2,517,0,'2025-09-03 15:06:09',2500),
+(168,2,518,0,'2025-09-03 15:06:12',2500),
+(169,2,519,0,'2025-09-03 15:06:17',2500),
+(170,2,520,0,'2025-09-03 15:12:48',2500),
+(171,2,521,0,'2025-09-03 15:12:52',2500),
+(172,1,1,0,'2025-09-03 15:18:40',500),
+(173,1,320,0,'2025-09-05 08:27:50',1000),
+(174,1,319,0,'2025-09-05 08:32:12',1000),
+(175,1,321,0,'2025-09-05 08:32:17',1000),
+(176,1,322,0,'2025-09-05 08:32:20',1000),
+(177,1,370,0,'2025-09-05 15:30:18',1000),
+(178,1,48,0,'2025-09-05 15:30:48',500),
+(179,1,478,0,'2025-09-05 15:32:47',2500);
+
+/*Table structure for table `users` */
+
+DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
   `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
   `date_of_birth` date DEFAULT NULL,
+  `birth_month` int DEFAULT NULL,
+  `birth_day` int DEFAULT NULL,
+  `birth_year` int DEFAULT NULL,
   `referral_code` varchar(20) DEFAULT NULL,
   `wallet_address` varchar(255) DEFAULT NULL,
-  `pearl` int(11) DEFAULT 0,
-  `level` int(11) DEFAULT 1,
-  `exp` int(11) DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `bio` text DEFAULT NULL,
+  `pearl` bigint NOT NULL DEFAULT '0',
+  `level` int DEFAULT NULL,
+  `exp` int DEFAULT NULL,
+  `bio` text,
   `location` varchar(100) DEFAULT NULL,
-  `website` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `website` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `referral_code` (`referral_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `users`
---
+/*Data for the table `users` */
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `first_name`, `last_name`, `date_of_birth`, `referral_code`, `wallet_address`, `pearl`, `level`, `exp`, `created_at`, `updated_at`, `bio`, `location`, `website`) VALUES
-(7, 'y0mi', 'ginotoralba0031@gmail.com', 'scrypt:32768:8:1$KF1VN2XzPdL4Aae3$db5a32bd8b78d117e3acc7a94a84a3ae1d145c81939bcb6590720915ab32996395a8460a8fb34735d5e8488fa74feb8c507b2754901ac876011b00099755f449', 'GINO', 'TORALBA', '1996-11-03', 'FLNIZVIX', 'pearl:0xd738ae7fe5e361f93cc8ca5d8c36a67b34cb0d92', 2250, 1, 0, '2025-08-29 09:01:54', '2025-08-30 04:43:46', 'CREATOR / DEVELOPER', NULL, NULL);
+insert  into `users`(`id`,`username`,`email`,`password`,`first_name`,`last_name`,`date_of_birth`,`birth_month`,`birth_day`,`birth_year`,`referral_code`,`wallet_address`,`pearl`,`level`,`exp`,`bio`,`location`,`website`,`created_at`,`updated_at`) values 
+(1,'y0mi','ginotoralba0031@gmail.com','scrypt:32768:8:1$bZPIb5bHEWjP7ozO$61990a29a7e73dfa926eac641957aebd339a6ed571e2682be9a1c92e112e102fe931c8a98a574de91141bf7fe6ddb39f367b8b27e66435c0437284f1e32c0148','GINO','TORALBA','1996-11-03',11,3,1996,'F3J4IP91','pearl:0x38d4764e925d99ae6cf0612be3ceaa6ec897af27',1234567890987631348,5,9000,'sample',NULL,NULL,'2025-09-03 11:24:34','2025-09-06 01:58:34'),
+(2,'ringo','recinto64@gmail.com','scrypt:32768:8:1$eqD09N2QN27lcqPK$3d723f97a72e6a4b42b057c52aee1282e14bb84a236141a005e52cd8929373ad8ae88b9ff3e2f41d90242af7b760834de983ebf1df3d4aafcff516869a668cae','RINGO','RECINTO','1997-10-23',10,23,1997,'AGEJ1I00','pearl:0x005e08bb760bc152c99f7eb49a51fbf0a0c9c3e4',123099812,20,111250,'JABOL',NULL,NULL,'2025-09-03 22:19:08','2025-09-05 16:37:44');
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `comments`
---
-ALTER TABLE `comments`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `comment_likes`
---
-ALTER TABLE `comment_likes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_comment_like` (`user_id`,`comment_id`),
-  ADD KEY `comment_id` (`comment_id`);
-
---
--- Indexes for table `daily_claims`
---
-ALTER TABLE `daily_claims`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_claim_date` (`user_id`,`claim_date`);
-
---
--- Indexes for table `follows`
---
-ALTER TABLE `follows`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_follow` (`follower_id`,`following_id`),
-  ADD KEY `following_id` (`following_id`);
-
---
--- Indexes for table `posts`
---
-ALTER TABLE `posts`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `post_images`
---
-ALTER TABLE `post_images`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `post_likes`
---
-ALTER TABLE `post_likes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_post_like` (`user_id`,`post_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `post_reactions`
---
-ALTER TABLE `post_reactions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_post_reaction` (`user_id`,`post_id`),
-  ADD KEY `post_id` (`post_id`);
-
---
--- Indexes for table `referrals`
---
-ALTER TABLE `referrals`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_referee` (`referee_id`),
-  ADD KEY `referrer_id` (`referrer_id`);
-
---
--- Indexes for table `social_media_links`
---
-ALTER TABLE `social_media_links`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_platform` (`user_id`,`platform`);
-
---
--- Indexes for table `transactions`
---
-ALTER TABLE `transactions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `related_user_id` (`related_user_id`);
-
---
--- Indexes for table `transfers`
---
-ALTER TABLE `transfers`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `sender_id` (`sender_id`),
-  ADD KEY `receiver_id` (`receiver_id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `username` (`username`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `referral_code` (`referral_code`),
-  ADD KEY `idx_username` (`username`),
-  ADD KEY `idx_email` (`email`),
-  ADD KEY `idx_referral_code` (`referral_code`),
-  ADD KEY `idx_wallet_address` (`wallet_address`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `comments`
---
-ALTER TABLE `comments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT for table `comment_likes`
---
-ALTER TABLE `comment_likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT for table `daily_claims`
---
-ALTER TABLE `daily_claims`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `follows`
---
-ALTER TABLE `follows`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `posts`
---
-ALTER TABLE `posts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT for table `post_images`
---
-ALTER TABLE `post_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `post_likes`
---
-ALTER TABLE `post_likes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `post_reactions`
---
-ALTER TABLE `post_reactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `referrals`
---
-ALTER TABLE `referrals`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `social_media_links`
---
-ALTER TABLE `social_media_links`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
---
--- AUTO_INCREMENT for table `transactions`
---
-ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
-
---
--- AUTO_INCREMENT for table `transfers`
---
-ALTER TABLE `transfers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `comments`
---
-ALTER TABLE `comments`
-  ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`);
-
---
--- Constraints for table `comment_likes`
---
-ALTER TABLE `comment_likes`
-  ADD CONSTRAINT `comment_likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `comment_likes_ibfk_2` FOREIGN KEY (`comment_id`) REFERENCES `comments` (`id`);
-
---
--- Constraints for table `daily_claims`
---
-ALTER TABLE `daily_claims`
-  ADD CONSTRAINT `daily_claims_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `follows`
---
-ALTER TABLE `follows`
-  ADD CONSTRAINT `follows_ibfk_1` FOREIGN KEY (`follower_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `follows_ibfk_2` FOREIGN KEY (`following_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `posts`
---
-ALTER TABLE `posts`
-  ADD CONSTRAINT `posts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `post_images`
---
-ALTER TABLE `post_images`
-  ADD CONSTRAINT `post_images_ibfk_1` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `post_likes`
---
-ALTER TABLE `post_likes`
-  ADD CONSTRAINT `post_likes_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `post_likes_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`);
-
---
--- Constraints for table `post_reactions`
---
-ALTER TABLE `post_reactions`
-  ADD CONSTRAINT `post_reactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `post_reactions_ibfk_2` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`);
-
---
--- Constraints for table `referrals`
---
-ALTER TABLE `referrals`
-  ADD CONSTRAINT `referrals_ibfk_1` FOREIGN KEY (`referrer_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `referrals_ibfk_2` FOREIGN KEY (`referee_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `social_media_links`
---
-ALTER TABLE `social_media_links`
-  ADD CONSTRAINT `social_media_links_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `transactions`
---
-ALTER TABLE `transactions`
-  ADD CONSTRAINT `transactions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `transactions_ibfk_2` FOREIGN KEY (`related_user_id`) REFERENCES `users` (`id`);
-
---
--- Constraints for table `transfers`
---
-ALTER TABLE `transfers`
-  ADD CONSTRAINT `transfers_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`),
-  ADD CONSTRAINT `transfers_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `users` (`id`);
-COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
